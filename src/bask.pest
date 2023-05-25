@@ -10,13 +10,13 @@ FuncBlock = {
   (WHITE_SPACE | Function)*
 }
 
-Function = { "fn " ~ FuncName ~ "(" ~ Arglist? ~ ")" ~ FuncReturnType? ~ 
+Function = { "fn " ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ 
   " {" ~ CodeBlock ~ "}"
 }
 FuncReturnType = { " "* ~ "->" ~ " "* ~ typeID}
-FuncName = { ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-Arglist = { " "* ~ Arg ~ (" "* ~ "," ~ " "* ~ Arg)* }
-Arg = { typeID ~ " "* ~ varID }
+FunctionName = { ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+FunctionArgList = { " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
+FunctionArg = { typeID ~ " "* ~ varID }
 
 
 CodeBlock = {
@@ -44,8 +44,7 @@ EnumValue = { EnumValueID ~
 EnumValueID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
 
 // Types either start with an upper case letter or are built-in types
-typeID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) | builtinTypeID }
-builtinTypeID = { "int" | "float" | "bool" | "string" | "char" }
+typeID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) | "int" | "float" | "bool" | "string" | "char"  }
 
 // Variables start with a lower case letter, and can contain numbers and underscores
 varID = { ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }

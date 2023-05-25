@@ -1,0 +1,3 @@
+num = { (ASCII_DIGIT)+ ~ ("." ~ (ASCII_DIGIT)*)? }
+sum = { (num ~ SPACE_SEPARATOR* ~ "+" ~ SPACE_SEPARATOR* ~ num) }
+file = { SOI ~ sum ~ ("\n" ~ sum?)* ~ EOI }

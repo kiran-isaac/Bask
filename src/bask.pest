@@ -1,0 +1,51 @@
+File = { SOI ~ ((Enum | Function) ~ NEWLINE*)* ~ EOI }
+
+Enum = { "enum " ~ typeID ~ 
+  (" with " ~ EnumTypeList)?
+  ~ " (" ~ WHITE_SPACE* ~ EnumValueList ~ NEWLINE* ~")" 
+  ~ (".{" ~ FuncBlock ~ "}")? 
+}
+
+FuncBlock = {
+  (WHITE_SPACE | Function)*
+}
+
+Function = { "fn " ~ FuncName ~ "(" ~ Arglist? ~ ")" ~ FuncReturnType? ~ 
+  " {" ~ CodeBlock ~ "}"
+}
+FuncReturnType = { " "* ~ "->" ~ " "* ~ typeID}
+FuncName = { ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+Arglist = { " "* ~ Arg ~ (" "* ~ "," ~ " "* ~ Arg)* }
+Arg = { typeID ~ " "* ~ varID }
+
+
+CodeBlock = {
+  (WHITE_SPACE | Statement)*
+}
+
+Statement = {
+  (Assignment)
+  ~ ";"
+}
+
+Assignment = { typeID? ~ " " ~ varID ~ " "* ~ "=" ~ " "* ~ Expression }
+
+Expression = { Num | varID }
+
+Num = { Integer | Float }
+Integer = { "-"? ~ ASCII_DIGIT+ }
+Float = { "-"? ~ (ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* | ASCII_DIGIT* ~ "." ~ ASCII_DIGIT+ ) }
+
+EnumTypeList = { typeID ~ ("," ~ " "* ~ typeID)* }
+EnumValueList = { EnumValue ~ (" "* ~ "," ~ WHITE_SPACE* ~ EnumValue)* }
+EnumValue = { EnumValueID ~ 
+  ("(" ~ " "* ~ Expression ~ (" "* ~ "," ~ " "* ~ Expression)* ~ ")")?
+}
+EnumValueID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
+
+// Types either start with an upper case letter or are built-in types
+typeID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) | builtinTypeID }
+builtinTypeID = { "int" | "float" | "bool" | "string" | "char" }
+
+// Variables start with a lower case letter, and can contain numbers and underscores
+varID = { ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }

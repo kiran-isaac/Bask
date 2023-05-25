@@ -1,0 +1,15 @@
+fn main(int argc) {
+  int x = 0;
+}
+
+enum Color (
+  Red,
+  Green,
+  Blue
+).{
+  fn test() {
+    int x = 0;
+  }
+
+  fn hello() {}
+}

@@ -1,0 +1,37 @@
+enum PieceType (
+  PAWN,
+  ROOK,
+  KNIGHT,
+  BISHOP,
+  QUEEN,
+  KING
+).{
+  fn toChar(bool isWhite) -> char {
+    char c = match self {
+      PAWN => 'p',
+      ROOK => 'r',
+      KNIGHT => 'n',
+      BISHOP => 'b',
+      QUEEN => 'q',
+      KING => 'k'
+    }
+
+    if isWhite {
+      return c.toUpper()
+    }
+
+    return c
+  }
+}
+
+struct Position (
+  int x,
+  int y
+)
+
+struct Piece (
+  bool isWhite,
+  PieceType type,
+  Position position,
+  bool hasMoved
+)

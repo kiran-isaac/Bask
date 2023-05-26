@@ -17,34 +17,36 @@ StructField  = { typeID ~ varID }
 CodeBlock           =  { "{" ~ Statement* ~ "}" }
 Statement           =  { StructuralStatement | RegularStatement ~ ";" }
 StructuralStatement = _{ If | While }
-If                  =  { "if" ~ RuntimeExpression ~ CodeBlock ~ ("else" ~ "if" ~ RuntimeExpression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
-While               =  { "while" ~ RuntimeExpression ~ CodeBlock }
+If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
+While               =  { "while" ~ Expression ~ CodeBlock }
 RegularStatement    = _{ Assignment | Return | MethodCall }
-Assignment          =  { typeID? ~ varID ~ "=" ~ RuntimeExpression }
-Return              =  { "return" ~ RuntimeExpression }
+Assignment          =  { typeID? ~ varID ~ "=" ~ Expression }
+Return              =  { "return" ~ Expression }
 
-RuntimeExpression        =  { prefix* ~ RuntimeExpressionPrimary ~ (infix ~ prefix* ~ RuntimeExpressionPrimary)* }
-RuntimeExpressionPrimary = _{ "(" ~ RuntimeExpression ~ ")" | ValueLiteral | MethodCall | varID }
+Expression =  { Prefix* ~ Primary ~ (Infix ~ Prefix* ~ Primary)* }
+Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | varID }
 
-infix     = _{ add | sub | mul | div | pow | or | and | equality | nequality | GT | LT | GTE | LTE }
-add       =  { "+" }
-sub       =  { "-" }
-mul       =  { "*" }
-div       =  { "/" }
-pow       =  { "^" }
-or        =  { "||" }
-and       =  { "&&" }
-equality  =  { "==" }
-nequality =  { "!=" }
-GT        =  { ">" }
-LT        =  { "<" }
-GTE       =  { ">=" }
-LTE       =  { "<=" }
-prefix    = _{ neg }
-neg       =  { "-" }
+Infix  =  _{ Add | Sub | Mul | Div | Mod | Pow | Or | And | Eq | Neq | GT | LT | GTE | LTE }
+Add    =  { "+" }
+Sub    =  { "-" }
+Mul    =  { "*" }
+Div    =  { "/" }
+Mod    =  { "%" }
+Pow    =  { "^" }
+Or     =  { "||" }
+And    =  { "&&" }
+Eq     =  { "==" }
+Neq    =  { "!=" }
+GT     =  { ">" }
+LT     =  { "<" }
+GTE    =  { ">=" }
+LTE    =  { "<=" }
+Prefix = _{ Neg | Not }
+Neg    =  { "-" }
+Not    =  { "!" }
 
 MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParamaters? ~ ")" }
-MethodParamaters = !{ RuntimeExpression ~ ("," ~ RuntimeExpression)* }
+MethodParamaters = !{ Expression ~ ("," ~ Expression)* }
 
 ValueLiteral   = _{ IntLit | FloatLit | StringLit | BoolLit | CharLit }
 StringLit      = @{ "\"" ~ (!("\"" | "\\") ~ ANY | EscapeSequence)* ~ "\"" }

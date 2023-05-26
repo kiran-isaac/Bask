@@ -6,5 +6,5 @@ enum Bytecode {
 
 pub fn compile(file : &str) {
   let pairs = parse_file(&file);
-  print_parse(pairs.clone().next().unwrap().into_inner(), 0);
+  print_parse(pairs.into_inner(), 0);
 }

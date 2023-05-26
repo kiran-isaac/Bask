@@ -9,13 +9,7 @@ fn main(int argc) {
 }
 
 fn test() {
-  int x = input();
-
-  if x == 0 {
-    IO.print("x is zero\n");
-  } else if x == 1 {}  else {
-    IO.print("x is not zero\n");
-  }
+  int x = -1 + 1;
 
   while x < 10 {
     IO.print("x is less than 10\n");

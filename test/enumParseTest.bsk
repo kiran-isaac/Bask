@@ -1,0 +1,25 @@
+struct Vector2 with A {
+  float x;
+  float y;
+}.{
+  fn length() => float {
+    return sqrt(x * x + y * y);
+  }
+
+  fn normalized() -> Vector2 {
+    float len = length();
+    return new(x / len, y / len);
+  }
+
+  fn mut normalize() {
+    float len = length();
+    x = x / len;
+    y = y / len;
+  }
+}
+
+enum Bruh with int (
+  ONE(1),
+  TWO(2),
+  THREE(3)
+)

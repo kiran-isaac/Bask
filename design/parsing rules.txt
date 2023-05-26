@@ -1,0 +1,9 @@
+Reserved keywords: 
+  int,
+  float,
+  bool,
+  char,
+  enum,
+  struct,
+  new,
+

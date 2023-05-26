@@ -1,5 +1,5 @@
 fn main(int argc) {
-  int x = 0;
+  int x = 0 + 1;
 }
 
 enum Color (
@@ -8,8 +8,6 @@ enum Color (
   Blue
 ).{
   fn test() {
-    int x = 0;
+    int x = x - x;
   }
-
-  fn hello() {}
 }

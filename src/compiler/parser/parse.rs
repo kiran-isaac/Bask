@@ -1,9 +1,10 @@
-#[derive(Parser)]
-#[grammar = "bask.pest"]
-pub struct BaskParser;
+use pest::{Parser, pratt_parser::{PrattParser, Assoc, Op}};
 
-#[derive(Debug)]
-pub enum DebugASTNodeType {
+#[derive(Parser)]
+#[grammar = "compiler/parser/bask.pest"]
+struct BaskParser;
+
+enum DebugASTNodeType {
   TypeID,
   VarID,
 
@@ -16,9 +17,12 @@ pub enum DebugASTNodeType {
   CodeBlock,
   Statement,
   Assignement,
+  Return,
+  If,
+  While,
+  For,
 
   Enum,
-  EnumName,
   EnumTypeList,
   EnumValueList,
   EnumValue,
@@ -48,7 +52,7 @@ impl DebugAST {
   }
 }
 
-pub fn generate_ast(node: &mut pest::iterators::Pair<Rule>) -> DebugAST {
+fn generate_ast(node: &mut pest::iterators::Pair<Rule>) -> DebugAST {
   let mut children = Vec::new();
   for mut child in node.clone().into_inner() {
     if child.as_rule() == Rule::EOI {
@@ -71,6 +75,8 @@ pub fn generate_ast(node: &mut pest::iterators::Pair<Rule>) -> DebugAST {
     Rule::CodeBlock => DebugAST { str: "CodeBlock".to_string(), node_type: DebugASTNodeType::CodeBlock, children },
     Rule::Statement => DebugAST { str: "Statement".to_string(), node_type: DebugASTNodeType::Statement, children },
     Rule::Assignment => DebugAST { str: format!("Assignement: {}", node.as_str()), node_type: DebugASTNodeType::Assignement, children },
+    Rule::Return => DebugAST { str: "Return".to_string(), node_type: DebugASTNodeType::Return, children },
+    Rule::If => DebugAST { str: "If".to_string(), node_type: DebugASTNodeType::If, children },
 
     Rule::Enum => DebugAST { str: "Enum".to_string(), node_type: DebugASTNodeType::Enum, children },
     Rule::EnumTypeList => DebugAST { str: "EnumTypeList".to_string(), node_type: DebugASTNodeType::EnumTypeList, children },
@@ -85,4 +91,18 @@ pub fn generate_ast(node: &mut pest::iterators::Pair<Rule>) -> DebugAST {
     Rule::Float => DebugAST { str: "Float".to_string(), node_type: DebugASTNodeType::Float, children },
     _ => DebugAST { str: format!("UNKNOWN: {:?}{}", node.as_rule(), node.as_str()), node_type: DebugASTNodeType::Expression, children },
   }
+}
+
+pub fn parse_file(file: &str) -> Result<DebugAST, pest::error::Error<Rule>> {
+  let mut pairs = BaskParser::parse(Rule::File, &file)?;
+  
+  let pratt =
+  PrattParser::new()
+      .op(Op::infix(Rule::add, Assoc::Left) | Op::infix(Rule::sub, Assoc::Left))
+      .op(Op::infix(Rule::mul, Assoc::Left) | Op::infix(Rule::div, Assoc::Left))
+      .op(Op::infix(Rule::pow, Assoc::Right))
+      .op(Op::prefix(Rule::neg));
+
+  let ast = generate_ast(&mut pairs.next().unwrap());
+  Ok(ast)
 }

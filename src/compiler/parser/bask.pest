@@ -11,26 +11,39 @@ FuncBlock = {
 }
 
 Function = { "fn " ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ 
-  " {" ~ CodeBlock ~ "}"
+  WHITE_SPACE* ~ CodeBlock 
 }
 FuncReturnType = { " "* ~ "->" ~ " "* ~ typeID}
 FunctionName = { ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-FunctionArgList = { " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
+FunctionArgList = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
 FunctionArg = { typeID ~ " "* ~ varID }
 
 
 CodeBlock = {
+  "{" ~
   (WHITE_SPACE | Statement)*
+  ~ "}"
 }
 
 Statement = {
-  (Assignment)
-  ~ ";"
+  (Assignment | Return | If)
 }
 
-Assignment = { typeID? ~ " " ~ varID ~ " "* ~ "=" ~ " "* ~ Expression }
+Assignment = { typeID? ~ " " ~ varID ~ " "* ~ "=" ~ " "* ~ Expression ~ " "* ~ ";" }
+Return = { "return" ~ " "* ~ Expression ~ " "* ~ ";" }
+If = { "if" ~ " "* ~ Expression ~ " "* ~ CodeBlock ~ (" "* ~ "else" ~ " "* ~ "if" ~ " "* ~ Expression  ~ " "* ~ CodeBlock)* ~ (" "* ~ "else" ~ " "* ~ CodeBlock)? }
 
-Expression = { Num | varID }
+Expression = { primary ~ infix ~ primary | prefix ~ primary }
+
+primary = _{ "(" ~ Expression ~ ")" | Num | varID }
+infix    =  _{ add | sub | mul | div | pow }
+  add    =   { "+" } // Addition
+  sub    =   { "-" } // Subtraction
+  mul    =   { "*" } // Multiplication
+  div    =   { "/" } // Division
+  pow    =   { "^" } // Exponentiation
+prefix   =  _{ neg }
+  neg    =   { "-" } // Negation
 
 Num = { Integer | Float }
 Integer = { "-"? ~ ASCII_DIGIT+ }
@@ -48,3 +61,5 @@ typeID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) | "int" | "float" |
 
 // Variables start with a lower case letter, and can contain numbers and underscores
 varID = { ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
+
+WHITESPACE = _{ " " }

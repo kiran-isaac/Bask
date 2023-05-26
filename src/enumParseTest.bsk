@@ -1,3 +1,0 @@
-enum Bruh with int, Test (
-  ONE(1)
-)

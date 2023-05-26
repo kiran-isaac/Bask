@@ -29,12 +29,19 @@ CodeBlock = {
 }
 
 Statement = {
-    (Assignment | Return | If)
+    (StructuralStatement | RegularStatement ~ ";")
 }
 
-Assignment = { typeID? ~ varID ~ "=" ~ Expression ~ ";" }
-Return     = { "return" ~ Expression ~ " "* ~ ";" }
-If         = { "if" ~ Expression ~ " "* ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
+StructuralStatement = _{
+    (If)
+}
+RegularStatement = _{
+    (Assignment | Return | MethodCall)
+}
+
+Assignment = { typeID? ~ varID ~ "=" ~ Expression }
+Return     = { "return" ~ Expression}
+If         = { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
 
 Expression = { prefix* ~ primary ~ (infix ~ prefix* ~ primary)* }
 

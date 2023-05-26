@@ -10,7 +10,7 @@ pub fn print_parse(parse : Pairs<Rule>, indent: usize) {
     print!("{}{:?}", indent_str, pair.as_rule());
     let children = pair.clone().into_inner();
     match pair.as_rule() {
-      Rule::FunctionName | Rule::ValueLiteral | Rule::varID => {
+      Rule::MethodCall | Rule::FunctionName | Rule::ValueLiteral | Rule::varID => {
         print!(" : {}", pair.as_str());
       },
       _ => {}
@@ -20,6 +20,15 @@ pub fn print_parse(parse : Pairs<Rule>, indent: usize) {
   }
 }
 
-pub fn parse_file(file: &str) -> Result<Pairs<Rule>, pest::error::Error<Rule>> {
-  return BaskParser::parse(Rule::File, &file);
+fn handle_error(e: pest::error::Error<Rule>){
+  println!("Error: {}", e);
+}
+
+pub fn parse_file(file: &str) -> Pairs<Rule> {
+  let parse_result = BaskParser::parse(Rule::File, file);
+  if parse_result.is_err() {
+    handle_error(parse_result.unwrap_err());
+    std::process::exit(1);
+  }
+  parse_result.unwrap()
 }

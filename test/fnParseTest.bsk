@@ -1,5 +1,5 @@
 fn main(int argc) {
-  int x = 0 + 1;
+  IO.print("Hello World!\n");
 }
 
 enum Color (
@@ -8,6 +8,6 @@ enum Color (
   Blue
 ).{
   fn test() {
-    int x = abs(x || x, "");
+    int x = abs(x || x, "Hello World!");
   }
 }

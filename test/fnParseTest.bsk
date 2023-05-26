@@ -8,6 +8,6 @@ enum Color (
   Blue
 ).{
   fn test() {
-    int x = x - x;
+    int x = abs(x || x, "");
   }
 }

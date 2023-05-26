@@ -1,5 +1,4 @@
 struct EnumType {
-  name: String,
   variants: Vec<String>,
 }
 

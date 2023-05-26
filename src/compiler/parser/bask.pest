@@ -1,51 +1,31 @@
-File = { SOI ~ ((Enum | Function) ~ NEWLINE*)* ~ EOI }
+File = { SOI ~ (Struct | Enum | Function)* ~ EOI }
 
-Enum = {
-    "enum" ~ typeID ~ ("with" ~ EnumTypeList)? ~ "(" ~ EnumValueList ~ NEWLINE* ~ ")" ~ (".{" ~ FunctionBlock ~ "}")?
-}
+Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ EnumValueList? ~ ")" ~ (".{" ~ Function* ~ "}")? }
+EnumValueList =  { EnumName ~ ("," ~ EnumName)* }
+EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
-EnumTypeList  = { typeID ~ ("," ~ typeID)* }
-EnumValueList = { EnumValue ~ (" "* ~ "," ~ WHITE_SPACE* ~ EnumValue)* }
-EnumValue     = {
-    EnumValueID ~ ("(" ~ Expression ~ ("," ~ Expression)* ~ ")")?
-}
-EnumValueID   = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
-
-FunctionBlock = {
-    (WHITE_SPACE | Function)*
-}
-
-Function = {
-    "fn " ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ WHITE_SPACE* ~ CodeBlock
-}
-
+Function        =  { "fn" ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
 FuncReturnType  =  { " "* ~ "->" ~ " "* ~ typeID }
-FunctionName    =  { ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+FunctionName    = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 FunctionArgList = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
 FunctionArg     =  { typeID ~ " "* ~ varID }
 
-CodeBlock = {
-    "{" ~ Statement* ~ "}"
-}
+Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ StructFields? ~ ")" ~ (".{" ~ Function* ~ "}")? }
+StructFields = { StructField ~ ("," ~ StructField)* }
+StructField  = { typeID ~ varID }
 
-Statement = {
-    (StructuralStatement | RegularStatement ~ ";")
-}
+CodeBlock           =  { "{" ~ Statement* ~ "}" }
+Statement           =  { StructuralStatement | RegularStatement ~ ";" }
+StructuralStatement = _{ If | While }
+If                  =  { "if" ~ RuntimeExpression ~ CodeBlock ~ ("else" ~ "if" ~ RuntimeExpression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
+While               =  { "while" ~ RuntimeExpression ~ CodeBlock }
+RegularStatement    = _{ Assignment | Return | MethodCall }
+Assignment          =  { typeID? ~ varID ~ "=" ~ RuntimeExpression }
+Return              =  { "return" ~ RuntimeExpression }
 
-StructuralStatement = _{
-    (If)
-}
-RegularStatement = _{
-    (Assignment | Return | MethodCall)
-}
+RuntimeExpression        =  { prefix* ~ RuntimeExpressionPrimary ~ (infix ~ prefix* ~ RuntimeExpressionPrimary)* }
+RuntimeExpressionPrimary = _{ "(" ~ RuntimeExpression ~ ")" | ValueLiteral | MethodCall | varID }
 
-Assignment = { typeID? ~ varID ~ "=" ~ Expression }
-Return     = { "return" ~ Expression}
-If         = { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
-
-Expression = { prefix* ~ primary ~ (infix ~ prefix* ~ primary)* }
-
-primary   = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | varID }
 infix     = _{ add | sub | mul | div | pow | or | and | equality | nequality | GT | LT | GTE | LTE }
 add       =  { "+" }
 sub       =  { "-" }
@@ -63,23 +43,23 @@ LTE       =  { "<=" }
 prefix    = _{ neg }
 neg       =  { "-" }
 
-MethodCall = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParamaters? ~ ")" }
-MethodParamaters = !{ Expression ~ ("," ~ Expression)* }
+MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParamaters? ~ ")" }
+MethodParamaters = !{ RuntimeExpression ~ ("," ~ RuntimeExpression)* }
 
-ValueLiteral = { IntLit | FloatLit | StringLit | BoolLit | CharLit }
-StringLit = @{ "\"" ~ (!("\"" | "\\") ~ ANY | EscapeSequence)* ~ "\"" }
-BoolLit   = { "true" | "false" }
-CharLit = { "'" ~ (!("'" | "\\") ~ ANY | EscapeSequence) ~ "'" }
-
-EscapeSequence = @{ "\\" ~ ( "\"" | "\\" | "n" | "t" | "r" | "b" | "f" | "v") }
-
-IntLit = { ASCII_DIGIT+ }
-FloatLit   = { (ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* | ASCII_DIGIT* ~ "." ~ ASCII_DIGIT+) }
+ValueLiteral   = _{ IntLit | FloatLit | StringLit | BoolLit | CharLit }
+StringLit      = @{ "\"" ~ (!("\"" | "\\") ~ ANY | EscapeSequence)* ~ "\"" }
+BoolLit        =  { "true" | "false" }
+CharLit        =  { "'" ~ (!("'" | "\\") ~ ANY | EscapeSequence) ~ "'" }
+EscapeSequence = @{ "\\" ~ ("\"" | "\\" | "n" | "t" | "r" | "b" | "f" | "v") }
+IntLit         = @{ ASCII_DIGIT+ }
+FloatLit       = @{ (ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* | ASCII_DIGIT* ~ "." ~ ASCII_DIGIT+) }
 
 // Types either start with an upper case letter or are built-in types
-typeID = { (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) | "int" | "float" | "bool" | "string" | "char" }
+typeID      = @{ "[" ~ typeID ~ "]" | builtinType | (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
+builtinType = _{ "int" | "float" | "bool" | "string" | "char" }
+TypeList    =  { typeID ~ ("," ~ typeID)* }
 
 // Variables start with a lower case letter, and can contain numbers and underscores
-varID = { ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
+varID = @{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
 
 WHITESPACE = _{ " " | "\n" }

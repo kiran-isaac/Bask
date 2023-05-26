@@ -1,13 +1,29 @@
+enum Numbers with int (
+  One,
+  Two,
+  Three
+)
+
 fn main(int argc) {
   IO.print("Hello World!\n");
 }
 
-enum Color (
-  Red,
-  Green,
-  Blue
-).{
-  fn test() {
-    int x = abs(x || x, "Hello World!");
+fn test() {
+  int x = input();
+
+  if x == 0 {
+    IO.print("x is zero\n");
+  } else if x == 1 {}  else {
+    IO.print("x is not zero\n");
   }
+
+  while x < 10 {
+    IO.print("x is less than 10\n");
+    x = x + 1;
+  }
+}
+struct Vector with A (
+  int x
+).{
+  fn hello() {}
 }

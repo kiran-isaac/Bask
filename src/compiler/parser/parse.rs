@@ -10,7 +10,7 @@ pub fn print_parse(parse : Pairs<Rule>, indent: usize) {
     print!("{}{:?}", indent_str, pair.as_rule());
     let children = pair.clone().into_inner();
     match pair.as_rule() {
-      Rule::MethodCall | Rule::FunctionName | Rule::ValueLiteral | Rule::varID => {
+      Rule::typeID | Rule::EnumName | Rule::MethodCall | Rule::FunctionName | Rule::varID | Rule::StringLit | Rule::CharLit | Rule::BoolLit | Rule::IntLit | Rule::FloatLit => {
         print!(" : {}", pair.as_str());
       },
       _ => {}

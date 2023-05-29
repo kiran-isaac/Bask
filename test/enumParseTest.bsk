@@ -1,8 +1,8 @@
-struct Vector2 with A {
-  float x;
-  float y;
-}.{
-  fn length() => float {
+struct Vector2 with A (
+  float x,
+  float y
+).{
+  fn length() -> float {
     return sqrt(x * x + y * y);
   }
 
@@ -19,7 +19,7 @@ struct Vector2 with A {
 }
 
 enum Bruh with int (
-  ONE(1),
-  TWO(2),
-  THREE(3)
+  ONE,
+  TWO,
+  THREE
 )

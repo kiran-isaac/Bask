@@ -4,11 +4,12 @@ Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ EnumValueList?
 EnumValueList =  { EnumName ~ ("," ~ EnumName)* }
 EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
-Function        =  { "fn" ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
-FuncReturnType  =  { " "* ~ "->" ~ " "* ~ typeID }
-FunctionName    = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-FunctionArgList = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
-FunctionArg     =  { typeID ~ " "* ~ varID }
+Function          =  { "fn" ~ FunctionKWMutable? ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
+FuncReturnType    =  { " "* ~ "->" ~ " "* ~ typeID }
+FunctionName      = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+FunctionArgList   = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
+FunctionArg       =  { typeID ~ " "* ~ varID }
+FunctionKWMutable =  { "mut" }
 
 Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ StructFields? ~ ")" ~ (".{" ~ Function* ~ "}")? }
 StructFields = { StructField ~ ("," ~ StructField)* }
@@ -26,7 +27,7 @@ Return              =  { "return" ~ Expression }
 Expression =  { Prefix* ~ Primary ~ (Infix ~ Prefix* ~ Primary)* }
 Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | varID }
 
-Infix  =  _{ Add | Sub | Mul | Div | Mod | Pow | Or | And | Eq | Neq | GT | LT | GTE | LTE }
+Infix  = _{ Add | Sub | Mul | Div | Mod | Pow | Or | And | Eq | Neq | GT | LT | GTE | LTE }
 Add    =  { "+" }
 Sub    =  { "-" }
 Mul    =  { "*" }

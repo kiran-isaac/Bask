@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'bask'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=bask",
+          "--package=bask"
+        ],
+        "filter": {
+          "name": "bask",
+          "kind": "bin"
+        }
+      },
+      "args": ["compile", "test/enumParseTest.bsk"],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'bask'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=bask",
+          "--package=bask"
+        ],
+        "filter": {
+          "name": "bask",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

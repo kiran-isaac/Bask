@@ -5,7 +5,7 @@ SingleLineComment = { "//" ~ (!"\n" ~ ANY)* }
 MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
 Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ EnumValueList? ~ ")" ~ (".{" ~ Function* ~ "}")? }
-EnumValueList =  { EnumName ~ ("," ~ EnumName)* }
+EnumValueList =  _{ EnumName ~ ("," ~ EnumName)* }
 EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
 Function          =  { "fn" ~ FunctionKWMutable? ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }

@@ -18,7 +18,7 @@ struct Vector2 with A (
   }
 }
 
-enum Bruh with int (
+enum Bruh (
   ONE,
   TWO,
   THREE

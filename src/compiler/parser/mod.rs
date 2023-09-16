@@ -1,6 +1,7 @@
 mod parse;
+mod AST;
 
 #[cfg(test)]
 mod tests;
 
-pub use parse::{parse_file, print_parse};
+pub use parse::parse_file;

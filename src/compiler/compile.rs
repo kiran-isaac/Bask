@@ -1,4 +1,4 @@
-use super::parser::{parse_file, print_parse};
+use super::parser::parse_file;
 
 enum Bytecode {
   
@@ -6,5 +6,4 @@ enum Bytecode {
 
 pub fn compile(file : &str) {
   let pairs = parse_file(&file);
-  print_parse(pairs.into_inner(), 0);
 }

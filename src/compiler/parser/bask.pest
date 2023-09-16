@@ -65,4 +65,4 @@ TypeList    =  { typeID ~ ("," ~ typeID)* }
 // Variables start with a lower case letter, and can contain numbers and underscores
 varID = @{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
 
-WHITESPACE = _{ " " | "\n" }
+WHITESPACE = _{ " " | "\n" | "\t" | "\r" }

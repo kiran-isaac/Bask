@@ -1,4 +1,8 @@
-File = { SOI ~ (Struct | Enum | Function)* ~ EOI }
+File = { SOI ~ (Struct | Enum | Function | Comment)* ~ EOI }
+
+Comment = _{ SingleLineComment | MultiLineComment }
+SingleLineComment = { "//" ~ (!"\n" ~ ANY)* }
+MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
 Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ EnumValueList? ~ ")" ~ (".{" ~ Function* ~ "}")? }
 EnumValueList =  { EnumName ~ ("," ~ EnumName)* }
@@ -46,8 +50,8 @@ Prefix = _{ Neg | Not }
 Neg    =  { "-" }
 Not    =  { "!" }
 
-MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParamaters? ~ ")" }
-MethodParamaters = !{ Expression ~ ("," ~ Expression)* }
+MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParameters? ~ ")" }
+MethodParameters = !{ Expression ~ ("," ~ Expression)* }
 
 ValueLiteral   = _{ IntLit | FloatLit | StringLit | BoolLit | CharLit }
 StringLit      = @{ "\"" ~ (!("\"" | "\\") ~ ANY | EscapeSequence)* ~ "\"" }
@@ -65,4 +69,4 @@ TypeList    =  { typeID ~ ("," ~ typeID)* }
 // Variables start with a lower case letter, and can contain numbers and underscores
 varID = @{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
 
-WHITESPACE = _{ " " | "\n" }
+WHITESPACE = _{ " " | "\n" | "\t" | "\r" }

@@ -35,64 +35,20 @@ fn get_precedence(pair: Pair<Rule>) -> Result<i32, ()> {
   }
 }
 
-fn shunting_yard(mut expr : Pair<Rule>) -> Pair<Rule> {
-  let mut output: Vec<Pair<Rule>> = Vec::new();
-  let mut operator: Vec<Pair<Rule>> = Vec::new();
-  for mut pair in expr.clone().into_inner() {
-    match pair.as_rule() {
-      Rule::Expression => {
-        shunting_yard(pair);
-      },
-      Rule::Primary => {
-        output.push(pair);
-      },
-      Rule::Add | Rule::Sub | Rule::Mul | Rule::Div | Rule::Mod | Rule::Pow | Rule::Or  | Rule::And | Rule::Eq  | Rule::Neq | Rule::GT  | Rule::LT  | Rule::GTE | Rule::LTE | Rule::Neg | Rule::Not => {
-        loop {
-          let top_of_op_stack = operator.last();
-          if top_of_op_stack.is_none() {break;}
-          let top_of_op_stack = top_of_op_stack.unwrap();
-          let top_of_op_stack_precedence = get_precedence(top_of_op_stack.clone());
-          let current_precedence = get_precedence(pair.clone());
-          if top_of_op_stack_precedence.is_err() || current_precedence.is_err() {
-            unreachable!("Cannot get precedence of operator in SYA");
-          }
-          if top_of_op_stack_precedence.unwrap() <= current_precedence.unwrap() {
-            break;
-          }
-        }
-        operator.push(pair);
-      },
-      _ => {
-        unreachable!("Unrecognised operator in SYA");
-      }
-    }
-  }
-  while !operator.is_empty() {
-    output.push(operator.pop().unwrap());
-  }
-  for pair in output {
-    println!("{:?}", pair.as_rule());
-  }
-  expr
-}
-
-fn to_postfix(mut parse_result : Pair<Rule>) -> Pair<Rule> {
-  for mut pair in parse_result.clone().into_inner() {
-    match pair.as_rule() {
-      Rule::Expression => {
-        shunting_yard(pair);
-      },
-      _ => {}
-    }
-  }
-  parse_result
-}
-
 pub fn parse_file(file: &str) -> Pair<Rule> {
   let parse_result = BaskParser::parse(Rule::File, file);
   if parse_result.is_err() {
     handle_error(parse_result.unwrap_err());
     std::process::exit(1);
   }
-  to_postfix(parse_result.unwrap().next().unwrap())
+  let pratt = PrattParser::new()
+      .op(Op::Infix(Rule::Eq, Assoc::Left) | Op::Infix(Rule::Neq, Assoc::Left) | Op::Infix(Rule::GT, Assoc::Left) | Op::Infix(Rule::LT, Assoc::Left) | Op::Infix(Rule::GTE, Assoc::Left) | Op::Infix(Rule::LTE, Assoc::Left))
+      .op(Op::Infix(Rule::Add, Assoc::Left) | Op::Infix(Rule::Sub, Assoc::Left) | Op::Infix(Rule::Or, Assoc::Left))
+      .op(Op::Infix(Rule::Mul, Assoc::Left) | Op::Infix(Rule::Div, Assoc::Left) | Op::Infix(Rule::Mod, Assoc::Left) | Op::Infix(Rule::And, Assoc::Left))
+      .op(Op::Prefix(Rule::Neg) | Op::Prefix(Rule::Not))
+      .op(Op::Infix(Rule::Pow, Assoc::Left));
+
+  pratt.map_primary(
+
+  )
 }

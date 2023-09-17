@@ -5,5 +5,7 @@ enum Bytecode {
 }
 
 pub fn compile(file : &str) {
-  let pairs = parse_file(&file);
+  let ast = parse_file(&file);
+  // Apply rules to AST
+
 }

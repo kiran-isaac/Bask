@@ -92,6 +92,8 @@ impl ASTNode {
             || self.rule == Rule::Not
     }
 
+    // Shunting Yard Algorithm
+    // from https://en.wikipedia.org/wiki/Shunting-yard_algorithm
     fn sya(&mut self) {
         let mut op_stack = ASTNodeStack::new();
         let mut output_stack : Vec<ASTNode> = Vec::new();
@@ -102,6 +104,11 @@ impl ASTNode {
                 cloned_child.sya();
                 output_stack.push(cloned_child);
                 continue;
+            }
+
+            if child.rule == Rule::MethodCall {
+                let mut cloned_child = child.clone();
+                cloned_child.convert_to_postfix_if_expression();
             }
 
             if child.is_primary() {

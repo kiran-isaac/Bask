@@ -99,19 +99,12 @@ impl ASTNode {
         let mut output_stack : Vec<ASTNode> = Vec::new();
 
         for child in &self.children {
-            if child.rule == Rule::Expression {
-                let mut cloned_child = child.clone();
-                cloned_child.sya();
-                output_stack.push(cloned_child);
-                continue;
-            }
-
             if child.rule == Rule::MethodCall {
                 let mut cloned_child = child.clone();
                 cloned_child.convert_to_postfix_if_expression();
             }
 
-            if child.is_primary() {
+            if child.is_primary() || child.rule == Rule::Expression {
                 output_stack.push(child.clone());
             } 
             
@@ -146,6 +139,33 @@ impl ASTNode {
         match self.rule {
             Rule::Expression => {
                 self.sya();
+
+                let mut stack = ASTNodeStack::new();
+                for mut child in self.children.clone() {
+                    if child.is_primary() {
+                        stack.push(child);
+                        continue;
+                    }
+
+                    if child.rule == Rule::Expression {
+                        child.convert_to_postfix_if_expression();
+                        assert!(child.children.len() == 1);
+                        continue;
+                    }
+
+                    let operand = stack.pop().unwrap();
+                    if child.rule == Rule::Neg || child.rule == Rule::Not {
+                        child.children = vec![operand];
+                        stack.push(child)
+                    } else {
+                        let operand2 = stack.pop().unwrap();
+                        child.children = vec![operand2, operand];
+                        stack.push(child);
+                    }
+                }
+
+                assert!(stack.stack.len() == 1);
+                self.children = stack.stack;
             },
             _ => {
                 for child in self.children.iter_mut() {

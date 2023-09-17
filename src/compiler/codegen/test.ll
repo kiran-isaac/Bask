@@ -3,7 +3,7 @@ declare void @int_to_string(i32, i8*)
 declare i32 @printf(i8*, ...)
 
 define i32 @test() {
-    %et1 = call i32 @power(i32 5, i32 180)
+    %et1 = call i32 @power(i32 2, i32 108)
     ret i32 %et1
 }
 

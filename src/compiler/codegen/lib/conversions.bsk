@@ -1,0 +1,75 @@
+int.{
+    string to(this)
+
+    float to(this)
+
+    double to(this) {
+        return (double < float) this
+    }
+
+    bool to(this) -> {
+        if (this == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+float.{
+    string to(this)
+
+    int to(this)
+
+    bool to(this) -> {
+        if (this == 0.) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+char.{
+    string to(this)
+
+    float to(this)
+
+    int to(this)
+
+    bool to(this) -> {
+        if (this == '\0') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+string.{
+    char to(this)
+
+    float to(this)
+
+    int to(this)
+
+    bool to(this) -> {
+        if (this == "") {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+bool.{
+    string to(this)
+
+    char to(this)
+
+    float to(this)
+
+    int to(this) {
+        return this ? 1 : 0;
+    }
+}

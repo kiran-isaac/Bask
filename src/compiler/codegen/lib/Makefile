@@ -6,3 +6,9 @@ lib.bc: $(BC_FILES)
 
 %.bc: %.ll
 	llvm-as	 $< -o $@
+
+%.ll: %.c
+	clang -S -emit-llvm $< -o $@
+
+clean:
+	rm -f *.bc

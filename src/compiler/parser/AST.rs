@@ -1,16 +1,16 @@
-use pest::{iterators::Pair, RuleType};
+use pest::iterators::Pair;
 use std::fmt::Debug;
 use super::parse::Rule;
 
 pub struct AST {
-    root: ASTNode,
+    pub root: ASTNode,
 }
 
 #[derive(Clone)]
-struct ASTNode {
-    children: Vec<ASTNode>,
-    rule: Rule,
-    value: String,
+pub struct ASTNode {
+    pub children: Vec<ASTNode>,
+    pub rule: Rule,
+    pub value: String,
 }
 
 struct ASTNodeStack {
@@ -42,7 +42,10 @@ impl ASTNode {
         let mut children: Vec<ASTNode> = Vec::new();
         let rule = pair.as_rule();
         let value = pair.as_str().to_string();
-        for child in pair.into_inner() {
+        for child in pair.clone().into_inner() {
+            if pair.as_rule() == Rule::EOI {
+                continue;
+            }
             children.push(ASTNode::new(child)?);
         }
         Ok(ASTNode {
@@ -101,7 +104,7 @@ impl ASTNode {
         for child in &self.children {
             if child.rule == Rule::MethodCall {
                 let mut cloned_child = child.clone();
-                cloned_child.convert_to_postfix_if_expression();
+                cloned_child.make_expressions_gooder();
             }
 
             if child.is_primary() || child.rule == Rule::Expression {
@@ -135,7 +138,7 @@ impl ASTNode {
         self.children = output_stack;
     }
 
-    pub fn convert_to_postfix_if_expression(&mut self) {
+    pub fn make_expressions_gooder(&mut self) {
         match self.rule {
             Rule::Expression => {
                 self.sya();
@@ -148,8 +151,9 @@ impl ASTNode {
                     }
 
                     if child.rule == Rule::Expression {
-                        child.convert_to_postfix_if_expression();
+                        child.make_expressions_gooder();
                         assert!(child.children.len() == 1);
+                        stack.push(child.children.pop().unwrap());
                         continue;
                     }
 
@@ -169,42 +173,59 @@ impl ASTNode {
             },
             _ => {
                 for child in self.children.iter_mut() {
-                    child.convert_to_postfix_if_expression();
+                    child.make_expressions_gooder();
                 }
             }
         }
+    }
+
+    #[cfg(test)]
+    pub fn dig_for(&self, rule : Rule) -> Option<&ASTNode> {
+        fn recursive_dig(node : &ASTNode, rule : Rule) -> Option<&ASTNode> {
+            if node.rule == rule {
+                return Some(node);
+            }
+
+            for child in &node.children {
+                let result = recursive_dig(child, rule);
+                if result.is_some() {
+                    return result;
+                }
+            }
+            None
+        }
+
+        recursive_dig(&self, rule)
     }
 }
 
 impl AST {
     pub fn new(pair: Pair<Rule>) -> Result<Self, ()> {
-        Ok(AST {
+        let mut root = AST {
             root: ASTNode::new(pair)?,
-        })
+        };
+
+        root.root.make_expressions_gooder();
+        Ok(root)
     }
 
-    pub fn re_jig(&mut self) {
-        self.root.convert_to_postfix_if_expression();
-    }
-
-    pub fn print(&self) -> std::fmt::Result {
-        fn recursive_print(node : &ASTNode, indent : usize) {
-            for _ in 0..indent {
-                print!(" ");
-            }
-            println!("{:?}", node);
-            for child in &node.children {
-                recursive_print(child, indent + 2);
+    #[cfg(test)]
+    pub fn find_function(&self, name : &str) -> Option<&ASTNode> {
+        for child in &self.root.children {
+            if child.rule == Rule::Function {
+                if child.children[0].value == name {
+                    return Some(child);
+                }
             }
         }
-
-        recursive_print(&self.root, 0);
-        Ok(())
+        None
     }
 }
 
-impl Debug for ASTNode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl ToString for ASTNode {
+    fn to_string(&self) -> String {
+        let mut string = String::new();
+
         match self.rule {
             Rule::typeID
             | Rule::EnumName
@@ -216,11 +237,64 @@ impl Debug for ASTNode {
             | Rule::BoolLit
             | Rule::IntLit
             | Rule::FloatLit => {
-                write!(f, "{:?} : {}", self.rule, self.value)
+                string.push_str(format!("{}", self.value).as_str())
             }
             _ => {
-                write!(f, "{:?}", self.rule)
+                string.push_str(format!("{:?}", self.rule).as_str())
+            }
+        };
+
+        if self.children.len() > 0 {
+            string.push_str("{");
+            for child in &self.children {
+                string.push_str(child.to_string().as_str());
+                string.push_str(",");
+            }
+            string.pop();
+            string.push_str("}");
+        }
+
+        string
+    }
+}
+
+impl Debug for ASTNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        fn recursive_print(node : &ASTNode, indent : usize, f: &mut std::fmt::Formatter<'_>) {
+            for _ in 0..indent {
+                let _ = write!(f, " ");
+            }
+
+            let _ = match node.rule {
+                Rule::typeID
+                | Rule::EnumName
+                | Rule::MethodCall
+                | Rule::FunctionName
+                | Rule::varID
+                | Rule::StringLit
+                | Rule::CharLit
+                | Rule::BoolLit
+                | Rule::IntLit
+                | Rule::FloatLit => {
+                    write!(f, "{:?} : {}\n", node.rule, node.value)
+                }
+                _ => {
+                    write!(f, "{:?}\n", node.rule)
+                }
+            };
+
+            for child in &node.children {
+                recursive_print(child, indent + 2, f);
             }
         }
+
+        recursive_print(self, 0, f);
+        Ok(())
+    }
+}
+
+impl Debug for AST {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.root.fmt(f)
     }
 }

@@ -1,8 +1,4 @@
-use pest::{
-    iterators::{Pair, Pairs},
-    pratt_parser::{Assoc, Op, PrattParser},
-    Parser,
-};
+use pest::Parser;
 
 use super::AST::AST;
 
@@ -10,21 +6,14 @@ use super::AST::AST;
 #[grammar = "compiler/parser/bask.pest"]
 pub struct BaskParser;
 
-fn handle_error(e: pest::error::Error<Rule>) {
-    println!("Error: {}", e);
-}
-
-pub fn parse_file(file: &str) -> AST {
+pub fn parse_file(file: &str) -> Result<AST, String> {
     let parse_result = BaskParser::parse(Rule::File, file);
     if parse_result.is_err() {
-        handle_error(parse_result.unwrap_err());
-        std::process::exit(1);
+        println!("{:?}", parse_result);
+        return Err("Error parsing file".to_string());
     }
-
-    let res = parse_result.unwrap().next().unwrap();
-    let mut ast = AST::new(res.clone()).unwrap();
-    // ast.print().unwrap();
-    ast.re_jig();
-    ast.print().unwrap();
-    ast
+    
+    let ast = AST::new(parse_result.unwrap().into_iter().next().unwrap()).unwrap();
+    
+    Ok(ast)
 }

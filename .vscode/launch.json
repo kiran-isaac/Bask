@@ -19,7 +19,7 @@
           "kind": "bin"
         }
       },
-      "args": ["compile", "test/enumParseTest.bsk"],
+      "args": ["compile", "test/casting.bsk"],
       "cwd": "${workspaceFolder}"
     },
     {

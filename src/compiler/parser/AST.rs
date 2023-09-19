@@ -164,7 +164,6 @@ impl ASTNode {
                         child.children = vec![operand];
                         stack.push(child)
                     } else if child.rule == Rule::Cast {
-                        println!("Cast: {:?}", child);
                         child.children = vec![child.children[0].clone(), operand];
                         stack.push(child);
                     } else {

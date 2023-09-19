@@ -1,5 +1,3 @@
-
-
 declare float @"int#to"(i32 %i)
 
 ; define double @"int#to"(i32 %i, i8* %str_ptr) {

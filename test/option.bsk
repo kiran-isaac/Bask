@@ -1,0 +1,5 @@
+struct Option with T {
+    // The value of the option
+    value: T
+    is_some: bool
+}

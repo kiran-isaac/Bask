@@ -1,0 +1,17 @@
+enum Piece {
+    Pawn,
+    Knight,
+    Bishop,
+    Rook,
+    Queen,
+    King
+}
+
+struct Square {
+    piece: Option<Piece>,
+    is_white: bool
+}
+
+struct Board {
+    squares: [Square; 64]
+}

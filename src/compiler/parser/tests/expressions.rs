@@ -10,9 +10,17 @@ fn expression_test_1(){
     assert!(ast.is_ok());
 
     let ast = ast.unwrap();
-    let expr = ast.root.dig_for(Rule::Expression).unwrap();
 
-    assert!(expr.to_string() == "Expression{Add{a,Mul{b,c}}}");
+    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    Expression{
+        Add{
+            a,
+            Mul{
+                b,
+                c
+            }
+        }
+    }".replace("\n", "").replace(" ", ""));
 }
 
 #[test]
@@ -24,9 +32,19 @@ fn expression_test_2(){
     assert!(ast.is_ok());
 
     let ast = ast.unwrap();
-    let expr = ast.root.dig_for(Rule::Expression).unwrap();
 
-    assert!(expr.to_string() == "Expression{Add{a,Mul{b,Neg{c}}}}");
+    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    Expression{
+        Add{
+            a,
+            Mul{
+                b,
+                Neg{
+                    c
+                }
+            }
+        }
+    }".replace("\n", "").replace(" ", ""));
 }
 
 #[test]
@@ -35,9 +53,22 @@ fn expression_test_cast(){
         int x = (int) a + b * - c;
     }";
     let ast = parse_file(file);
-    println!("{:?}", ast);
 
     let ast = ast.unwrap();
-    let expr = ast.root.dig_for(Rule::Expression).unwrap();
 
+    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    Expression{
+        Add{
+            Cast{
+                int,
+                a
+            },
+            Mul{
+                b,
+                Neg{
+                    c
+                }
+            }
+        }
+    }".replace("\n", "").replace(" ", ""));
 }

@@ -46,20 +46,21 @@ GT     =  { ">" }
 LT     =  { "<" }
 GTE    =  { ">=" }
 LTE    =  { "<=" }
-Prefix = _{ Neg | Not }
+Prefix = _{ Neg | Not | Cast }
 Neg    =  { "-" }
 Not    =  { "!" }
+Cast   =  { "(" ~ typeID ~ ")" }
 
 MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParameters? ~ ")" }
 MethodParameters = !{ Expression ~ ("," ~ Expression)* }
 
-ValueLiteral   = _{ IntLit | FloatLit | StringLit | BoolLit | CharLit }
+ValueLiteral   = _{ FloatLit | IntLit | StringLit | BoolLit | CharLit }
 StringLit      = @{ "\"" ~ (!("\"" | "\\") ~ ANY | EscapeSequence)* ~ "\"" }
 BoolLit        =  { "true" | "false" }
 CharLit        =  { "'" ~ (!("'" | "\\") ~ ANY | EscapeSequence) ~ "'" }
 EscapeSequence = @{ "\\" ~ ("\"" | "\\" | "n" | "t" | "r" | "b" | "f" | "v") }
-IntLit         = @{ ASCII_DIGIT+ }
 FloatLit       = @{ (ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* | ASCII_DIGIT* ~ "." ~ ASCII_DIGIT+) }
+IntLit         = @{ ASCII_DIGIT+ }
 
 // Types either start with an upper case letter or are built-in types
 typeID      = @{ "[" ~ typeID ~ "]" | builtinType | (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }

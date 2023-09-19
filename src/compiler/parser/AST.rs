@@ -57,6 +57,7 @@ impl ASTNode {
 
     fn get_precedence(&self) -> Result<i32, ()> {
         match self.rule {
+            Rule::Cast => Ok(0),
             Rule::Eq | Rule::Neq | Rule::GT | Rule::LT | Rule::GTE | Rule::LTE => Ok(1),
             Rule::Add | Rule::Sub | Rule::Or => Ok(3),
             Rule::Mul | Rule::Div | Rule::Mod | Rule::And => Ok(4),
@@ -93,6 +94,7 @@ impl ASTNode {
             || self.rule == Rule::Or
             || self.rule == Rule::Neg
             || self.rule == Rule::Not
+            || self.rule == Rule::Cast
     }
 
     // Shunting Yard Algorithm
@@ -119,7 +121,7 @@ impl ASTNode {
                 let precedence = precedence.unwrap();
                 let op = child.clone();
 
-                if op.rule == Rule::Neg || op.rule == Rule::Not {
+                if op.rule == Rule::Neg || op.rule == Rule::Not || op.rule == Rule::Cast {
                     op_stack.push(op);
                     continue;
                 }
@@ -158,7 +160,7 @@ impl ASTNode {
                     }
 
                     let operand = stack.pop().unwrap();
-                    if child.rule == Rule::Neg || child.rule == Rule::Not {
+                    if child.rule == Rule::Neg || child.rule == Rule::Not || child.rule == Rule::Cast {
                         child.children = vec![operand];
                         stack.push(child)
                     } else {
@@ -205,6 +207,7 @@ impl AST {
             root: ASTNode::new(pair)?,
         };
 
+        println!("{:?}", root.root);
         root.root.make_expressions_gooder();
         Ok(root)
     }

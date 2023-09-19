@@ -28,3 +28,17 @@ fn expression_test_2(){
 
     assert!(expr.to_string() == "Expression{Add{a,Mul{b,Neg{c}}}}");
 }
+
+#[test]
+fn expression_test_cast(){
+    let file = "fn main() {
+        int x = (int) a + b * - c;
+    }";
+    let ast = parse_file(file);
+    println!("{:?}", ast);
+
+
+    let ast = ast.unwrap();
+    let expr = ast.root.dig_for(Rule::Expression).unwrap();
+
+}

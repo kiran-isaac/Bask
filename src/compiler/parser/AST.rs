@@ -57,12 +57,12 @@ impl ASTNode {
 
     fn get_precedence(&self) -> Result<i32, ()> {
         match self.rule {
-            Rule::Cast => Ok(0),
             Rule::Eq | Rule::Neq | Rule::GT | Rule::LT | Rule::GTE | Rule::LTE => Ok(1),
             Rule::Add | Rule::Sub | Rule::Or => Ok(3),
             Rule::Mul | Rule::Div | Rule::Mod | Rule::And => Ok(4),
-            Rule::Neg | Rule::Not => Ok(5),
-            Rule::Pow => Ok(6),
+            Rule::Cast => Ok(5),
+            Rule::Neg | Rule::Not => Ok(6),
+            Rule::Pow => Ok(7),
             _ => Err(()),
         }
     }
@@ -160,9 +160,13 @@ impl ASTNode {
                     }
 
                     let operand = stack.pop().unwrap();
-                    if child.rule == Rule::Neg || child.rule == Rule::Not || child.rule == Rule::Cast {
+                    if child.rule == Rule::Neg || child.rule == Rule::Not{
                         child.children = vec![operand];
                         stack.push(child)
+                    } else if child.rule == Rule::Cast {
+                        println!("Cast: {:?}", child);
+                        child.children = vec![child.children[0].clone(), operand];
+                        stack.push(child);
                     } else {
                         let operand2 = stack.pop().unwrap();
                         child.children = vec![operand2, operand];
@@ -207,7 +211,6 @@ impl AST {
             root: ASTNode::new(pair)?,
         };
 
-        println!("{:?}", root.root);
         root.root.make_expressions_gooder();
         Ok(root)
     }

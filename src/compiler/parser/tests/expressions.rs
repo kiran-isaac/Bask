@@ -37,7 +37,6 @@ fn expression_test_cast(){
     let ast = parse_file(file);
     println!("{:?}", ast);
 
-
     let ast = ast.unwrap();
     let expr = ast.root.dig_for(Rule::Expression).unwrap();
 

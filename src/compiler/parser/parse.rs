@@ -6,14 +6,15 @@ use super::AST::AST;
 #[grammar = "compiler/parser/bask.pest"]
 pub struct BaskParser;
 
-pub fn parse_file(file: &str) -> Result<AST, String> {
+pub fn parse_file(file: &str) -> Result<AST, ()> {
     let parse_result = BaskParser::parse(Rule::File, file);
     if parse_result.is_err() {
-        println!("{:?}", parse_result);
-        return Err("Error parsing file".to_string());
+        // print pest error 
+        print!("{}", parse_result.err().unwrap().to_string());
+        return Err(());
     }
     
     let ast = AST::new(parse_result.unwrap().into_iter().next().unwrap()).unwrap();
-    
+
     Ok(ast)
 }

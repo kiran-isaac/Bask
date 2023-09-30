@@ -1,1 +1,0 @@
-%struct.list = type { i64**, i32 }

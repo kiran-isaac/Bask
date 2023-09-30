@@ -16,6 +16,7 @@ fn test() {
     x = x + 1;
   }
 }
+
 struct Vector with A (
   int x
 ).{

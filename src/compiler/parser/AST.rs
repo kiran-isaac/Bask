@@ -210,6 +210,8 @@ impl AST {
             root: ASTNode::new(pair)?,
         };
 
+        println!("{:?}", root.root);
+
         root.root.make_expressions_gooder();
         Ok(root)
     }
@@ -217,6 +219,8 @@ impl AST {
     #[cfg(test)]
     pub fn find_function(&self, name : &str) -> Option<&ASTNode> {
         for child in &self.root.children {
+            let i = 1;
+            drop(i);
             if child.rule == Rule::Function {
                 if child.children[0].value == name {
                     return Some(child);

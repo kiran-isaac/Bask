@@ -1,4 +1,7 @@
+%struct.string = type { i8*, i32 }
+
 declare void @print_int(i64)
+declare %struct.string @char_list_new() 
 
 define i64 @fun() {
     %1 = mul i64 5, 2
@@ -10,6 +13,6 @@ define i64 @fun() {
 
 define i64 @main() {
     %1 = call i64 @fun()
-    call void @print_int(i64 %1)
+    %2 = call %struct.string @char_list_new()
     ret i64 %1
 }

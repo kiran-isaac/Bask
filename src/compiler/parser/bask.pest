@@ -49,7 +49,7 @@ LTE    =  { "<=" }
 Prefix = _{ Neg | Not | Cast }
 Neg    =  { "-" }
 Not    =  { "!" }
-Cast   =  { "(" ~ typeID ~ ")" }
+Cast   =  @{ "(" ~ typeID ~ ")" }
 
 MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParameters? ~ ")" }
 MethodParameters = !{ Expression ~ ("," ~ Expression)* }

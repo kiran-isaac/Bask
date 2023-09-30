@@ -4,6 +4,5 @@ fn fun() -> int {
 
 fn main() -> int {
     int x = fun();
-    print((string));
-
+    print((string) x);
 }

@@ -3,7 +3,6 @@ extern crate pest;
 extern crate pest_derive;
 
 mod compiler;
-mod runtime;
 use compiler::compile;
 
 fn help() {
@@ -20,7 +19,6 @@ fn help() {
 fn main() {
   let args = std::env::args().collect::<Vec<String>>();
   let version = env!("CARGO_PKG_VERSION");
-
   if args.len() < 2 {
     help();
     return;
@@ -28,7 +26,7 @@ fn main() {
 
   match args[1].as_str() {
     "run" => {
-      println!("Running file");
+      println!("Running file")
     },
     "compile" => {
       if args.len() < 3 {

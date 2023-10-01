@@ -1,5 +1,7 @@
-#define TEST
+#include <bask/string.h>
+#include <stdio.h>
 
-#include "../include/list.h"
-
-
+int main() {
+	String *string = STR_new();
+	String *string2 = STR_from("Hello");
+}

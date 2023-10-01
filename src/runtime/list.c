@@ -1,9 +1,9 @@
-#include "include/list.h"
-#include "include/log.h"
+#include <bask/list.h>
+#include <bask/log.h>
 
-List *LST_list(size_t length, size_t elem_size) {
+List *LST_new(size_t length, size_t elem_size) {
   if (elem_size > 8) {
-		BSK_log(LOG_E, "Incorrect use of list");
+		BSK_log(LOG_E, "Incorrect use of list");	
 	}
 
 	List *list = malloc(sizeof(List));

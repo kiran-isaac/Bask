@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "*.asm": "asm-intel-x86-generic",
+        "*.bsk": "swift",
+        "string.h": "c"
+    }
+}

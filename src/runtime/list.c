@@ -1,5 +1,5 @@
-#include <bask/list.h>
-#include <bask/log.h>
+#include "include/list.h"
+#include "include/log.h"
 
 List *LST_new(size_t length, size_t elem_size) {
   if (elem_size > 8) {
@@ -13,14 +13,6 @@ List *LST_new(size_t length, size_t elem_size) {
 	return list;
 }
 
-void convert_to_char_array(unsigned char *arr, long long a) {
-	int i = 0;
-
-	for (i = 0; i < 8; ++i)
-	{
-		arr[i] = (unsigned char)((((unsigned long long) a) >> (56 - (8*i))) & 0xFFu);
-	}
-}
 
 void LST_add_to_slice(List *list, long elem) {
 	if (list->length % 2 == 0) {

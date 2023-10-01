@@ -1,0 +1,12 @@
+{
+	"configurations": {
+		"library": {
+      "adapter": "CodeLLDB",
+      "filetypes": [ "c" ],
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/tests/a.out"
+      }
+		}
+	}
+}

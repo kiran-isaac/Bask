@@ -1,7 +1,7 @@
 #ifndef RUN_STRING_H
 #define RUN_STRING_H
 
-#include <bask/list.h>
+#include "list.h"
 
 typedef List String;
 

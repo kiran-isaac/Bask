@@ -1,6 +1,6 @@
 {
   "configurations": {
-    "launch": {
+		"compile": {
       "adapter": "CodeLLDB",
       "filetypes": [ "rust" ],
       "configuration": {
@@ -8,15 +8,6 @@
         "program": "${workspaceRoot}/target/debug/bask"
       }
     }
-  },
-	{
-		"launch": {
-			"adapter": "CodeLLDB",
-			"filetypes": [ "c" ],
-			"configuration" : {
-				"request": "launch",
-				"program": "${workspaceRoot}/src/runtime/tests/a.out"
-			}
-		}
 	}
 }
+

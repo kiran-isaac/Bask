@@ -1,5 +1,5 @@
-#include <bask/string.h>
-#include <bask/list.h>
+#include "include/string.h" 
+#include "include/list.h"
 #include <string.h>
 
 String *STR_new() {

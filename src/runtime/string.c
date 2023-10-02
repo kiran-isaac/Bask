@@ -8,10 +8,10 @@ String *STR_new() {
 }
 
 String *STR_from(const char *from) {
-	int len = strlen(from);
+	int len = strlen(from) + 1;
 	String *str = STR_new();
 	for (int i = 0; i < len; i++) {
-		LST_add_to_slice(str, (long) from[i]);
+		LST_add_byte(str, (long) from[i]);
 	}
 	return str;
 }

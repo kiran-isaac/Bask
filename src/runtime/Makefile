@@ -6,6 +6,7 @@ libbask_runtime.so: $(C_FILES)
 	sudo rm -f /usr/lib/bask/$@
 	sudo cp $@ /usr/lib/$@
 	sudo cp -r ./include/* /usr/include/bask
-	
+	cd tests; make; cd ..;
+
 clean:
 	rm -f *.so

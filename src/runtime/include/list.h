@@ -13,7 +13,10 @@ typedef struct List {
 
 List *LST_new(size_t, size_t);
 void LST_add_byte(List *, unsigned char);
+void LST_add_int(List *, unsigned int);
 void LST_add_ll(List *, long long);
+void LST_list(List *, unsigned int);
 long LST_index(List *, size_t);
+void LST_free(List *);
 
 #endif

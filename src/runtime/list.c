@@ -9,14 +9,17 @@ List *LST_new(size_t allocated, size_t elem_size) {
 	}
 
 	List *list = malloc(sizeof(List));
-	list->array = malloc(elem_size * sizeof(char) * 128);
+	list->array = malloc(elem_size * sizeof(char) * allocated);
 	list->elem_size = elem_size;
 	list->allocated = allocated;
 	list->length = 0;
 	return list;
 }
 
-#define LST_resize_check(list) if (list->length >= list->allocated) {list->array = realloc(list->array, list->length * 2 * list->elem_size);list->allocated *= 2;}
+#define LST_resize_check(list) if (list->length >= list->allocated) {\
+	list->array = realloc(list->array, list->allocated * 2 * list->elem_size);\
+	list->allocated *= 2;\
+}
 
 void LST_add_byte(List *list, unsigned char elem) {
 	if (list->elem_size != 1) {
@@ -29,22 +32,23 @@ void LST_add_byte(List *list, unsigned char elem) {
 	list->length++;
 }
 
+void LST_add_int(List *list, unsigned int elem) {
+	if (list->elem_size != 2) {
+		BSK_log(LOG_E, "Invalid elem size");
+	}
+
+	LST_resize_check(list);
+
+	char bytes[2];
+	memcpy(bytes, &elem, 2);
+}
+
 void LST_add_ll(List *list, long long elem) {
 	if (list->elem_size != 8) {
 		BSK_log(LOG_E, "Invalid elem size");	
 	}
 
 	LST_resize_check(list);
-
-	elem <<= 8 - list->elem_size;
-	unsigned char bytes[8];
-
-
-	int current_byte = 0;
-	for (int i = list->elem_size; i == 0; i--) {
-		char byte = elem;
-		list->array[list->length + current_byte] = bytes[current_byte];
-	}
 }
 
 long LST_index(List *list, size_t index) {
@@ -59,5 +63,7 @@ long LST_index(List *list, size_t index) {
 	return val;
 }
 
-
-
+void LST_free(List *list) {
+	free(list->array);
+	free(list);
+}

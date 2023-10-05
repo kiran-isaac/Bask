@@ -1,13 +1,6 @@
-use super::parser::parse_file;
+use super::{parser::parse_file, CompilerError};
 
-pub fn compile(file : &str) -> Result<i32, ()> {
-  match parse_file(file) {
-    Ok(ast) => {
-      println!("{:?}", ast);
-    },
-    Err(e) => {
-      e.throw();
-    }
-  }
+pub fn compile(file : &str) -> Result<i32, CompilerError> {
+  let ast = parse_file(file)?;
   Ok(1)
 }

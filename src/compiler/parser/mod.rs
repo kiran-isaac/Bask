@@ -1,9 +1,9 @@
 mod parse;
 
-#[allow(non_snake_case)]
-mod AST;
+mod ast;
 
 #[cfg(test)]
 mod tests;
 
 pub use parse::parse_file;
+pub use ast::AST as AST;

@@ -2,7 +2,7 @@ use pest::Parser;
 
 use crate::compiler::CompilerError;
 
-use super::AST::AST;
+use super::ast::AST;
 
 #[derive(Parser)]
 #[grammar = "compiler/parser/bask.pest"]

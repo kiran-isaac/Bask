@@ -40,7 +40,11 @@ fn main() {
           return;
         }
       };
-      compile(file.as_str());
+      
+      match compile(file.as_str()) {
+        Ok(_) => println!("Compiled successfully"),
+        Err(e) => e.throw()
+      }
     },
     "-h" | "--help" => {
       help();

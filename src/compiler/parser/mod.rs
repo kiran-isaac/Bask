@@ -1,4 +1,6 @@
 mod parse;
+
+#[allow(non_snake_case)]
 mod AST;
 
 #[cfg(test)]

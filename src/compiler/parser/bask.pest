@@ -12,7 +12,8 @@ Function          =  { "fn" ~ FunctionKWMutable? ~ FunctionName ~ "(" ~ Function
 FuncReturnType    =  { " "* ~ "->" ~ " "* ~ typeID }
 FunctionName      = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 FunctionArgList   = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
-FunctionArg       =  { typeID ~ " "* ~ varID }
+FunctionArg       =  { typeID ~ " "* ~ varID | SelfKeyword }
+SelfKeyword	      =  { "self" }
 FunctionKWMutable =  { "mut" }
 
 Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ StructFields? ~ ")" ~ (".{" ~ Function* ~ "}")? }
@@ -24,12 +25,16 @@ Statement           =  { StructuralStatement | RegularStatement ~ ";" }
 StructuralStatement = _{ If | While }
 If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
 While               =  { "while" ~ Expression ~ CodeBlock }
+Switch							=  { "switch" ~ Expression ~ "{" ~ Case ~ ("," ~ Case)* ~ "}" }
+Case								=  { (ValueLiteral | Expression) ~ "=>" ~ (Expression | CodeBlock) }
 RegularStatement    = _{ Assignment | Return | MethodCall }
 Assignment          =  { typeID? ~ varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }
 
+ConstantExpression =  { Prefix* ~ ConstantPrimary ~ (Infix ~ Prefix* ~ ConstantPrimary)* }
 Expression =  { Prefix* ~ Primary ~ (Infix ~ Prefix* ~ Primary)* }
-Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | varID }
+Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | Switch | varID }
+ConstantPrimary = _{ "(" ~ Expression ~ ")" | ValueLiteral }
 
 Infix  = _{ Add | Sub | Mul | Div | Mod | Pow | Or | And | Eq | Neq | GT | LT | GTE | LTE }
 Add    =  { "+" }
@@ -49,7 +54,7 @@ LTE    =  { "<=" }
 Prefix = _{ Neg | Not | Cast }
 Neg    =  { "-" }
 Not    =  { "!" }
-Cast   =  @{ "(" ~ typeID ~ ")" }
+Cast   =  { "(" ~ typeID ~ ")" }
 
 MethodCall       = @{ (varID ~ ".")? ~ (FunctionName ~ ".")* ~ FunctionName ~ "(" ~ MethodParameters? ~ ")" }
 MethodParameters = !{ Expression ~ ("," ~ Expression)* }

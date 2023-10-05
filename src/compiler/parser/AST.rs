@@ -75,6 +75,7 @@ impl ASTNode {
             || self.rule == Rule::CharLit
             || self.rule == Rule::StringLit
             || self.rule == Rule::MethodCall
+            || self.rule == Rule::Switch
     }
 
     fn is_operator(&self) -> bool {
@@ -209,8 +210,6 @@ impl AST {
         let mut root = AST {
             root: ASTNode::new(pair)?,
         };
-
-        println!("{:?}", root.root);
 
         root.root.make_expressions_gooder();
         Ok(root)

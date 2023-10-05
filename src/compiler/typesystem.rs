@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use super::CompilerError;
 
@@ -9,10 +9,6 @@ pub enum Type {
     Array {
         of: String,
         elem_size: usize,
-    },
-    Alias {
-        to: String,
-        size: usize,
     },
     Fundamental {
         name: String,
@@ -27,18 +23,6 @@ pub enum Type {
         name: String,
         variants: Vec<String>,
     },
-}
-
-impl Type {
-    pub fn get_size(&self) -> usize {
-        match self {
-            Type::Array { elem_size, .. } => *elem_size,
-            Type::Alias { size, .. } => *size,
-            Type::Fundamental { size, .. } => *size,
-            Type::Struct { size, .. } => *size,
-            Type::Enum { .. } => ENUM_SIZE,
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -62,20 +46,6 @@ impl TypeTable {
             "u8".to_string(),
             Type::Fundamental {
                 name: "u8".to_string(),
-                size: 1,
-            },
-        );
-        types.insert(
-            "char".to_string(),
-            Type::Alias {
-                to: "u8".to_string(),
-                size: 1,
-            },
-        );
-        types.insert(
-            "bool".to_string(),
-            Type::Alias {
-                to: "u8".to_string(),
                 size: 1,
             },
         );
@@ -153,6 +123,22 @@ impl TypeTable {
         TypeTable { types }
     }
 
+    pub fn get_size(&self, name : String) -> usize {
+        let type_ = self.get_type(&name).unwrap();
+
+        match type_ {
+            Type::Fundamental { size, .. } => {
+                return *size;
+            }
+            Type::Struct { size, .. } => {
+                return *size;
+            }
+            _ => {
+                unreachable!();
+            }
+        }
+    }
+
     pub fn add_type(&mut self, name: &str, type_: Type) {
         self.types.insert(name.to_string(), type_);
     }
@@ -161,130 +147,10 @@ impl TypeTable {
         return self.types.get(name);
     }
 
-    fn check_alias_dest_and_get_size(&mut self) {
-        let mut unregistered: Vec<String>;
-        let last_unregistered_length = 0;
-
-        loop {
-            unregistered = self
-                .types
-                .iter()
-                .filter(|(_, type_)| {
-                    match type_ {
-                        Type::Alias { to, .. } => {
-                            let to_type = self.get_type(to);
-                            if to_type.is_none() {
-                                return true;
-                            }
-                        }
-                        _ => {}
-                    }
-                    return false;
-                })
-                .map(|(name, _)| name.to_string())
-                .collect();
-
-            if unregistered.len() == 0 {
-                break;
-            }
-
-            if unregistered.len() == last_unregistered_length {
-                panic!("Unregistered types: {:?}", unregistered);
-            }
-        }
-
-        fn recursively_get_size(type_: &Type, type_table: &TypeTable) -> usize {
-            match type_ {
-                Type::Alias { to, .. } => {
-                    let to_type = type_table.get_type(to).unwrap();
-                    return recursively_get_size(to_type, type_table);
-                }
-                Type::Fundamental { size, .. } => {
-                    return *size;
-                }
-                Type::Struct { size, .. } => {
-                    return *size;
-                }
-                _ => {
-                    unreachable!();
-                }
-            }
-        }
-
-        let unsized_aliases = self.clone()
-                    .types
-                    .iter()
-                    .filter(|(_, type_)| {
-                        match type_ {
-                            Type::Alias { size , ..} => {
-                                return size == &0;
-                            }
-                            _ => {}
-                        }
-                        return false;
-                    })
-                    .map(|(name, _)| name.to_string())
-                    .collect::<Vec<String>>();
-
-        for name in unsized_aliases.iter() {
-            let type_ = self.get_type(name).unwrap();
-
-            let size = recursively_get_size(type_, self);
-            self.types.insert(name.to_string(), Type::Alias {
-                to: match type_ {
-                    Type::Alias { to, .. } => to.to_string(),
-                    _ => unreachable!()
-                },
-                size
-            });
-        }
-    }
-
     pub fn finalize(&mut self) -> Result<(), CompilerError> {
-        self.check_alias_dest_and_get_size();
+        self.check_struct_fields_and_get_size()?;
 
-        let mut unregistered: Vec<String>;
-        let last_unregistered_length = 0;
-
-        loop {
-            unregistered = self
-                .types
-                .iter()
-                .filter(|(_, type_)| {
-                    match type_ {
-                        Type::Alias { to, .. } => {
-                            let to_type = self.get_type(to);
-                            if to_type.is_none() {
-                                return true;
-                            }
-                        }
-                        Type::Struct { fields, .. } => {
-                            for field in fields {
-                                let field_type = self.get_type(&field.1);
-                                if field_type.is_none() {
-                                    return true;
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                    return false;
-                })
-                .map(|(name, _)| name.to_string())
-                .collect();
-
-            if unregistered.len() == 0 {
-                break;
-            }
-
-            if unregistered.len() == last_unregistered_length {
-                return Err(CompilerError::TypecheckError(format!(
-                    "Unregistered types: {:?}",
-                    unregistered
-                )));
-            }
-        }
-
+        
         Ok(())
     }
     /*
@@ -332,38 +198,6 @@ impl TypeTable {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn alias_test() {
-        let mut type_table = TypeTable::new();
-        type_table.add_type(
-            "test",
-            Type::Alias {
-                to: "i32".to_string(),
-                size: 4,
-            },
-        );
-        assert!(
-            type_table.get_type("test").unwrap()
-                == &Type::Alias {
-                    to: "i32".to_string(),
-                    size: 4,
-                }
-        );
-
-        type_table.add_type(
-            "test2",
-            Type::Alias {
-                to: "test".to_string(),
-                size: 0,
-            },
-        );
-
-        type_table.finalize();
-        assert!(
-            type_table.get_type("test2").unwrap().get_size() == 4
-        );
-    }
 
     #[test]
     fn struct_test() {

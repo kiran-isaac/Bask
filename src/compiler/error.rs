@@ -2,6 +2,7 @@ use std::process::exit;
 use colored::Colorize;
 
 #[allow(dead_code)]
+#[derive(Debug)]
 pub enum CompilerError {
   ParseError(String),
   TypecheckError(String),

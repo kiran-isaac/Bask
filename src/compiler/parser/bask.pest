@@ -69,7 +69,7 @@ IntLit         = @{ ASCII_DIGIT+ }
 
 // Types either start with an upper case letter or are built-in types
 typeID      = @{ "[" ~ typeID ~ "]" | builtinType | (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
-builtinType = _{ "int" | "float" | "bool" | "string" | "char" | "long" | "double" | "short" | "byte" | "void" }
+builtinType = _{ "i8" | "u8" | "char" | "bool" | "i16" | "u16" | "i32" | "u32" | "i64" | "u64" | "float" | "double" | "string" }
 TypeList    =  { typeID ~ ("," ~ typeID)* }
 
 // Variables start with a lower case letter, and can contain numbers and underscores

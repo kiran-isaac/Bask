@@ -14,13 +14,13 @@ enum PieceType (
       BISHOP => 'b',
       QUEEN => 'q',
       KING => 'k'
-    }
+    };
 
     if isWhite {
-      return c.toUpper()
+      return c.toUpper();
     }
 
-    return c
+    return c;
   }
 }
 

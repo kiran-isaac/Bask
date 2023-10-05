@@ -26,7 +26,7 @@ StructuralStatement = _{ If | While }
 If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
 While               =  { "while" ~ Expression ~ CodeBlock }
 Switch							=  { "switch" ~ Expression ~ "{" ~ Case ~ ("," ~ Case)* ~ "}" }
-Case								=  { (ValueLiteral | Expression) ~ "=>" ~ (Expression | CodeBlock) }
+Case								=  { (ValueLiteral | Expression | EnumName) ~ "=>" ~ (Expression | CodeBlock) }
 RegularStatement    = _{ Assignment | Return | MethodCall }
 Assignment          =  { typeID? ~ varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }

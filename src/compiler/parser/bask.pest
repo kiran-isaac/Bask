@@ -4,8 +4,8 @@ Comment = _{ SingleLineComment | MultiLineComment }
 SingleLineComment = { "//" ~ (!"\n" ~ ANY)* }
 MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
-TopLevelStatement = { (( Enum | Struct | Alias ) ~ ";"?) | Function | (typeID ~ ImplBlock) }
-
+TopLevelStatement = _{ (( Enum | Struct | Alias ) ~ ";"?) | Function | ImplForType }
+ImplForType       = { (typeID ~ ImplBlock) }
 Alias = { "alias" ~ typeID ~ "=" ~ typeID }
 
 Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ EnumValueList? ~ "}" ~ ImplBlock? }

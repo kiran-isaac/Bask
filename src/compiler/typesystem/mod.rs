@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use super::CompilerError;
 
 mod from_ast;
-pub use from_ast::from_ast;
 #[cfg(test)]
 mod tests;
 
@@ -28,6 +27,10 @@ pub enum Type {
     Enum {
         name: String,
         variants: Vec<String>,
+    },
+    Alias {
+        name: String,
+        target: String,
     },
 }
 

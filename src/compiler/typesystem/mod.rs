@@ -2,6 +2,11 @@ use std::collections::HashMap;
 
 use super::CompilerError;
 
+mod from_ast;
+pub use from_ast::from_ast;
+#[cfg(test)]
+mod tests;
+
 const ENUM_SIZE: usize = 4;
 const PTR_SIZE: usize = 8;
 
@@ -191,45 +196,6 @@ impl TypeTable {
 
         self.types = table_2.types.clone();
         
-        Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn struct_test() -> Result<(), CompilerError> {
-        let mut type_table = TypeTable::new();
-
-        type_table.add_type(
-            "test",
-            Type::Struct {
-                name: "test".to_string(),
-                size: 0,
-                fields: vec![(String::from("Int"), String::from("i32"))],
-            },
-        );
-
-        // Should have size 8
-        type_table.add_type(
-            "test2",
-            Type::Struct {
-                name: "test2".to_string(),
-                size: 0,
-                fields: vec![("Bruh".to_string(), "test".to_string())],
-            },
-        );
-        type_table.finalize()?;
-
-        assert_eq!(
-            type_table.get_size("test".to_string()), 4
-        );
-        assert_eq!(
-            type_table.get_size("test2".to_string()), 8
-        );
-
         Ok(())
     }
 }

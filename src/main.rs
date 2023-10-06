@@ -3,13 +3,15 @@ extern crate pest;
 extern crate pest_derive;
 
 mod compiler;
+use std::io::Read;
+
 use compiler::compile;
 
 fn help() {
   println!("Usage: bask [command] [options] <file>");
   println!("Commands:");
-  println!("  run\t\t\t\tRun the specified file");
-  println!("  compile\t\t\t\tBuild the specified file");
+  println!("  run\t\t\t\tRun the specified files");
+  println!("  compile\t\t\t\tBuild the specified files");
   println!("Options:");
   println!("  -h, --help\t\t\tPrint this help message");
   println!("  -v, --version\t\t\tPrint the version of the compiler");
@@ -33,14 +35,16 @@ fn main() {
         println!("No file specified");
         return;
       }
-      let file = match std::fs::read_to_string(&args[2]) {
-        Ok(f) => f,
-        Err(e) => {
-          println!("Error reading file: {}", e);
-          return;
-        }
-      };
-      
+      // Read all files and combine them into one string
+      let mut file = String::new();
+      for i in 2..args.len() {
+        let mut f = std::fs::File::open(&args[i]).unwrap();
+        let mut contents = String::new();
+        f.read_to_string(&mut contents).unwrap();
+        file.push_str(contents.as_str());
+        file.push('\n');
+      }
+
       match compile(file.as_str()) {
         Ok(_) => println!("Compiled successfully"),
         Err(e) => e.throw()

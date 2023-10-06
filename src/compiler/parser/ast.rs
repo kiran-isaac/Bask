@@ -1,6 +1,5 @@
 use crate::compiler::CompilerError;
 use pest::iterators::Pair;
-use std::fmt::Debug;
 
 use super::parse::Rule;
 
@@ -34,6 +33,17 @@ impl ASTNodeStack {
   
   pub fn peek(&self) -> Option<&ASTNode> {
     self.stack.last()
+  }
+}
+
+impl Iterator for ASTNode {
+  type Item = ASTNode;
+  
+  fn next(&mut self) -> Option<Self::Item> {
+    if self.children.len() == 0 {
+      return None;
+    }
+    Some(self.children.pop().unwrap())
   }
 }
 

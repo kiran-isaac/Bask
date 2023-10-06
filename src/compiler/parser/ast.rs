@@ -1,5 +1,6 @@
 use crate::compiler::CompilerError;
 use pest::iterators::Pair;
+use std::fmt::Debug;
 
 use super::parse::Rule;
 
@@ -36,14 +37,12 @@ impl ASTNodeStack {
   }
 }
 
-impl Iterator for ASTNode {
+impl IntoIterator for ASTNode {
   type Item = ASTNode;
+  type IntoIter = std::vec::IntoIter<Self::Item>;
   
-  fn next(&mut self) -> Option<Self::Item> {
-    if self.children.len() == 0 {
-      return None;
-    }
-    Some(self.children.pop().unwrap())
+  fn into_iter(self) -> Self::IntoIter {
+    self.children.into_iter()
   }
 }
 

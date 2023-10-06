@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use super::CompilerError;
 
 const ENUM_SIZE: usize = 4;
+const PTR_SIZE: usize = 8;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Type {
@@ -123,7 +124,7 @@ impl TypeTable {
         TypeTable { types }
     }
 
-    pub fn get_size(&self, name : String) -> usize {
+    pub fn get_size(&self, name: String) -> usize {
         let type_ = self.get_type(&name).unwrap();
 
         match type_ {
@@ -148,51 +149,50 @@ impl TypeTable {
     }
 
     pub fn finalize(&mut self) -> Result<(), CompilerError> {
-        self.check_struct_fields_and_get_size()?;
+        let mut table_2 = self.clone();
 
+        for (name, type_) in self.types.iter_mut() {
+            match type_ {
+                Type::Struct { fields, .. } => {
+                    let mut struct_size = 0;
+                    for (field_name, field_type) in fields.iter_mut() {
+                        let field_type = table_2.get_type(field_type);
+                        if field_type.is_none() {
+                            return Err(CompilerError::UnknownType(format!(
+                                "{} in struct {}",
+                                field_name, 
+                                name
+                            )));
+                        }
+                        match field_type.unwrap() {
+                            Type::Fundamental { size, .. } => {
+                                struct_size += *size;
+                            }
+                            Type::Enum { .. } => {
+                                struct_size += ENUM_SIZE;
+                            }
+                            _ => {
+                                struct_size += PTR_SIZE;
+                            }
+                        }
+                    }
+                    table_2.types.insert(
+                        name.to_string(),
+                        Type::Struct {
+                            name: (*name).clone(),
+                            size: struct_size,
+                            fields: fields.clone(),
+                        },
+                    );
+                }
+                _ => {}
+            }
+        }
+
+        self.types = table_2.types.clone();
         
         Ok(())
     }
-    /*
-    // pub fn register_enum(&mut self, name : &str, variants : &Vec<String>) {
-    //   let mut size = 0;
-    //   for variant in variants {
-    //     size += 4;
-    //   }
-    //   self.types.insert(name.to_string(), Type::Alias(name.to_string()));
-    // }
-
-    // fn register_unresolved(&mut self, name : &str) {
-    //   self.unresolved.push(name.to_string());
-    // }
-
-    // fn follow_alias(&self, name : &str) -> Option<&Type> {
-    //   let search_result = self.types.get(name);
-    //   if search_result.is_some() {
-    //     return search_result;
-    //   }
-    //   return None;
-    // }
-
-    // pub fn register_struct(&mut self, name : &str, fields : Vec<(String, String)>) {
-    //   let mut size = 0;
-    //   for field in fields {
-    //     let field_type = self.get_type(&field.1);
-    //     if field_type.is_none() {
-    //       self.register_unresolved(&field.1);
-    //       continue;
-    //     }
-
-    //   }
-    //   self.types.insert(name.to_string(), Type::Struct { name : name.to_string(), size, fields });
-    // }
-
-    // pub fn finalize(self) -> Result<(), CompilerError> {
-    //   for unresolved in self.unresolved {
-    //     let unresolved_type = self.get_type(&unresolved).unwrap();
-    //   }
-    //   Ok(())
-    // } */
 }
 
 #[cfg(test)]
@@ -200,7 +200,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn struct_test() {
+    fn struct_test() -> Result<(), CompilerError> {
         let mut type_table = TypeTable::new();
 
         type_table.add_type(
@@ -211,16 +211,25 @@ mod tests {
                 fields: vec![(String::from("Int"), String::from("i32"))],
             },
         );
+
+        // Should have size 8
         type_table.add_type(
-            "test2", 
+            "test2",
             Type::Struct {
                 name: "test2".to_string(),
                 size: 0,
-                fields: vec![("Bruh".to_string(), "test".to_string())]
-            }
+                fields: vec![("Bruh".to_string(), "test".to_string())],
+            },
         );
-        type_table.finalize().unwrap();
+        type_table.finalize()?;
 
-        println!("{:?}", type_table);
+        assert_eq!(
+            type_table.get_size("test".to_string()), 4
+        );
+        assert_eq!(
+            type_table.get_size("test2".to_string()), 8
+        );
+
+        Ok(())
     }
 }

@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use super::CompilerError;
 
 mod from_ast;
+mod enforce;
 #[cfg(test)]
 mod tests;
 
@@ -40,7 +41,7 @@ pub struct TypeTable {
 }
 
 impl TypeTable {
-    pub fn new() -> TypeTable {
+    fn new() -> TypeTable {
         let mut types = HashMap::new();
 
         // ints
@@ -56,6 +57,20 @@ impl TypeTable {
             Type::Fundamental {
                 name: "u8".to_string(),
                 size: 1,
+            },
+        );
+        types.insert(
+            "char".to_string(),
+            Type::Alias {
+                name: "char".to_string(),
+                target: "u8".to_string(),
+            },
+        );
+        types.insert(
+            "bool".to_string(),
+            Type::Alias {
+                name: "bool".to_string(),
+                target: "u8".to_string(),
             },
         );
 
@@ -79,6 +94,13 @@ impl TypeTable {
             Type::Fundamental {
                 name: "i32".to_string(),
                 size: 4,
+            },
+        );
+        types.insert(
+            "int".to_string(),
+            Type::Alias {
+                name: "int".to_string(),
+                target: "i32".to_string(),
             },
         );
         types.insert(
@@ -148,7 +170,7 @@ impl TypeTable {
         }
     }
 
-    pub fn add_type(&mut self, name: &str, type_: Type) {
+    fn add_type(&mut self, name: &str, type_: Type) {
         self.types.insert(name.to_string(), type_);
     }
 
@@ -156,7 +178,7 @@ impl TypeTable {
         return self.types.get(name);
     }
 
-    pub fn finalize(&mut self) -> Result<(), CompilerError> {
+    fn finalize(&mut self) -> Result<(), CompilerError> {
         let mut table_2 = self.clone();
 
         for (name, type_) in self.types.iter_mut() {
@@ -168,8 +190,7 @@ impl TypeTable {
                         if field_type.is_none() {
                             return Err(CompilerError::UnknownType(format!(
                                 "{} in struct {}",
-                                field_name, 
-                                name
+                                field_name, name
                             )));
                         }
                         match field_type.unwrap() {
@@ -198,7 +219,7 @@ impl TypeTable {
         }
 
         self.types = table_2.types.clone();
-        
+
         Ok(())
     }
 }

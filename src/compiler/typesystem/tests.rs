@@ -33,17 +33,38 @@ fn struct_test() -> Result<(), CompilerError> {
 
 #[test]
 fn from_ast_test() -> Result<(), CompilerError> {
-    let file = "enum Piece {
-      Pawn,
-      Knight,
-      Bishop,
-      Rook,
-      Queen,
-      King
-  }";
-    let ast = parse_file(file);
+    let file = "alias Hello = string;
 
-    println!("AST: {:?}", ast.unwrap().root);
+    struct Vector2 {
+      x : float,
+      y : float
+    }.{
+      fn length() -> float {
+        return sqrt(x * x + y * y);
+      }
+    
+      fn normalized() -> Vector2 {
+        float len = length();
+        return new(x / len, y / len);
+      }
+    
+      fn normalize() {
+        float len = length();
+        x = x / len;
+        y = y / len;
+      }
+    }
+    
+    Hello.{
+      fn say() {
+      }
+    }";
+
+    let ast = parse_file(file)?;
+
+    let table = TypeTable::from_ast(&ast)?;
+
+    assert_eq!(table.get_size("Vector2".to_string()), 8);
 
     // let type_table = from_ast(&ast)?;
 

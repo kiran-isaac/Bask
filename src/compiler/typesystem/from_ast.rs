@@ -1,7 +1,7 @@
 use super::CompilerError;
-use super::{TypeTable, Type};
-use crate::compiler::AST;
+use super::{Type, TypeTable};
 use crate::compiler::parser::Rule;
+use crate::compiler::AST;
 
 impl TypeTable {
     pub fn from_ast(ast: &AST) -> Result<TypeTable, CompilerError> {
@@ -16,6 +16,9 @@ impl TypeTable {
                     let name = top_level_node.children[0].value.clone();
                     let mut variants = Vec::new();
                     for variant in &top_level_node.children {
+                        if variant.rule != Rule::EnumName {
+                            continue;
+                        }
                         variants.push(variant.value.clone());
                     }
                     types.types.insert(
@@ -62,17 +65,21 @@ impl TypeTable {
                     );
                 }
 
-                // not invalid but has no bearing on le type table construction
-                Rule::ImplForType | Rule::Function | Rule :: EOI => {}
+                // not invalid but has no bearing on the type table construction
+                Rule::ImplForType | Rule::Function | Rule::EOI => {}
 
                 // Shouldnt be anything else???
                 _ => {
-                    unreachable!("Invalid top level node in type table construction: {:?}", top_level_node.rule);
+                    unreachable!(
+                        "Invalid top level node in type table construction: {:?}",
+                        top_level_node.rule
+                    );
                 }
             }
         }
 
         types.finalize()?;
+        types.enforce(ast)?;
 
         Ok(types)
     }

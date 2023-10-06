@@ -4,7 +4,7 @@ Comment = _{ SingleLineComment | MultiLineComment }
 SingleLineComment = { "//" ~ (!"\n" ~ ANY)* }
 MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
-Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ EnumValueList? ~ ")" ~ (".{" ~ Function* ~ "}")? }
+Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ EnumValueList? ~ "}" ~ (".{" ~ Function* ~ "}")? }
 EnumValueList =  _{ EnumName ~ ("," ~ EnumName)* }
 EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
@@ -16,9 +16,9 @@ FunctionArg       =  { typeID ~ " "* ~ varID | SelfKeyword }
 SelfKeyword	      =  { "self" }
 FunctionKWMutable =  { "mut" }
 
-Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "(" ~ StructFields? ~ ")" ~ (".{" ~ Function* ~ "}")? }
+Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ StructFields? ~ "}" ~ (".{" ~ Function* ~ "}")? }
 StructFields = { StructField ~ ("," ~ StructField)* }
-StructField  = { typeID ~ varID }
+StructField  = { varID ~ ":" ~ typeID }
 
 CodeBlock           =  { "{" ~ Statement* ~ "}" }
 Statement           =  { StructuralStatement | RegularStatement ~ ";" }
@@ -27,8 +27,9 @@ If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expres
 While               =  { "while" ~ Expression ~ CodeBlock }
 Switch							=  { "switch" ~ Expression ~ "{" ~ Case ~ ("," ~ Case)* ~ "}" }
 Case								=  { (ValueLiteral | Expression | EnumName) ~ "=>" ~ (Expression | CodeBlock) }
-RegularStatement    = _{ Assignment | Return | MethodCall }
-Assignment          =  { typeID? ~ varID ~ "=" ~ Expression }
+RegularStatement    = _{ Assignment | Declaration | Return | MethodCall }
+Declaration         =  { typeID ~ varID ~ ("=" ~ Expression)? }
+Assignment          =  { varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }
 
 ConstantExpression =  { Prefix* ~ ConstantPrimary ~ (Infix ~ Prefix* ~ ConstantPrimary)* }
@@ -68,8 +69,9 @@ FloatLit       = @{ (ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* | ASCII_DIGIT* ~ "." ~ AS
 IntLit         = @{ ASCII_DIGIT+ }
 
 // Types either start with an upper case letter or are built-in types
-typeID      = @{ "[" ~ typeID ~ "]" | builtinType | (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
-builtinType = _{ "i8" | "u8" | "char" | "bool" | "i16" | "u16" | "i32" | "u32" | "i64" | "u64" | "float" | "double" | "string" }
+typeID      = @{ array | builtinType | (ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")*) }
+array       = !{ "[" ~ typeID ~ (";" ~ IntLit)? ~ "]" }
+builtinType = _{ "i8" | "u8" | "char" | "bool" | "i16" | "int" | "u16" | "i32" | "u32" | "i64" | "u64" | "float" | "double" | "string" }
 TypeList    =  { typeID ~ ("," ~ typeID)* }
 
 // Variables start with a lower case letter, and can contain numbers and underscores

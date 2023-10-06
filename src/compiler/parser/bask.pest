@@ -1,22 +1,26 @@
-File = { SOI ~ (Struct | Enum | Function | Comment)* ~ EOI }
+File = { SOI ~ (TopLevelStatement | Comment)* ~ EOI }
 
 Comment = _{ SingleLineComment | MultiLineComment }
 SingleLineComment = { "//" ~ (!"\n" ~ ANY)* }
 MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
-Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ EnumValueList? ~ "}" ~ (".{" ~ Function* ~ "}")? }
+TopLevelStatement = { (( Enum | Struct | Alias ) ~ ";"?) | Function | (typeID ~ ImplBlock) }
+
+Alias = { "alias" ~ typeID ~ "=" ~ typeID }
+
+Enum          =  { "enum" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ EnumValueList? ~ "}" ~ ImplBlock? }
 EnumValueList =  _{ EnumName ~ ("," ~ EnumName)* }
 EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
-Function          =  { "fn" ~ FunctionKWMutable? ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
+Function          =  { "fn" ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
 FuncReturnType    =  { " "* ~ "->" ~ " "* ~ typeID }
 FunctionName      = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 FunctionArgList   = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
-FunctionArg       =  { typeID ~ " "* ~ varID | SelfKeyword }
+FunctionArg       =  { typeID ~ " "* ~ (varID | SelfKeyword) }
+ImplBlock         =  { ".{" ~ Function* ~ "}" }
 SelfKeyword	      =  { "self" }
-FunctionKWMutable =  { "mut" }
 
-Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ StructFields? ~ "}" ~ (".{" ~ Function* ~ "}")? }
+Struct       = { "struct" ~ typeID ~ ("with" ~ TypeList)? ~ "{" ~ StructFields? ~ "}" ~ ImplBlock? }
 StructFields = { StructField ~ ("," ~ StructField)* }
 StructField  = { varID ~ ":" ~ typeID }
 
@@ -32,10 +36,8 @@ Declaration         =  { typeID ~ varID ~ ("=" ~ Expression)? }
 Assignment          =  { varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }
 
-ConstantExpression =  { Prefix* ~ ConstantPrimary ~ (Infix ~ Prefix* ~ ConstantPrimary)* }
 Expression =  { Prefix* ~ Primary ~ (Infix ~ Prefix* ~ Primary)* }
 Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | Switch | varID }
-ConstantPrimary = _{ "(" ~ Expression ~ ")" | ValueLiteral }
 
 Infix  = _{ Add | Sub | Mul | Div | Mod | Pow | Or | And | Eq | Neq | GT | LT | GTE | LTE }
 Add    =  { "+" }

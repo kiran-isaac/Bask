@@ -68,7 +68,9 @@ impl Scope {
     pub fn get_scope(&self, scope_id: String) -> Result<&Scope, ()> {        
         // Collect to a vector and remove the first element
         let scope_id: Vec<&str> = scope_id.split(":").collect();
-        let scope_id: Vec<&str> = scope_id[1..].to_vec();
+        // filter out the empty ones 
+        let scope_id: Vec<&str> = scope_id.iter().filter(|x| !x.is_empty()).map(|x| *x).collect();
+
         let scope_id_length: usize = scope_id.len();
 
         return match scope_id_length {
@@ -76,7 +78,7 @@ impl Scope {
                 Ok(self)
             },
             _ => {
-                let next_scope_id = scope_id.join(":");
+                let next_scope_id = scope_id[1..].join(":");
                 return match self.children.get(scope_id[0].parse::<usize>().unwrap()) {
                     Some(scope) => scope.get_scope(next_scope_id),
                     None => Err(()),

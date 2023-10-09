@@ -6,7 +6,8 @@ use crate::compiler::TypeTable;
 fn get_scope_test() -> Result<(), CompilerError> {
     let file = "
     fn main() {
-        int a = 1;
+        int d = 17;
+       { int a = d;}
         int b = 2;
         int c = 3;
     }";
@@ -14,8 +15,9 @@ fn get_scope_test() -> Result<(), CompilerError> {
     let ast = parse_file(file)?;
     let type_table = TypeTable::from_ast(&ast)?;
     let derived_scope_tree = ScopeTree::new(&ast, &type_table);
-    let code_block_scope = derived_scope_tree.get_scope(":0".to_string());
-    assert_eq!(code_block_scope.scope_id, ":0".to_string());
+    assert_eq!(derived_scope_tree.get_scope(":0".to_string()).scope_id, ":0".to_string());
+
+    println!("{:#?}", derived_scope_tree.get_scope(":".to_string()));
 
     Ok(())
 }

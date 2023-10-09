@@ -1,6 +1,5 @@
 use crate::compiler::{parser::parse_file, CompilerError, symtab::scope::ScopeTree};
 
-use super::scope::Scope;
 use crate::compiler::TypeTable;
 
 #[test]
@@ -13,12 +12,10 @@ fn get_scope_test() -> Result<(), CompilerError> {
     }";
 
     let ast = parse_file(file)?;
-
     let type_table = TypeTable::from_ast(&ast)?;
-
-    let scope = ScopeTree::new(&ast, &type_table);
-
-    println!("{:#?}", scope.get_scope(":".to_string()).unwrap());
+    let derived_scope_tree = ScopeTree::new(&ast, &type_table);
+    let code_block_scope = derived_scope_tree.get_scope(":0".to_string());
+    assert_eq!(code_block_scope.scope_id, ":0".to_string());
 
     Ok(())
 }
@@ -38,11 +35,7 @@ fn scope_tree_init_test() -> Result<(), CompilerError> {
 
     let type_table = TypeTable::from_ast(&ast)?;
 
-    println!("{:#?}", ast);
-
     let scope = ScopeTree::new(&ast, &type_table);
-
-    println!("{:#?}", scope);
 
     Ok(())
 }

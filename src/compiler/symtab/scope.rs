@@ -16,7 +16,7 @@ enum ScopeType {
 
 #[derive(Debug, Clone)]
 pub struct Scope {
-    scope_id: String,
+    pub scope_id: String,
     children: Vec<Scope>,
     symbols: Vec<Symbol>,
     scope_type: ScopeType,
@@ -65,25 +65,21 @@ impl Scope {
 }
 
 impl Scope {
-    pub fn get_scope(&self, scope_id: String) -> Option<&Scope> {        
+    pub fn get_scope(&self, scope_id: String) -> Result<&Scope, ()> {        
         // Collect to a vector and remove the first element
         let scope_id: Vec<&str> = scope_id.split(":").collect();
-        let scope_id = scope_id[1..].to_vec();
-        let scope_id_length = scope_id.len();
+        let scope_id: Vec<&str> = scope_id[1..].to_vec();
+        let scope_id_length: usize = scope_id.len();
 
         return match scope_id_length {
-            1 => {
-                Some(self)
-            },
-            2 => {
-                let index = scope_id[0].parse::<usize>().unwrap();
-                self.children.get(index)
+            0 => {
+                Ok(self)
             },
             _ => {
                 let next_scope_id = scope_id.join(":");
                 return match self.children.get(scope_id[0].parse::<usize>().unwrap()) {
                     Some(scope) => scope.get_scope(next_scope_id),
-                    None => None,
+                    None => Err(()),
                 }
             }
         }
@@ -98,8 +94,11 @@ impl ScopeTree {
         }
     }
 
-    pub fn get_scope(&self, scope_id: String) -> Option<&Scope> {
-        return self.root.get_scope(scope_id);
+    pub fn get_scope(&self, scope_id: String) -> &Scope {
+        match self.root.get_scope(scope_id.clone()) {
+            Ok(scope) => scope,
+            Err(_) => panic!("Cannot find scope with id: {}", scope_id),
+        }
     }
 }
 

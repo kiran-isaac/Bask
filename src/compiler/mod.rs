@@ -2,6 +2,7 @@ mod parser;
 mod compile;
 mod error;
 mod typesystem;
+mod symtab;
 
 pub use compile::compile;
 pub use error::CompilerError;

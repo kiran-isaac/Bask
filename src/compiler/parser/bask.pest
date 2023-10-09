@@ -25,8 +25,8 @@ StructFields = { StructField ~ ("," ~ StructField)* }
 StructField  = { varID ~ ":" ~ typeID }
 
 CodeBlock           =  { "{" ~ Statement* ~ "}" }
-Statement           =  { StructuralStatement | RegularStatement ~ ";" }
-StructuralStatement = _{ If | While }
+Statement           = _{ (StructuralStatement | RegularStatement ~ ";") | CodeBlock }
+StructuralStatement = _{ If | While | Switch }
 If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expression ~ CodeBlock)* ~ ("else" ~ CodeBlock)? }
 While               =  { "while" ~ Expression ~ CodeBlock }
 Switch							=  { "switch" ~ Expression ~ "{" ~ Case ~ ("," ~ Case)* ~ "}" }
@@ -35,6 +35,8 @@ RegularStatement    = _{ Assignment | Declaration | Return | MethodCall }
 Declaration         =  { typeID ~ varID ~ ("=" ~ Expression)? }
 Assignment          =  { varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }
+Break               =  { "break" }
+Continue            =  { "continue" }
 
 Expression =  { Prefix* ~ Primary ~ (Infix ~ Prefix* ~ Primary)* }
 Primary    = _{ "(" ~ Expression ~ ")" | ValueLiteral | MethodCall | Switch | varID }

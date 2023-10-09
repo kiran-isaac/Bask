@@ -15,6 +15,7 @@ pub struct ASTNode {
     pub value: String,
     pub line: usize,
     pub col: usize,
+    pub stmt_id: Option<usize>,
 }
 
 struct ASTNodeStack {
@@ -54,11 +55,29 @@ impl ASTNode {
         let rule = pair.as_rule();
         let (line, col) = pair.line_col();
         let value = pair.as_str().to_string();
+
+        let mut internal_stmt_id = 0;
         for child in pair.clone().into_inner() {
-            if pair.as_rule() == Rule::EOI {
-                continue;
+            match child.as_rule() {
+                Rule::EOI => {
+                    continue;
+                }
+                Rule::Declaration 
+                    | Rule::While 
+                    | Rule::If
+                    | Rule::Switch 
+                    | Rule::Assignment
+                    | Rule::Return 
+                    | Rule::Break 
+                    | Rule::Continue => {
+                    children.push(ASTNode::new_stmt(child, internal_stmt_id));
+                    internal_stmt_id += 1;
+                    continue;
+                }
+                _ => {
+                    children.push(ASTNode::new(child))
+                }
             }
-            children.push(ASTNode::new(child));
         }
         ASTNode {
             children,
@@ -66,7 +85,26 @@ impl ASTNode {
             value,
             line,
             col,
+            stmt_id: None,
         }
+    }
+
+    fn new_stmt(pair: Pair<Rule>, stmt_id : usize) -> ASTNode {
+        let mut children: Vec<ASTNode> = Vec::new();
+        let rule = pair.as_rule();
+        let (line, col) = pair.line_col();
+        let value = pair.as_str().to_string();
+        for child in pair.clone().into_inner() {
+            children.push(ASTNode::new(child));
+        } 
+        ASTNode {
+            children,
+            rule,
+            value,
+            line,
+            col,
+            stmt_id: Some(stmt_id),
+        } 
     }
 
     pub fn recursive_dig(&self, find: Rule) -> Vec<ASTNode> {
@@ -326,7 +364,7 @@ impl Debug for ASTNode {
                     write!(f, "{:?} : {}\n", node.rule, node.value)
                 }
                 _ => {
-                    write!(f, "{:?}\n", node.rule)
+                    write!(f, "{:?}{}\n", node.rule, node.stmt_id.unwrap_or(0))
                 }
             };
 

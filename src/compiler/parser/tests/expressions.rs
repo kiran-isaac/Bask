@@ -11,7 +11,7 @@ fn expression_test_1(){
 
     let ast = ast.unwrap();
 
-    assert!(ast.root.get_child_recursively(Rule::Expression).unwrap().to_string() == "
+    assert_eq!(ast.root.get_child_recursively(Rule::Expression).unwrap().to_string(), "
     Expression{
         Add{
             a,

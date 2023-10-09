@@ -1,6 +1,11 @@
-use crate::compiler::{ASTNode, Rule};
+use crate::compiler::{ASTNode, Rule, TypeTable, AST};
 
 use super::Symbol;
+
+#[derive(Debug, Clone)]
+pub struct ScopeTree {
+    root: Scope,
+}
 
 #[derive(Debug, PartialEq, Clone)]
 enum ScopeType {
@@ -11,41 +16,90 @@ enum ScopeType {
 
 #[derive(Debug, Clone)]
 pub struct Scope {
+    scope_id: String,
     children: Vec<Scope>,
     symbols: Vec<Symbol>,
     scope_type: ScopeType,
 }
 
-impl From<ASTNode> for Scope {
-    fn from(ast: ASTNode) -> Scope { 
-        let mut scope = Scope {
-            children: Vec::new(),
-            symbols: Vec::new(),
-            scope_type: ScopeType::Global,
-        };
+impl Scope {
+    fn new(ast: &ASTNode, types: &TypeTable, scope_id: String) -> Scope { 
+        let mut children = Vec::new();
+        let mut symbols = Vec::new();
 
-        for child in ast.children {
+        let mut i = 0;
+        for child in ast.children.iter() {
             match child.rule {
-                Rule::Function => {
-                    let mut function_scope = Scope::from(child);
-                    function_scope.scope_type = ScopeType::Function;
-                    scope.children.push(function_scope);
-                },
                 Rule::CodeBlock => {
-                    let mut block_scope = Scope::from(child);
+                    let mut block_scope = Scope::new(&child, types, format!("{}:{}", scope_id, i));
                     block_scope.scope_type = ScopeType::Block;
-                    scope.children.push(block_scope);
+                    children.push(block_scope);
+                    i += 1;
                 },
                 Rule::Declaration => {
-                    let symbol = Symbol::from(child);
-                    scope.symbols.push(symbol);
+                    let symbol = Symbol::new(child, types);
+                    symbols.push(symbol);
                 },
-                _ => {
-                    println!("Unhandled rule: {:?}", child.rule)
+                Rule::Function => {
+                    let codeblock = child.get_child(Rule::CodeBlock).unwrap();
+                    let block_scope = Scope::new(codeblock, types, format!("{}:{}", scope_id, i));
+                    children.push(block_scope);
+                    i += 1;
                 }
+                _ => {}
             }
         }
 
-        scope
+        return Scope {
+            scope_id,
+            children,
+            symbols,
+            scope_type : match ast.rule {
+                Rule::File => ScopeType::Global,
+                Rule::Function => ScopeType::Function,
+                Rule::CodeBlock => ScopeType::Block,
+            _ => unreachable!("Cannot convert {:?} to Scope", ast.rule),
+        },
+        }
     }
 }
+
+impl Scope {
+    pub fn get_scope(&self, scope_id: String) -> Option<&Scope> {        
+        // Collect to a vector and remove the first element
+        let scope_id: Vec<&str> = scope_id.split(":").collect();
+        let scope_id = scope_id[1..].to_vec();
+        let scope_id_length = scope_id.len();
+
+        return match scope_id_length {
+            1 => {
+                Some(self)
+            },
+            2 => {
+                let index = scope_id[0].parse::<usize>().unwrap();
+                self.children.get(index)
+            },
+            _ => {
+                let next_scope_id = scope_id.join(":");
+                return match self.children.get(scope_id[0].parse::<usize>().unwrap()) {
+                    Some(scope) => scope.get_scope(next_scope_id),
+                    None => None,
+                }
+            }
+        }
+    }
+}
+
+impl ScopeTree {
+    pub fn new(ast: &AST, types: &TypeTable) -> ScopeTree {
+        let root = Scope::new(&ast.root, types, "".to_string());
+        ScopeTree {
+            root,
+        }
+    }
+
+    pub fn get_scope(&self, scope_id: String) -> Option<&Scope> {
+        return self.root.get_scope(scope_id);
+    }
+}
+

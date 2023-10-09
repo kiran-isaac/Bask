@@ -5,7 +5,7 @@ use super::CompilerError;
 mod from_ast;
 mod functions;
 
-use functions::FunctionSignature;
+pub use functions::FunctionSignature;
 
 mod enforce;
 #[cfg(test)]

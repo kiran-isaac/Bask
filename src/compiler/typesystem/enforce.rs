@@ -24,17 +24,6 @@ impl TypeTable {
 
     // Enforce the type system rules
     pub fn enforce(&self, ast: &AST) -> Result<(), CompilerError> {
-        for child in &ast.root.children {
-            match child.rule {
-                Rule::Function => {
-                    let function = child;
-                    let return_type = function.get_child(Rule::typeID);
-                    
-                }
-                _ => {}
-            }
-        }
-
         self.declaration_enforce(ast)?;
         Ok(())
     }
@@ -53,8 +42,8 @@ mod tests {
 
         let ast = parse_file(file)?;
         let type_table = TypeTable::from_ast(&ast);
+
         assert!(type_table.is_err());
-        type_table.unwrap_err().throw();
 
         Ok(())
     }

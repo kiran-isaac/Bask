@@ -11,7 +11,7 @@ fn expression_test_1(){
 
     let ast = ast.unwrap();
 
-    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    assert!(ast.root.get_child_recursively(Rule::Expression).unwrap().to_string() == "
     Expression{
         Add{
             a,
@@ -33,7 +33,7 @@ fn expression_test_2(){
 
     let ast = ast.unwrap();
 
-    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    assert!(ast.root.get_child_recursively(Rule::Expression).unwrap().to_string() == "
     Expression{
         Add{
             a,
@@ -56,7 +56,7 @@ fn expression_test_cast(){
 
     let ast = ast.unwrap();
 
-    assert!(ast.root.dig_for(Rule::Expression).unwrap().to_string() == "
+    assert!(ast.root.get_child_recursively(Rule::Expression).unwrap().to_string() == "
     Expression{
         Add{
             Cast{

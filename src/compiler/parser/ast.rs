@@ -13,6 +13,8 @@ pub struct ASTNode {
     pub children: Vec<ASTNode>,
     pub rule: Rule,
     pub value: String,
+    pub line: usize,
+    pub col: usize,
 }
 
 struct ASTNodeStack {
@@ -50,6 +52,7 @@ impl ASTNode {
     pub fn new(pair: Pair<Rule>) -> Self {
         let mut children: Vec<ASTNode> = Vec::new();
         let rule = pair.as_rule();
+        let (line, col) = pair.line_col();
         let value = pair.as_str().to_string();
         for child in pair.clone().into_inner() {
             if pair.as_rule() == Rule::EOI {
@@ -61,6 +64,8 @@ impl ASTNode {
             children,
             rule,
             value,
+            line,
+            col,
         }
     }
 
@@ -122,14 +127,14 @@ impl ASTNode {
 
     // Shunting Yard Algorithm
     // from https://en.wikipedia.org/wiki/Shunting-yard_algorithm
-    fn sya(&mut self) {
+    fn sya(&mut self) -> Result<(), CompilerError> {
         let mut op_stack = ASTNodeStack::new();
         let mut output_stack: Vec<ASTNode> = Vec::new();
 
         for child in &self.children {
             if child.rule == Rule::MethodCall {
                 let mut cloned_child = child.clone();
-                cloned_child.make_expressions_gooder();
+                cloned_child.make_expressions_gooder()?;
             }
 
             if child.is_primary() || child.rule == Rule::Expression {
@@ -159,16 +164,20 @@ impl ASTNode {
         }
 
         while op_stack.peek().is_some() {
-            assert!(op_stack.peek().unwrap().is_operator());
+            if !op_stack.peek().unwrap().is_operator() {
+                return Err(CompilerError::BadExpression(self.line));
+            }
             output_stack.push(op_stack.pop().unwrap());
         }
         self.children = output_stack;
+
+        Ok(())
     }
 
     pub fn make_expressions_gooder(&mut self) -> Result<(), CompilerError> {
         match self.rule {
             Rule::Expression => {
-                self.sya();
+                self.sya()?;
 
                 let mut stack = ASTNodeStack::new();
                 for mut child in self.children.clone() {
@@ -199,7 +208,7 @@ impl ASTNode {
                 }
 
                 if stack.stack.len() != 1 {
-                    return Err(CompilerError::ParseError("".to_string()));
+                    return Err(CompilerError::BadExpression(self.line));
                 }
 
                 self.children = stack.stack;
@@ -213,8 +222,16 @@ impl ASTNode {
         Ok(())
     }
 
-    #[cfg(test)]
-    pub fn dig_for(&self, rule: Rule) -> Option<&ASTNode> {
+    pub fn get_child(&self, rule: Rule) -> Option<&ASTNode> {
+        for child in &self.children {
+            if child.rule == rule {
+                return Some(child);
+            }
+        }
+        None
+    }
+
+    pub fn get_child_recursively(&self, rule: Rule) -> Option<&ASTNode> {
         fn recursive_dig(node: &ASTNode, rule: Rule) -> Option<&ASTNode> {
             if node.rule == rule {
                 return Some(node);
@@ -246,8 +263,6 @@ impl AST {
     #[cfg(test)]
     pub fn find_function(&self, name: &str) -> Option<&ASTNode> {
         for child in &self.root.children {
-            let i = 1;
-            drop(i);
             if child.rule == Rule::Function {
                 if child.children[0].value == name {
                     return Some(child);

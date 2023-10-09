@@ -13,7 +13,7 @@ EnumValueList =  _{ EnumName ~ ("," ~ EnumName)* }
 EnumName      = @{ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
 
 Function          =  { "fn" ~ FunctionName ~ "(" ~ FunctionArgList? ~ ")" ~ FuncReturnType? ~ CodeBlock }
-FuncReturnType    =  { " "* ~ "->" ~ " "* ~ typeID }
+FuncReturnType    =  _{ "->" ~ typeID }
 FunctionName      = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 FunctionArgList   = _{ " "* ~ FunctionArg ~ (" "* ~ "," ~ " "* ~ FunctionArg)* }
 FunctionArg       =  { typeID ~ " "* ~ (varID | SelfKeyword) }

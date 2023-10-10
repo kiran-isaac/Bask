@@ -6,7 +6,7 @@ use colored::Colorize;
 pub enum CompilerError {
   ParseError(String),
   TypecheckError(String),
-  Other(String, String)
+  UnknownType(String),
 }
 
 impl CompilerError {
@@ -15,7 +15,7 @@ impl CompilerError {
     println!("{}", match self {
       CompilerError::ParseError(s) => format!("Parse error: {}", s),
       CompilerError::TypecheckError(s) => format!("Typecheck error: {}", s),
-      CompilerError::Other(s, t) => format!("{}: {}", s, t)
+      CompilerError::UnknownType(s) => format!("Unknown type: {}", s),
     });
     exit(1);
   }

@@ -1,7 +1,7 @@
 use super::CompilerError;
 use super::TypeTable;
 use crate::compiler::parser::Rule;
-use crate::compiler::{AST, ASTNode};
+use crate::compiler::AST;
 
 impl TypeTable {
     fn declaration_enforce(&self, ast: &AST) -> Result<(), CompilerError> {
@@ -14,6 +14,7 @@ impl TypeTable {
                 None => {
                     return Err(CompilerError::TypecheckError(
                         format!("Type '{}' not found", type_id)
+                        , declaration.line
                     ));
                 }
             }
@@ -35,12 +36,13 @@ mod tests {
 
     #[test]
     fn declaration_enforce_non_existant_type() -> Result<(), CompilerError>{
-        let file = "fn main() {
+        let file = "fn main() -> int {
             Bruh a = 1;
         }";
 
         let ast = parse_file(file)?;
         let type_table = TypeTable::from_ast(&ast);
+
         assert!(type_table.is_err());
 
         Ok(())

@@ -13,12 +13,12 @@ fn assignment_test() {
     assert!(ast.is_ok());
     let ast = ast.unwrap();
 
-    assert_eq!(ast.root.dig_for(Rule::Declaration).unwrap().to_string(), "Declaration{
+    assert_eq!(ast.root.get_child_recursively(Rule::Declaration).unwrap().to_string(), "Declaration{
         int,
         x
     }".replace("\n", "").replace(" ", ""));
 
-    assert_eq!(ast.root.dig_for(Rule::Assignment).unwrap().to_string(), "Assignment{
+    assert_eq!(ast.root.get_child_recursively(Rule::Assignment).unwrap().to_string(), "Assignment{
         x,
         Expression{
             y

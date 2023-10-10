@@ -3,6 +3,10 @@ use std::collections::HashMap;
 use super::CompilerError;
 
 mod from_ast;
+mod functions;
+
+pub use functions::FunctionSignature;
+
 mod enforce;
 #[cfg(test)]
 mod tests;

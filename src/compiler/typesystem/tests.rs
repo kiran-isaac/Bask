@@ -70,3 +70,47 @@ fn from_ast_test() -> Result<(), CompilerError> {
 
     Ok(())
 }
+
+#[test]
+fn array_test() -> Result<(), CompilerError> {
+    let file = "fn main() {
+        [[int]; 64] x;
+    }";
+
+    let ast = parse_file(file)?;
+
+    println!("{:#?}", ast);
+
+    let table = TypeTable::from_ast(&ast)?;
+
+    println!("{:#?}", table);
+
+    Ok(())
+}
+
+#[test]
+fn chess_typecheck_test() -> Result<(), CompilerError> {
+    let file = "enum Piece {
+        Pawn,
+        Knight,
+        Bishop,
+        Rook,
+        Queen,
+        King
+    }
+
+    struct Square {
+        is_white: bool
+    }
+
+    struct Board {
+        squares: [Square; 64]
+    }";
+
+    let ast = parse_file(file)?;
+
+    let table = TypeTable::from_ast(&ast)?;
+
+    println!("{:#?}", table);
+    Ok(())
+}

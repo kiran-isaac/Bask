@@ -16,8 +16,7 @@ fn get_scope_test() -> Result<(), CompilerError> {
     let type_table = TypeTable::from_ast(&ast)?;
     let derived_scope_tree = ScopeTree::new(&ast, &type_table);
     assert_eq!(derived_scope_tree.get_scope(":0".to_string()).scope_id, ":0".to_string());
-
-    println!("{:#?}", derived_scope_tree.get_scope(":".to_string()));
+    assert_eq!(derived_scope_tree.get_scope(":0:0".to_string()).scope_id, ":0:0".to_string());
 
     Ok(())
 }

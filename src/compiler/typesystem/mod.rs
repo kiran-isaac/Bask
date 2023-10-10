@@ -189,12 +189,12 @@ impl TypeTable {
             match type_ {
                 Type::Struct { fields, .. } => {
                     let mut struct_size = 0;
-                    for (field_name, field_type) in fields.iter_mut() {
-                        let field_type = table_2.get_type(field_type);
+                    for (_, field_type_name) in fields.iter_mut() {
+                        let field_type = table_2.get_type(field_type_name);
                         if field_type.is_none() {
                             return Err(CompilerError::UnknownType(format!(
                                 "{} in struct {}",
-                                field_name, name
+                                field_type_name, name
                             )));
                         }
                         match field_type.unwrap() {

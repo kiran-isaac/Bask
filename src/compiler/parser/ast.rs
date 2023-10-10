@@ -364,7 +364,7 @@ impl Debug for ASTNode {
                     write!(f, "{:?} : {}\n", node.rule, node.value)
                 }
                 _ => {
-                    write!(f, "{:?}{}\n", node.rule, node.stmt_id.unwrap_or(0))
+                    write!(f, "{:?}\n", node.rule)
                 }
             };
 

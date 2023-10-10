@@ -6,7 +6,7 @@ use crate::compiler::AST;
 
 impl TypeTable {
     // Validate a type from an ASTNode
-    fn validate_from_ast(&self, ast: &ASTNode) -> Result<(), ()> {
+    pub fn validate_from_ast(&self, ast: &ASTNode) -> Result<(), ()> {
         assert_eq!(ast.rule, Rule::typeID);
         let mut ast = ast;
         if ast.children.len() == 1 {

@@ -6,6 +6,6 @@ mod symbol;
 #[cfg(test)]
 mod tests;
 
-use scope::Scope;
-use symbol::Symbol;
+pub use scope::ScopeTree;
+pub use symbol::Symbol;
 use super::typesystem::FunctionSignature;

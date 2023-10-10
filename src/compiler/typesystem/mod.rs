@@ -16,10 +16,6 @@ const PTR_SIZE: usize = 8;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Type {
-    Array {
-        of: String,
-        elem_size: usize,
-    },
     Fundamental {
         name: String,
         size: usize,
@@ -27,7 +23,7 @@ pub enum Type {
     Struct {
         name: String,
         size: usize,
-        fields: Vec<(String, String)>,
+        fields: Vec<(String, Type)>,
     },
     Enum {
         name: String,
@@ -43,6 +39,26 @@ pub enum Type {
 pub struct TypeTable {
     types: HashMap<String, Type>,
 }
+
+// impl Type {
+//     fn from_ast(ast: &ASTNode) -> Result<Type, CompilerError> {
+//         assert_eq!(ast.rule, Rule::typeID);
+
+//         if ast.children.len() == 1 {
+//             match ast.children[0].rule {
+//                 Rule::array => {
+//                     let array_type = ast.children[0].children[0].value.clone();
+//                     let array_type = Type::from_ast(&ast.children[0].children[0])?;
+//                     return Ok(Type::Array {
+//                         of: array_type.to_string(),
+//                         elem_size: 0,
+//                     });
+//                 }
+//                 _ => {}
+//             }
+//         }
+//     }
+// }
 
 impl TypeTable {
     fn new() -> TypeTable {
@@ -149,9 +165,9 @@ impl TypeTable {
         // string
         types.insert(
             "string".to_string(),
-            Type::Array {
-                of: "char".to_string(),
-                elem_size: 1,
+            Type::Alias {
+                name: "string".to_string(),
+                target: "[u8]".to_string(),
             },
         );
 
@@ -190,24 +206,7 @@ impl TypeTable {
                 Type::Struct { fields, .. } => {
                     let mut struct_size = 0;
                     for (_, field_type_name) in fields.iter_mut() {
-                        let field_type = table_2.get_type(field_type_name);
-                        if field_type.is_none() {
-                            return Err(CompilerError::UnknownType(format!(
-                                "{} in struct {}",
-                                field_type_name, name
-                            )));
-                        }
-                        match field_type.unwrap() {
-                            Type::Fundamental { size, .. } => {
-                                struct_size += *size;
-                            }
-                            Type::Enum { .. } => {
-                                struct_size += ENUM_SIZE;
-                            }
-                            _ => {
-                                struct_size += PTR_SIZE;
-                            }
-                        }
+   
                     }
                     table_2.types.insert(
                         name.to_string(),

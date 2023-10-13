@@ -31,7 +31,7 @@ If                  =  { "if" ~ Expression ~ CodeBlock ~ ("else" ~ "if" ~ Expres
 While               =  { "while" ~ Expression ~ CodeBlock }
 Switch							=  { "switch" ~ Expression ~ "{" ~ Case ~ ("," ~ Case)* ~ "}" }
 Case								=  { (ValueLiteral | Expression | EnumName) ~ "=>" ~ (Expression | CodeBlock) }
-RegularStatement    = _{ Assignment | Declaration | Return | MethodCall }
+RegularStatement    = _{ Assignment | Declaration | Return | MethodCall | Break | Continue }
 Declaration         =  { typeID ~ varID ~ ("=" ~ Expression)? }
 Assignment          =  { varID ~ "=" ~ Expression }
 Return              =  { "return" ~ Expression }

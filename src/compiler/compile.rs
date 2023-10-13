@@ -7,5 +7,7 @@ pub fn compile(file: &str) -> Result<i32, CompilerError> {
 
     types.enforce(&ast)?; 
 
+    println!("{:?}", ast);
+
     Ok(1)
 }

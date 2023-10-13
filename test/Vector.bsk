@@ -1,0 +1,19 @@
+struct Vector2 {
+  x : float,
+  y : float
+}.{
+  fn length() -> float {
+    return sqrt(x * x + y * y);
+  }
+
+  fn normalized() -> Vector2 {
+    float len = length();
+    return new(x / len, y / len);
+  }
+
+  fn normalize() {
+    float len = length();
+    x = x / len;
+    y = y / len;
+  }
+}

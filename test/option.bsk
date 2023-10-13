@@ -1,3 +1,4 @@
+// How options would be implemented using generics
 struct Option with T {
     // The value of the option
     value: T

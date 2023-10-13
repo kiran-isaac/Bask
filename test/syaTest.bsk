@@ -1,8 +1,0 @@
-fn fun() -> int {
-    return 1 + 5*2 - ((10 * 2));
-}
-
-fn main() -> int {
-    int x = fun();
-    print((string) x);
-}

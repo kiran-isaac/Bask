@@ -16,7 +16,7 @@ fn test_switch() {
 
     let ast = ast.unwrap();
 
-    assert!(ast.root.dig_for(Rule::Switch).unwrap().to_string() == "Switch{
+    assert!(ast.root.get_child_recursively(Rule::Switch).unwrap().to_string() == "Switch{
         Expression{
             x
         },

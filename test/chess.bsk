@@ -8,7 +8,6 @@ enum Piece {
 }
 
 struct Square {
-    piece: Option<Piece>,
     is_white: bool
 }
 

@@ -1,16 +1,11 @@
-use super::parser::parse_file;
+use super::{parser::parse_file, CompilerError, TypeTable};
 
+pub fn compile(file: &str) -> Result<i32, CompilerError> {
+    let ast = parse_file(file)?;
 
-pub fn compile(file : &str) {
-  let ast = parse_file(&file);
-  // Apply rules to AST
+    let types = TypeTable::from_ast(&ast)?;
 
-  match ast {
-    Ok(ast) => {
-      println!("AST: {:?}", ast);
-    },
-    Err(_) => {
-      println!("Error parsing file");
-    }
-  }
+    types.enforce(&ast)?; 
+
+    Ok(1)
 }

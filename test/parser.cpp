@@ -18,3 +18,23 @@ TEST(Parser, Parse) {
   
   auto ast = parser.parse();
 }
+
+TEST(Parser, Assignment) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5; }")};
+  
+  Options options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+  
+  auto ast = parser.parse();
+}
+
+TEST(Parser, FunctionCall) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { print(\"Hello, World!\"); }")};
+  
+  Options options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+  
+  auto ast = parser.parse();
+}

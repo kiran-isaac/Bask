@@ -14,7 +14,7 @@ enum KLTokenType {
   KLTT_Identifier,
   KLTT_EndOfFile,
   
-  KLTT_Literal_Integer,
+  KLTT_Literal_Int,
   KLTT_Literal_Float,
   KLTT_Literal_String,
   KLTT_Literal_Char,

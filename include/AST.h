@@ -21,10 +21,22 @@ public:
   virtual ~ASTNode() = default;
 };
 
+class ASTType : public ASTNode {
+public:
+  KL_Type type;
+  
+  explicit ASTType(KL_Type type) : type(std::move(type)) {}
+};
+
 // --------------------------- Expressions ---------------------------
 class ASTExpr : public ASTNode {};
 
-class ASTExprLiteral : public ASTExpr {
+// Two types of expressions: primary and operator
+class ASTExprPrimary : public ASTExpr {};
+class ASTExprOperator : public ASTExpr {};
+
+// The primary expressions
+class ASTExprLiteral : public ASTExprPrimary {
 public:
   KLTokenType type;
   string value;
@@ -32,14 +44,38 @@ public:
   explicit ASTExprLiteral(KLTokenType type, string value) : type(type), value(std::move(value)) {}
 };
 
-class ASTExprIdentifier : public ASTExpr {
+class ASTExprIdentifier : public ASTExprPrimary {
 public:
   string name;
   
   explicit ASTExprIdentifier(string name) : name(std::move(name)) {}
 };
 
-class ASTExprBinary : public ASTExpr {
+class ASTExprFuncCall : public ASTExprPrimary {
+public:
+  string name;
+  unique_ptr<vector<unique_ptr<ASTExpr>>> args;
+  
+  ASTExprFuncCall(string name, unique_ptr<vector<unique_ptr<ASTExpr>>> args) : name(std::move(name)), args(std::move(args)) {}
+};
+
+class ASTExprParen : public ASTExprPrimary {
+public:
+  unique_ptr<ASTExpr> expr;
+  
+  explicit ASTExprParen(unique_ptr<ASTExpr> expr) : expr(std::move(expr)) {}
+};
+
+class ASTExprArrayAccess : public ASTExprPrimary {
+public:
+  string name;
+  unique_ptr<ASTExpr> index;
+  
+  ASTExprArrayAccess(string name, unique_ptr<ASTExpr> index) : name(std::move(name)), index(std::move(index)) {}
+};
+
+// The operator expressions
+class ASTExprBinary : public ASTExprOperator {
 public:
   unique_ptr<ASTExpr> lhs;
   unique_ptr<ASTExpr> rhs;
@@ -48,35 +84,12 @@ public:
   ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KLTokenType op) : lhs(std::move(lhs)), rhs(std::move(rhs)), op(op) {}
 };
 
-class ASTExprUnary : public ASTExpr {
+class ASTExprUnary : public ASTExprOperator {
 public:
   unique_ptr<ASTExpr> expr;
   KLTokenType op;
   
-  ASTExprUnary(unique_ptr<ASTExpr> expr, KLTokenType op) : expr(std::move(expr)), op(op) {}
-};
-
-class ASTExprFuncCall : public ASTExpr {
-public:
-  string name;
-  vector<unique_ptr<ASTExpr>> args;
-  
-  ASTExprFuncCall(string name, vector<unique_ptr<ASTExpr>> args) : name(std::move(name)), args(std::move(args)) {}
-};
-
-class ASTExprParen : public ASTExpr {
-public:
-  unique_ptr<ASTExpr> expr;
-  
-  explicit ASTExprParen(unique_ptr<ASTExpr> expr) : expr(std::move(expr)) {}
-};
-
-class ASTExprArrayAccess : public ASTExpr {
-public:
-  string name;
-  unique_ptr<ASTExpr> index;
-  
-  ASTExprArrayAccess(string name, unique_ptr<ASTExpr> index) : name(std::move(name)), index(std::move(index)) {}
+  ASTExprUnary(KLTokenType op, unique_ptr<ASTExpr> expr) : expr(std::move(expr)), op(op) {}
 };
 
 // --------------------------- Statements ---------------------------
@@ -91,6 +104,16 @@ public:
 
 };
 
+class ASTStmtAssignment : public ASTStmt {
+public:
+  bool is_const;
+  unique_ptr<ASTType> type;
+  string name;
+  unique_ptr<ASTExpr> value;
+  
+  ASTStmtAssignment(bool is_const, unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value) : is_const(is_const), type(std::move(type)), name(std::move(name)), value(std::move(value)) {}
+};
+
 class ASTStmtDecl : public ASTStmt {
 public:
   string name;
@@ -101,13 +124,6 @@ public:
 };
 
 // --------------------------- Program ---------------------------
-class ASTType : public ASTNode {
-public:
-  KL_Type type;
-  
-  explicit ASTType(KL_Type type) : type(std::move(type)) {}
-};
-
 class ASTFuncDecl : public ASTNode {
 public:
   string name;

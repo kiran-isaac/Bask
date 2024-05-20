@@ -14,7 +14,7 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "Identifier";
     case KLTT_EndOfFile:
       return "EndOfFile";
-    case KLTT_Literal_Integer:
+    case KLTT_Literal_Int:
       return "Literal_Integer";
     case KLTT_Literal_Float:
       return "Literal_Float";

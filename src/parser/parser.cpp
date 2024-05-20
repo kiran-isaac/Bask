@@ -14,6 +14,11 @@ void Parser::expect(KLTokenType type) const {
 }
 
 void Parser::nextToken() {
+  if (!peekQueue.empty()) {
+    tk = peekQueue.front();
+    peekQueue.pop();
+    return;
+  }
   auto lexer_returns = lexer.next();
   if (lexer_returns.has_value()) {
     tk = lexer_returns.value();
@@ -21,6 +26,19 @@ void Parser::nextToken() {
     parserError("Unexpected end of file");
   }
 }
+
+// IDE was giving me a warning about the loop not using the condition variable
+// This is a false positive, as the queue is getting longer with each iteration
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
+Token Parser::peek(int n) {
+  while (n > peekQueue.size()) {
+    peekQueue.push(lexer.next().value());
+  }
+  
+  return peekQueue.front();
+}
+#pragma clang diagnostic pop
 
 void Parser::parserError(const string &msg) {
   cerr << msg << endl;
@@ -61,7 +79,7 @@ unique_ptr<ASTType> Parser::parseType() {
     nextToken();
     type.kind = KL_ARRAY;
     switch (tk.type) {
-      case KLTT_Literal_Integer:
+      case KLTT_Literal_Int:
         type.array_sizes.push_back(stoi(tk.value));
         nextToken();
         if (tk.type != KLTT_Punctuation_RBracket) {
@@ -85,6 +103,8 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
     parserError("Expected identifier");
   }
   
+  peek(2);
+  
   string name = tk.value;
   nextToken();
   
@@ -93,7 +113,17 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
   expect(KLTT_Punctuation_RParen);
   nextToken();
   
-  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), vector<unique_ptr<ASTStmt>>());
+  expect(KLTT_Punctuation_LBrace);
+  nextToken();
+  
+  vector<unique_ptr<ASTStmt>> body;
+  while (tk.type != KLTT_Punctuation_RBrace) {
+    body.push_back(parseStatement());
+  }
+  
+  nextToken();
+  
+  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(body));
 }
 
 unique_ptr<ASTNode> Parser::parse() {

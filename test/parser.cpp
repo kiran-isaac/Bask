@@ -37,4 +37,5 @@ TEST(Parser, FunctionCall) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
+  ast->print(0);
 }

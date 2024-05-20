@@ -50,6 +50,9 @@ unique_ptr<ASTExprPrimary> Parser::parsePrimary() {
       } else if (peek(1).type == KLTT_Punctuation_LBracket) {
         parserError("Array access not implemented");
         // return parseArrayAccess();
+      } else if (peek(1).type == KLTT_Operator_Assign) {
+        parserError("Assignment not implemented");
+        // return parseAssignment();
       }
       return make_unique<ASTExprIdentifier>(tk.value);
     case KLTT_Punctuation_LParen:

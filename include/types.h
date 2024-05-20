@@ -5,6 +5,11 @@
 #ifndef KL_TYPES_H
 #define KL_TYPES_H
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 enum KL_PrimitiveType {
   KL_INT,
   KL_FLOAT,
@@ -26,5 +31,6 @@ struct KL_Type {
   vector<unsigned int> array_sizes;
 };
 
+string type_to_string(const KL_Type &type);
 
 #endif //KL_TYPES_H

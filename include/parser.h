@@ -27,7 +27,7 @@ private:
   unique_ptr<ASTType> parseType();
   unique_ptr<ASTStmt> parseStatement();
   unique_ptr<ASTStmtExpr> parseExpressionStatement();
-  unique_ptr<ASTStmt> parseAssignment();
+  unique_ptr<ASTStmtDecl> parseDeclaration();
   
   unique_ptr<ASTExpr> parseExpression();
   

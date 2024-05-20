@@ -6,7 +6,7 @@
 
 using namespace std;
 
-unique_ptr<ASTStmt> Parser::parseAssignment() {
+unique_ptr<ASTStmtDecl> Parser::parseDeclaration() {
   bool is_const = false;
   if (tk.type == KLTT_KW_Const) {
     is_const = true;
@@ -21,7 +21,10 @@ unique_ptr<ASTStmt> Parser::parseAssignment() {
   nextToken();
   auto value = parseExpression();
   
-  return make_unique<ASTStmtAssignment>(is_const, std::move(type), name, std::move(value));
+  expect(KLTT_Punctuation_Semicolon);
+  nextToken();
+  
+  return make_unique<ASTStmtDecl>(is_const, std::move(type), name, std::move(value));
 }
 
 unique_ptr<ASTStmtExpr> Parser::parseExpressionStatement() {
@@ -39,7 +42,7 @@ unique_ptr<ASTStmt> Parser::parseStatement() {
     case KLTT_KW_Bool:
     case KLTT_KW_Char:
     case KLTT_KW_String:
-      return parseAssignment();
+      return parseDeclaration();
     case KLTT_Identifier:
       return parseExpressionStatement();
     default:

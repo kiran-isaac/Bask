@@ -1,0 +1,15 @@
+char[] getMessage() {
+    return "Hello, World!";
+}
+
+int main() {
+    const char newline = '\n';
+
+    char[] message = getMessage();
+
+    puts(message);
+
+    putchar(newline);
+
+    return 0;
+}

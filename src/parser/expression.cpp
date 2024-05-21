@@ -114,6 +114,7 @@ unique_ptr<ASTExpr> Parser::parseUnaryExpression() {
 }
 
 unique_ptr<ASTExpr> Parser::parseBinaryExpression(unique_ptr<ASTExpr> LHS, int min_precedence) {
+  while (true) {
     int precedence = getOperatorPrecedence(tk.type);
     if (precedence < min_precedence) {
       return LHS;
@@ -131,16 +132,12 @@ unique_ptr<ASTExpr> Parser::parseBinaryExpression(unique_ptr<ASTExpr> LHS, int m
     }
     
     int next_precedence = getOperatorPrecedence(tk.type);
-    if (next_precedence == -1) {
-      return make_unique<ASTExprBinary>(std::move(LHS), std::move(RHS), op);
-    }
-    
     if (precedence < next_precedence) {
       RHS = parseBinaryExpression(std::move(RHS), precedence + 1);
-      return make_unique<ASTExprBinary>(std::move(LHS), std::move(RHS), op);
-    } else {
-      return make_unique<ASTExprBinary>(std::move(LHS), std::move(RHS), op);
     }
+    
+    LHS = make_unique<ASTExprBinary>(std::move(LHS), std::move(RHS), op);
+  }
 }
 
 unique_ptr<ASTExpr> Parser::parseExpression() {

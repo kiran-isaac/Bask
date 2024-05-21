@@ -62,13 +62,13 @@ TEST(Parser, BinaryExpression) {
   ast->getFunction("main")->getStatement(0)->getExpr()->print(0);
 }
 
-TEST(Parser, BinaryExpressionFile) {
-  const char* argv[] = {"KL", "../test/sample/binary_expressions.kl"};
+TEST(Parser, BinaryExpression2) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 + 3 * -(2 + 10); }")};
   
   Options options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
   unique_ptr<ASTProgram> ast = parser.parse();
-  ast->getFunction("main")->getStatement(2)->print(0);
+  ast->getFunction("main")->getStatement(0)->print(0);
 }

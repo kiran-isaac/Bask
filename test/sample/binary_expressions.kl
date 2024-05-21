@@ -1,6 +1,3 @@
 int main() {
-    bool a = !true;
-    int b = -(10 * -10);
-    char c = 'a' >> 1;
-    int x = 10;
+    int y = 20 + 10 * 5 + 2;
 }

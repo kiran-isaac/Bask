@@ -41,7 +41,7 @@ TEST(Lexer, Keywords) {
 }
 
 TEST(Lexer, Punctuation) {
-  const char* argv[] = {"KL", insertIntoTempFile("(){}[];.,")};
+  const char* argv[] = {"KL", insertIntoTempFile("(){}[];.,= == != < <= > >= << >>")};
   Token expected[] = {Token{KLTokenType::KLTT_Punctuation_LParen, "(", 1, 1},
                       Token{KLTokenType::KLTT_Punctuation_RParen, ")", 1, 2},
                       Token{KLTokenType::KLTT_Punctuation_LBrace, "{", 1, 3},
@@ -50,7 +50,16 @@ TEST(Lexer, Punctuation) {
                       Token{KLTokenType::KLTT_Punctuation_RBracket, "]", 1, 6},
                       Token{KLTokenType::KLTT_Punctuation_Semicolon, ";", 1, 7},
                       Token{KLTokenType::KLTT_Punctuation_Dot, ".", 1, 8},
-                      Token{KLTokenType::KLTT_Punctuation_Comma, ",", 1, 9}};
+                      Token{KLTokenType::KLTT_Punctuation_Comma, ",", 1, 9},
+                      Token{KLTokenType::KLTT_Operator_Assign, "=", 1, 10},
+                      Token{KLTokenType::KLTT_Operator_Equal, "==", 1, 12},
+                      Token{KLTokenType::KLTT_Operator_NotEqual, "!=", 1, 15},
+                      Token{KLTokenType::KLTT_Operator_Less, "<", 1, 18},
+                      Token{KLTokenType::KLTT_Operator_LessEqual, "<=", 1, 20},
+                      Token{KLTokenType::KLTT_Operator_Greater, ">", 1, 23},
+                      Token{KLTokenType::KLTT_Operator_GreaterEqual, ">=", 1, 25},
+                      Token{KLTokenType::KLTT_Operator_Shl, "<<", 1, 28},
+                      Token{KLTokenType::KLTT_Operator_Shr, ">>", 1, 31}};
   
   Options options(2, argv);
   Lexer lexer(options);

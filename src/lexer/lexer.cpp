@@ -199,10 +199,39 @@ optional<Token> Lexer::next() {
         return Token{KLTokenType::KLTT_Operator_BitwiseNot, "~", tokenStartLine, tokenStartCol};
       case '!':
         advance();
+        if (*c == '=') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_NotEqual, "!=", tokenStartLine, tokenStartCol};
+        }
         return Token{KLTokenType::KLTT_Operator_LogicalNot, "!", tokenStartLine, tokenStartCol};
       case '=':
         advance();
+        if (*c == '=') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_Equal, "==", tokenStartLine, tokenStartCol};
+        }
         return Token{KLTokenType::KLTT_Operator_Assign, "=", tokenStartLine, tokenStartCol};
+      case '<':
+        advance();
+        if (*c == '=') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_LessEqual, "<=", tokenStartLine, tokenStartCol};
+        } else if (*c == '<') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_Shl, "<<", tokenStartLine, tokenStartCol};
+        }
+        return Token{KLTokenType::KLTT_Operator_Less, "<", tokenStartLine, tokenStartCol};
+        
+      case '>':
+        advance();
+        if (*c == '=') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_GreaterEqual, ">=", tokenStartLine, tokenStartCol};
+        } else if (*c == '>') {
+          advance();
+          return Token{KLTokenType::KLTT_Operator_Shr, ">>", tokenStartLine, tokenStartCol};
+        }
+        return Token{KLTokenType::KLTT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
       
       case '\'':
         break;

@@ -23,20 +23,23 @@ private:
   
   static void parserError(const string &msg);
   
-  unique_ptr<ASTFuncDecl> parseFunction();
-  unique_ptr<ASTType> parseType();
-  unique_ptr<ASTStmt> parseStatement();
-  unique_ptr<ASTStmtExpr> parseExpressionStatement();
-  unique_ptr<ASTStmtAssignment> parseAssignment();
-  unique_ptr<ASTStmtDecl> parseDeclaration();
+  // program
+  unique_ptr<ASTFuncDecl> parse_function();
+  unique_ptr<ASTType> parse_type_annotation();
   
-  unique_ptr<ASTExpr> parseBinaryExpression(unique_ptr<ASTExpr> LHS, int min_precedence);
-  unique_ptr<ASTExpr> parseUnaryExpression();
-  unique_ptr<ASTExpr> parseExpression();
+  // statements
+  unique_ptr<ASTStmt> parse_statement();
+  unique_ptr<ASTStmtExpr> parse_expression_statement();
+  unique_ptr<ASTStmtAssignment> parse_assignment();
+  unique_ptr<ASTStmtDecl> parse_declaration();
   
-  unique_ptr<ASTExpr> parsePrimary();
-  unique_ptr<ASTExpr> parsePrimaryParens();
-  unique_ptr<ASTExprFuncCall> parseFunctionCall();
+  // expressions
+  unique_ptr<ASTExpr> parse_expression();
+  unique_ptr<ASTExpr> parse_binary_expression(unique_ptr<ASTExpr> LHS, int min_precedence);
+  unique_ptr<ASTExpr> parse_unary_expression();
+  unique_ptr<ASTExpr> parse_primary();
+  unique_ptr<ASTExpr> parse_primary_parens();
+  unique_ptr<ASTExprFuncCall> parse_function_call();
 public:
   explicit Parser(Lexer &lexer) : lexer(lexer) { nextToken(); }
 

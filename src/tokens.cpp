@@ -4,7 +4,7 @@
 
 #include <tokens.h>
 
-int getOperatorPrecedence(KL_TokenType type) {
+int get_operator_precedence(KL_TokenType type) {
   switch (type) {
     case KL_TT_Operator_Assign:
       return 1;
@@ -44,6 +44,6 @@ int getOperatorPrecedence(KL_TokenType type) {
   }
 }
 
-bool isCommutative(KL_TokenType op) {
+bool operator_is_commutative(KL_TokenType op) {
   return op == KL_TT_Operator_Add || op == KL_TT_Operator_Mul || op == KL_TT_Operator_Equal || op == KL_TT_Operator_NotEqual;
 }

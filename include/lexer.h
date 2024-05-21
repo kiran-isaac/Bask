@@ -37,19 +37,19 @@ private:
   
   bool isBuffer1;
   
-  void refreshBuffer1();
-  void refreshBuffer2();
+  void refresh_buffer_1();
+  void refresh_buffer_2();
   
   unsigned int preprocessor_condition_depth;
   bool pathway_found; // used
   
   void advance();
   
-  optional<KL_Token> lexWord();
-  optional<KL_Token> lexNumber();
-  optional<KL_Token> lexStringLiteral();
-  optional<KL_Token> lexCharLiteral();
-  optional<char> lexEscapeChar();
+  optional<KL_Token> lex_word();
+  optional<KL_Token> lex_number();
+  optional<KL_Token> lex_string_literal();
+  optional<KL_Token> lex_char_literal();
+  optional<char> let_escape_char();
 };
 
 #endif //KL_LEXER_H

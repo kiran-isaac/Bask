@@ -76,11 +76,10 @@ struct KL_Token {
   unsigned int col;
 };
 
-int getOperatorPrecedence(KL_TokenType type);
-bool isCommutative(KL_TokenType op);
+int get_operator_precedence(KL_TokenType type);
+bool operator_is_commutative(KL_TokenType op);
 
-const char *tokenTypeToString(KL_TokenType type);
-
-string tokenToString(const KL_Token& token);
+const char *token_type_to_string(KL_TokenType type);
+string token_to_string(const KL_Token& token);
 
 #endif //KL_TOKENS_H

@@ -9,7 +9,7 @@ using namespace std;
 
 void Parser::expect(KL_TokenType type) const {
   if (tk.type != type) {
-    parserError("Expected " + string(tokenTypeToString(type)) + " but got " + string(tokenTypeToString(tk.type)));
+    parserError("Expected " + string(token_type_to_string(type)) + " but got " + string(token_type_to_string(tk.type)));
   }
 }
 
@@ -45,7 +45,7 @@ void Parser::parserError(const string &msg) {
   exit(1);
 }
 
-unique_ptr<ASTType> Parser::parseType() {
+unique_ptr<ASTType> Parser::parse_type_annotation() {
   unsigned int line = tk.line;
   unsigned int col = tk.col;
   
@@ -100,8 +100,8 @@ unique_ptr<ASTType> Parser::parseType() {
   return make_unique<ASTType>(type, line, col);
 }
 
-unique_ptr<ASTFuncDecl> Parser::parseFunction() {
-  unique_ptr<ASTType> return_type = parseType();
+unique_ptr<ASTFuncDecl> Parser::parse_function() {
+  unique_ptr<ASTType> return_type = parse_type_annotation();
   unsigned int line = tk.line;
   unsigned int col = tk.col;
   
@@ -122,7 +122,7 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
   
   vector<unique_ptr<ASTStmt>> body;
   while (tk.type != KL_TT_Punctuation_RBrace) {
-    body.push_back(parseStatement());
+    body.push_back(parse_statement());
   }
   
   nextToken();
@@ -134,7 +134,7 @@ unique_ptr<ASTProgram> Parser::parse() {
   vector<unique_ptr<ASTFuncDecl>> functions;
   
   while (tk.type != KL_TT_EndOfFile) {
-    functions.push_back(parseFunction());
+    functions.push_back(parse_function());
   }
   
   return make_unique<ASTProgram>(std::move(functions));

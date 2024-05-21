@@ -5,13 +5,14 @@
 #include <AST.h>
 #include <cmath>
 
-unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
+unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *) {
   auto binary = dynamic_cast<ASTExprBinary *>(expr);
   binary->lhs = fold(binary->lhs.get());
   binary->rhs = fold(binary->rhs.get());
   
   // Optimisation: Extract as many constants as possible. At the moment expressions aren't re-arranged if the operator is commutative
-  if (binary->lhs->getAstType() != ASTNode::ASTNodeType::ExprValue || binary->rhs->getAstType() != ASTNode::ASTNodeType::ExprValue) {
+  if (binary->lhs->get_AST_type() != ASTNode::ASTNodeType::ExprValue ||
+    binary->rhs->get_AST_type() != ASTNode::ASTNodeType::ExprValue) {
     return make_unique<ASTExprBinary>(std::move(binary->lhs), std::move(binary->rhs), binary->op, binary->line, binary->col);
   }
   

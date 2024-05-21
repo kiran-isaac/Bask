@@ -41,9 +41,9 @@ public:
   
   virtual ~ASTNode() = default;
   
-  virtual void foldExpressions() {}
+  virtual void fold_expressions() {}
   
-  [[nodiscard]] virtual ASTNodeType getAstType() const = 0;
+  [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
   
   unsigned int line = 0;
   unsigned int col = 0;
@@ -64,7 +64,7 @@ public:
   
   explicit ASTType(KL_Type type, unsigned int line, unsigned int col) : type(std::move(type)), line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Type;
   }
   
@@ -77,16 +77,16 @@ public:
 // --------------------------- Expressions ---------------------------
 class ASTExpr : public ASTNode {
 private:
-  static unique_ptr<ASTExpr> foldBinary(ASTExpr *);
+  static unique_ptr<ASTExpr> fold_binary(ASTExpr *);
   
-  static unique_ptr<ASTExpr> foldUnary(ASTExpr *);
+  static unique_ptr<ASTExpr> fold_unary(ASTExpr *);
 public:
   unsigned int line{};
   unsigned int col{};
   
   static unique_ptr<ASTExpr> fold(ASTExpr *);
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Expr;
   }
 };
@@ -104,7 +104,7 @@ public:
                                                                                            value(std::move(value)),
                                                                                            line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ExprValue;
   }
   
@@ -123,7 +123,7 @@ public:
   explicit ASTExprIdentifier(string name, unsigned int line, unsigned int col) : name(std::move(name)), line(line),
                                                                                  col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ExprIdentifier;
   }
   
@@ -143,7 +143,7 @@ public:
   ASTExprFuncCall(string name, unique_ptr<vector<unique_ptr<ASTExpr>>> args, unsigned int line, unsigned int col)
     : name(std::move(name)), args(std::move(args)), line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ExprFuncCall;
   }
   
@@ -169,13 +169,13 @@ public:
   ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KL_TokenType op, unsigned int line, unsigned int col)
     : lhs(std::move(lhs)), rhs(std::move(rhs)), op(op), line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ExprBinary;
   }
   
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Binary Expression: " << tokenTypeToString(op) << std::endl;
+    out << "Binary Expression: " << token_type_to_string(op) << std::endl;
     printIndent(indent, out);
     out << "LHS:" << std::endl;
     lhs->print(indent + 1, out);
@@ -196,13 +196,13 @@ public:
                                                                                                  op(op), line(line),
                                                                                                  col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ExprUnary;
   }
   
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Unary Expression: " << tokenTypeToString(op) << std::endl;
+    out << "Unary Expression: " << token_type_to_string(op) << std::endl;
     expr->print(indent + 1, out);
   }
 };
@@ -213,7 +213,7 @@ public:
   unsigned int line = 0;
   unsigned int col = 0;
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Stmt;
   }
 };
@@ -228,11 +228,11 @@ public:
   explicit ASTStmtExpr(unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
                                                                                         line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return StmtExpr;
   }
   
-  void foldExpressions() override {
+  void fold_expressions() override {
     expr = ASTExpr::fold(expr.get());
   }
   
@@ -253,11 +253,11 @@ public:
   ASTStmtAssignment(string name, unique_ptr<ASTExpr> value, unsigned int line, unsigned int col) : name(
     std::move(name)), value(std::move(value)), line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return StmtAssignment;
   }
   
-  void foldExpressions() override {
+  void fold_expressions() override {
     value = ASTExpr::fold(value.get());
   }
   
@@ -280,11 +280,11 @@ public:
               unsigned int col) : type(std::move(type)), name(std::move(name)),
                                   value(std::move(value)), line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return StmtDecl;
   }
   
-  void foldExpressions() override {
+  void fold_expressions() override {
     value = ASTExpr::fold(value.get());
   }
   
@@ -311,13 +311,13 @@ public:
               unsigned int col) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)),
                                   line(line), col(col) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return FuncDecl;
   }
   
-  void foldExpressions() override {
+  void fold_expressions() override {
     for (auto &stmt: body) {
-      stmt->foldExpressions();
+      stmt->fold_expressions();
     }
   }
   
@@ -329,7 +329,7 @@ public:
     }
   }
   
-  [[nodiscard]] ASTStmt *getStatement(int index) const {
+  [[nodiscard]] ASTStmt *get_statement(int index) const {
     if (index >= body.size()) {
       throw runtime_error("debugging function access statement index out of bounds");
     }
@@ -343,13 +343,13 @@ public:
   
   explicit ASTProgram(vector<unique_ptr<ASTFuncDecl>> funcs) : funcs(std::move(funcs)) {}
   
-  [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Program;
   }
   
-  void foldExpressions() override {
+  void fold_expressions() override {
     for (auto &func: funcs) {
-      func->foldExpressions();
+      func->fold_expressions();
     }
   }
   
@@ -361,13 +361,13 @@ public:
     }
   }
   
-  void getFunctionNames(vector<string> &names) const {
+  void get_function_names(vector<string> &names) const {
     for (const auto &func: funcs) {
       names.push_back(func->name);
     }
   }
   
-  [[nodiscard]] const ASTFuncDecl *getFunction(const string &name) const {
+  [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
     for (const auto &func: funcs) {
       if (func->name == name) {
         return func.get();

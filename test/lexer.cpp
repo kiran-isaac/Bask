@@ -30,9 +30,9 @@ TEST(Lexer, Keywords) {
   for (auto & i : expected) {
     auto token = lexer.next();
     if (!token.has_value()) {
-      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+      FAIL() << string("Expected token not found. Expected: ") << token_to_string(i);
     }
-    tokenToString((const KL_Token &) token);
+    token_to_string((const KL_Token &) token);
     ASSERT_EQ(token.value().type, i.type);
     ASSERT_EQ(token.value().value, i.value);
     ASSERT_EQ(token.value().line, i.line);
@@ -67,7 +67,7 @@ TEST(Lexer, Punctuation) {
   for (auto & i : expected) {
     auto token = lexer.next();
     if (!token.has_value()) {
-      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+      FAIL() << string("Expected token not found. Expected: ") << token_to_string(i);
     }
     ASSERT_EQ(token.value().type, i.type);
     ASSERT_EQ(token.value().value, i.value);
@@ -97,7 +97,7 @@ TEST(Lexer, Operators) {
   for (auto & i : expected) {
     auto token = lexer.next();
     if (!token.has_value()) {
-      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+      FAIL() << string("Expected token not found. Expected: ") << token_to_string(i);
     }
     ASSERT_EQ(token.value().type, i.type);
     ASSERT_EQ(token.value().value, i.value);
@@ -133,7 +133,7 @@ TEST(Lexer, Identifiers) {
   for (auto & i : expected) {
     auto token = lexer.next();
     if (!token.has_value()) {
-      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+      FAIL() << string("Expected token not found. Expected: ") << token_to_string(i);
     }
     ASSERT_EQ(token.value().type, i.type);
     ASSERT_EQ(token.value().value, i.value);
@@ -160,7 +160,7 @@ TEST(Lexer, CharLiterals) {
   for (auto & i : expected) {
     auto token = lexer.next();
     if (!token.has_value()) {
-      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+      FAIL() << string("Expected token not found. Expected: ") << token_to_string(i);
     }
     
     // Exception for \0 because it seems to do some weird in string literals. This still checks for

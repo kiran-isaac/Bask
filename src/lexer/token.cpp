@@ -4,11 +4,11 @@
 
 #include <tokens.h>
 
-string tokenToString(const KL_Token& token) {
-  return "TK:" + string(tokenTypeToString(token.type)) + " " + token.value + " [" + to_string(token.line) + ":" + to_string(token.col) + "]";
+string token_to_string(const KL_Token& token) {
+  return "TK:" + string(token_type_to_string(token.type)) + " " + token.value + " [" + to_string(token.line) + ":" + to_string(token.col) + "]";
 }
 
-const char* tokenTypeToString(KL_TokenType type)  {
+const char* token_type_to_string(KL_TokenType type)  {
   switch (type) {
     case KL_TT_Identifier:
       return "Identifier";

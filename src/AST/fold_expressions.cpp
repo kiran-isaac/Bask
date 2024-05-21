@@ -4,12 +4,12 @@
 
 #include <AST.h>
 
-unique_ptr<ASTExpr> ASTExpr::foldUnary(ASTExpr* expr) {
+unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr*) {
   auto unary = dynamic_cast<ASTExprUnary *>(expr);
   unary->expr = fold(unary->expr.get());
   
   // If it not a constant, return the expression as is
-  if (unary->expr->getAstType() != ASTNode::ASTNodeType::ExprValue) {
+  if (unary->expr->get_AST_type() != ASTNode::ASTNodeType::ExprValue) {
     return make_unique<ASTExprUnary>(unary->op, fold(unary->expr.get()), unary->line, unary->col);
   }
   
@@ -46,15 +46,15 @@ unique_ptr<ASTExpr> ASTExpr::foldUnary(ASTExpr* expr) {
 }
 
 unique_ptr<ASTExpr> ASTExpr::fold(ASTExpr *expr) {
-  if (expr->getAstType() == ASTNode::ASTNodeType::ExprValue) {
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprValue) {
     return make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(expr));
   }
   
-  if (expr->getAstType() == ASTNode::ASTNodeType::ExprIdentifier) {
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprIdentifier) {
     return make_unique<ASTExprIdentifier>(*dynamic_cast<ASTExprIdentifier *>(expr));
   }
   
-  if (expr->getAstType() == ASTNode::ASTNodeType::ExprFuncCall) {
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprFuncCall) {
     auto func_call = dynamic_cast<ASTExprFuncCall *>(expr);
     for (auto &arg: *func_call->args) {
       arg = fold(arg.get());
@@ -62,11 +62,11 @@ unique_ptr<ASTExpr> ASTExpr::fold(ASTExpr *expr) {
     return make_unique<ASTExprFuncCall>(func_call->name, std::move(func_call->args), func_call->line, func_call->col);
   }
   
-  if (expr->getAstType() == ASTNode::ASTNodeType::ExprUnary) {
-    return foldUnary(expr);
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprUnary) {
+    return fold_unary(expr);
   }
   
-  if (expr->getAstType() == ASTNode::ASTNodeType::ExprBinary) {
-    return foldBinary(expr);
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprBinary) {
+    return fold_binary(expr);
   }
 }

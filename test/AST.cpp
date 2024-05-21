@@ -19,13 +19,13 @@ TEST(ASTFolding, IntegerAdd) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  auto stmt1 = ast->getFunction("main")->getStatement(0);
+  auto stmt1 = ast->get_function("main")->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
   expr->print(0, cout);
   
-  ast->foldExpressions();
-  stmt1 = ast->getFunction("main")->getStatement(0);
+  ast->fold_expressions();
+  stmt1 = ast->get_function("main")->get_statement(0);
   decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
   expr->print(0, cout);
@@ -48,6 +48,6 @@ TEST(ASTFolding, String) {
   printf("Before folding:\n");
   ast->print(0, cout);
   
-  ast->foldExpressions();
+  ast->fold_expressions();
   ast->print(0, cout);
 }

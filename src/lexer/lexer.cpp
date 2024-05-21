@@ -6,23 +6,23 @@
 
 #define UNKNOWN_TOKEN_ERROR_LOCATION_SIZE 10
 
-void Lexer::refreshBuffer1() {
+void Lexer::refresh_buffer_1() {
   memset(buf1, EOF, 4096);
   fread(buf1, 1, 4096, file);
 }
 
-void Lexer::refreshBuffer2() {
+void Lexer::refresh_buffer_2() {
   memset(buf2, EOF, 4096);
   fread(buf2, 1, 4096, file);
 }
 
 void Lexer::advance() {
   if (c == buf1 + 4095) {
-    refreshBuffer2();
+    refresh_buffer_2();
     c = buf2;
     isBuffer1 = false;
   } else if (c == buf2 + 4095) {
-    refreshBuffer1();
+    refresh_buffer_1();
     c = buf1;
     isBuffer1 = true;
   } else {
@@ -38,7 +38,7 @@ Lexer::Lexer(const Options& options) {
     return;
   }
   
-  refreshBuffer1();
+  refresh_buffer_1();
   
   c = buf1;
   line = 1;
@@ -49,7 +49,7 @@ Lexer::Lexer(const Options& options) {
   pathway_found = false;
 }
 
-optional<KL_Token> Lexer::lexWord() {
+optional<KL_Token> Lexer::lex_word() {
   string word;
   word += *c;
   advance();
@@ -246,17 +246,17 @@ optional<KL_Token> Lexer::next() {
         return KL_Token{KL_TokenType::KL_TT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
       
       case '\'':
-        return lexCharLiteral();
+        return lex_char_literal();
       case '"':
-        return lexStringLiteral();
+        return lex_string_literal();
       
       case 'a'...'z':
       case 'A'...'Z':
       case '_':
-        return lexWord();
+        return lex_word();
         
       case '0'...'9':
-        return lexNumber();
+        return lex_number();
       
       default:
         return nullopt;

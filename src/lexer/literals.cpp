@@ -3,7 +3,7 @@
 //
 #include "lexer.h"
 
-std::optional<char> Lexer::lexEscapeChar() {
+std::optional<char> Lexer::let_escape_char() {
   int val = 0;
   int i = 0; // counter for octal escape sequences
   switch (*c) {
@@ -117,13 +117,13 @@ std::optional<char> Lexer::lexEscapeChar() {
   }
 }
 
-std::optional<KL_Token> Lexer::lexStringLiteral() {
+std::optional<KL_Token> Lexer::lex_string_literal() {
   advance();
   std::string str;
   while (*c != '"') {
     if (*c == '\\') {
       advance();
-      auto escapeChar = lexEscapeChar();
+      auto escapeChar = let_escape_char();
       if (escapeChar.has_value()) {
         str += escapeChar.value();
       } else {
@@ -138,12 +138,12 @@ std::optional<KL_Token> Lexer::lexStringLiteral() {
   return KL_Token{KL_TokenType::KL_TT_Literal_String, str, tokenStartLine, tokenStartCol};
 }
 
-std::optional<KL_Token> Lexer::lexCharLiteral() {
+std::optional<KL_Token> Lexer::lex_char_literal() {
   string charLiteralString = "";
   advance();
   if (*c == '\\') {
     advance();
-    auto escapeChar = lexEscapeChar();
+    auto escapeChar = let_escape_char();
     if (escapeChar.has_value()) {
       if (*c == '\'') {
         advance();
@@ -165,7 +165,7 @@ std::optional<KL_Token> Lexer::lexCharLiteral() {
   return std::nullopt;
 }
 
-std::optional<KL_Token> Lexer::lexNumber() {
+std::optional<KL_Token> Lexer::lex_number() {
   std::string num;
   while (isdigit(*c)) {
     num += *c;

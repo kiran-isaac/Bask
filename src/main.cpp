@@ -9,7 +9,7 @@ int main(int argc, const char **argv) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->foldExpressions();
+  ast->fold_expressions();
   ast->print(0, cout);
   
   return 0;

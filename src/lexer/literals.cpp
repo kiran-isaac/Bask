@@ -6,7 +6,6 @@
 std::optional<char> Lexer::lexEscapeChar() {
   int val = 0;
   int i = 0; // counter for octal escape sequences
-  advance();
   switch (*c) {
     case 'a':
       advance();

@@ -76,6 +76,9 @@ struct Token {
   unsigned int col;
 };
 
+int getOperatorPrecedence(KLTokenType type);
+bool isCommutative(KLTokenType op);
+
 const char *tokenTypeToString(KLTokenType type);
 
 string tokenToString(const Token& token);

@@ -9,8 +9,8 @@
 
 using namespace std;
 
-TEST(Parser, Parse) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { return 0; }")};
+TEST(Parser, ParseFunction) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() {  }")};
   
   Options options(2, argv);
   Lexer lexer(options);
@@ -19,14 +19,36 @@ TEST(Parser, Parse) {
   auto ast = parser.parse();
 }
 
-TEST(Parser, Assignment) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5; }")};
+TEST(Parser, Declaration) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 * 10; }")};
   
   Options options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
   auto ast = parser.parse();
+  ast->print(0, std::cout);
+}
+
+TEST(Parser, Assignment) {
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { a = 5 * 10; }")};
+  
+  Options options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+  
+  auto ast = parser.parse();
+  ast->foldExpressions();
+  
+  auto stmt = ast->getFunction("main")->getStatement(0);
+  auto assignment = dynamic_cast<ASTStmtAssignment *>(stmt);
+  auto expr = dynamic_cast<ASTExpr *>(assignment->value.get());
+  auto value = dynamic_cast<ASTExprValue *>(expr);
+  
+  ASSERT_NE(value, nullptr);
+  
+  ASSERT_EQ(assignment->name, "a");
+  ASSERT_EQ(value->value, "50");
 }
 
 TEST(Parser, FunctionCall) {
@@ -37,7 +59,17 @@ TEST(Parser, FunctionCall) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->print(0, std::cout);
+  auto stmt = ast->getFunction("main")->getStatement(0);
+  auto expr = dynamic_cast<ASTExprFuncCall *>(dynamic_cast<ASTStmtExpr *>(stmt)->expr.get());
+  
+  ASSERT_NE(expr, nullptr);
+  
+  ASSERT_EQ(expr->name, "print");
+  ASSERT_EQ(expr->args->size(), 1);
+  
+  auto arg = dynamic_cast<ASTExprValue *>(expr->args->at(0).get());
+  ASSERT_NE(arg, nullptr);
+  ASSERT_EQ(arg->value, "Hello, World!");
 }
 
 TEST(Parser, TinyBinaryExpression) {

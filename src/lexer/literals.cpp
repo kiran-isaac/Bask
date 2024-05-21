@@ -135,10 +135,11 @@ std::optional<Token> Lexer::lexStringLiteral() {
     }
   }
   advance();
-  return Token{KLTokenType::KLTT_Literal_String, str, line, col};
+  return Token{KLTokenType::KLTT_Literal_String, str, tokenStartLine, tokenStartCol};
 }
 
 std::optional<Token> Lexer::lexCharLiteral() {
+  string charLiteralString = "";
   advance();
   if (*c == '\\') {
     advance();
@@ -146,7 +147,8 @@ std::optional<Token> Lexer::lexCharLiteral() {
     if (escapeChar.has_value()) {
       if (*c == '\'') {
         advance();
-        return Token{KLTokenType::KLTT_Literal_Char, string(1, escapeChar.value()), line, col};
+        charLiteralString += escapeChar.value();
+        return Token{KLTokenType::KLTT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
       }
     }
   } else {
@@ -154,7 +156,8 @@ std::optional<Token> Lexer::lexCharLiteral() {
     advance();
     if (*c == '\'') {
       advance();
-      return Token{KLTokenType::KLTT_Literal_Char, string(1, escapeChar), line, col};
+      charLiteralString += escapeChar;
+      return Token{KLTokenType::KLTT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
     }
   }
   

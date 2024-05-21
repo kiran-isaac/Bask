@@ -18,19 +18,34 @@ TEST(ASTFolding, IntegerAdd) {
   Lexer lexer(options);
   Parser parser(lexer);
   
-  stringstream str;
-
   auto ast = parser.parse();
   auto stmt1 = ast->getFunction("main")->getStatement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  printf("Before folding:\n");
-  expr->print(0, str);
   
-  ast->foldExpr();
+  ast->foldExpressions();
   stmt1 = ast->getFunction("main")->getStatement(0);
   decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  printf("After folding:\n");
-  expr->print(0, str);
+}
+
+TEST(ASTFolding, String) {
+  string program =
+    R"(int main() {
+        string d = "Hello, " + "World!" + '\n';
+        string a = "Hello, " + "World!";
+        bool b = "Hello, " == "World!";
+        bool c = "Hello, " != "World!";
+    })";
+  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
+  
+  Options options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+  auto ast = parser.parse();
+  printf("Before folding:\n");
+  ast->print(0, cout);
+  
+  ast->foldExpressions();
+  ast->print(0, cout);
 }

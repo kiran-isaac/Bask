@@ -41,7 +41,7 @@ public:
   
   virtual ~ASTNode() = default;
   
-  virtual void foldExpr() {}
+  virtual void foldExpressions() {}
   
   [[nodiscard]] virtual ASTNodeType getAstType() const = 0;
   
@@ -233,7 +233,7 @@ public:
     return StmtExpr;
   }
   
-  void foldExpr() override {
+  void foldExpressions() override {
     expr = ASTExpr::fold(expr.get());
   }
   
@@ -258,7 +258,7 @@ public:
     return StmtAssignment;
   }
   
-  void foldExpr() override {
+  void foldExpressions() override {
     value = ASTExpr::fold(value.get());
   }
   
@@ -285,7 +285,7 @@ public:
     return StmtDecl;
   }
   
-  void foldExpr() override {
+  void foldExpressions() override {
     value = ASTExpr::fold(value.get());
   }
   
@@ -316,16 +316,15 @@ public:
     return FuncDecl;
   }
   
-  void foldExpr() override {
+  void foldExpressions() override {
     for (auto &stmt: body) {
-      stmt->foldExpr();
+      stmt->foldExpressions();
     }
   }
   
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Function: " << name << std::endl;
-    returnType->print(indent + 1, out);
+    out << type_to_string(returnType->type) << " function: " << name << std::endl;
     for (const auto &stmt: body) {
       stmt->print(indent + 1, out);
     }
@@ -349,9 +348,9 @@ public:
     return Program;
   }
   
-  void foldExpr() override {
+  void foldExpressions() override {
     for (auto &func: funcs) {
-      func->foldExpr();
+      func->foldExpressions();
     }
   }
   

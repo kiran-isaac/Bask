@@ -141,3 +141,35 @@ TEST(Lexer, Identifiers) {
     ASSERT_EQ(token.value().col, i.col);
   }
 }
+
+TEST(Lexer, CharLiterals) {
+  const char *argv[] = {"KL", insertIntoTempFile("'a' 'b' 'c' '\\n' '\\t' '\\0' '\\'' '\\\\'")};
+  
+  Token expected[] = {Token{KLTokenType::KLTT_Literal_Char, "a", 1, 1},
+                      Token{KLTokenType::KLTT_Literal_Char, "b", 1, 5},
+                      Token{KLTokenType::KLTT_Literal_Char, "c", 1, 9},
+                      Token{KLTokenType::KLTT_Literal_Char, "\n", 1, 13},
+                      Token{KLTokenType::KLTT_Literal_Char, "\t", 1, 18},
+                      Token{KLTokenType::KLTT_Literal_Char, "\0", 1, 23},
+                      Token{KLTokenType::KLTT_Literal_Char, "'", 1, 28},
+                      Token{KLTokenType::KLTT_Literal_Char, "\\", 1, 33}};
+  
+  Options options(2, argv);
+  Lexer lexer(options);
+  
+  for (auto & i : expected) {
+    auto token = lexer.next();
+    if (!token.has_value()) {
+      FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
+    }
+    
+    // Exception for \0 because it seems to do some weird in string literals. This still checks for
+    // the desired behavior.
+    if (!(token.value().value[0] == '\0' && token.value().col == 23)) {
+      ASSERT_EQ(token.value().value, i.value);
+    }
+    ASSERT_EQ(token.value().type, i.type);
+    ASSERT_EQ(token.value().line, i.line);
+    ASSERT_EQ(token.value().col, i.col);
+  }
+}

@@ -80,7 +80,6 @@ private:
   static unique_ptr<ASTExpr> foldBinary(ASTExpr *);
   
   static unique_ptr<ASTExpr> foldUnary(ASTExpr *);
-
 public:
   unsigned int line{};
   unsigned int col{};
@@ -163,11 +162,11 @@ class ASTExprBinary : public ASTExpr {
 public:
   unique_ptr<ASTExpr> lhs;
   unique_ptr<ASTExpr> rhs;
-  KLTokenType op;
+  KL_TokenType op;
   unsigned int line;
   unsigned int col;
   
-  ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KLTokenType op, unsigned int line, unsigned int col)
+  ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KL_TokenType op, unsigned int line, unsigned int col)
     : lhs(std::move(lhs)), rhs(std::move(rhs)), op(op), line(line), col(col) {}
   
   [[nodiscard]] ASTNodeType getAstType() const override {
@@ -189,13 +188,13 @@ public:
 class ASTExprUnary : public ASTExpr {
 public:
   unique_ptr<ASTExpr> expr;
-  KLTokenType op;
+  KL_TokenType op;
   unsigned int line;
   unsigned int col;
   
-  ASTExprUnary(KLTokenType op, unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
-                                                                                                op(op), line(line),
-                                                                                                col(col) {}
+  ASTExprUnary(KL_TokenType op, unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
+                                                                                                 op(op), line(line),
+                                                                                                 col(col) {}
   
   [[nodiscard]] ASTNodeType getAstType() const override {
     return ExprUnary;

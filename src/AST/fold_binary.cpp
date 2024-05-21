@@ -11,6 +11,9 @@ unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
   binary->rhs = fold(binary->rhs.get());
   
   // Optimisation: Extract as many constants as possible. At the moment expressions aren't re-arranged if the operator is commutative
+  if (binary->lhs->getAstType() != ASTNode::ASTNodeType::ExprValue || binary->rhs->getAstType() != ASTNode::ASTNodeType::ExprValue) {
+    return make_unique<ASTExprBinary>(std::move(binary->lhs), std::move(binary->rhs), binary->op, binary->line, binary->col);
+  }
   
   auto lhs = dynamic_cast<ASTExprValue *>(binary->lhs.get());
   auto rhs = dynamic_cast<ASTExprValue *>(binary->rhs.get());
@@ -37,11 +40,11 @@ unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
     }
     
     switch (binary->op) {
-      case KLTT_Operator_Add:
+      case KL_TT_Operator_Add:
         return make_unique<ASTExprValue>(v1->type, s1 + s2, v1->line, v1->col);
-      case KLTT_Operator_Equal:
+      case KL_TT_Operator_Equal:
         return make_unique<ASTExprValue>(BOOL_CONST, s1 == s2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_NotEqual:
+      case KL_TT_Operator_NotEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, s1 != s2 ? "true" : "false", v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in string expression");
@@ -69,27 +72,27 @@ unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
     }
     
     switch (binary->op) {
-      case KLTT_Operator_Add:
+      case KL_TT_Operator_Add:
         return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 + f2), v1->line, v1->col);
-      case KLTT_Operator_Sub:
+      case KL_TT_Operator_Sub:
         return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 - f2), v1->line, v1->col);
-      case KLTT_Operator_Mul:
+      case KL_TT_Operator_Mul:
         return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 * f2), v1->line, v1->col);
-      case KLTT_Operator_Div:
+      case KL_TT_Operator_Div:
         return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 / f2), v1->line, v1->col);
-      case KLTT_Operator_Mod:
+      case KL_TT_Operator_Mod:
         return make_unique<ASTExprValue>(FLOAT_CONST, to_string(fmod(f1, f2)), v1->line, v1->col);
-      case KLTT_Operator_Equal:
+      case KL_TT_Operator_Equal:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 == f2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_NotEqual:
+      case KL_TT_Operator_NotEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 != f2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_Less:
+      case KL_TT_Operator_Less:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 < f2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_LessEqual:
+      case KL_TT_Operator_LessEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 <= f2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_Greater:
+      case KL_TT_Operator_Greater:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 > f2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_GreaterEqual:
+      case KL_TT_Operator_GreaterEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, f1 >= f2 ? "true" : "false", v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in float expression");
@@ -115,37 +118,37 @@ unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
     }
     
     switch (binary->op) {
-      case KLTT_Operator_Add:
+      case KL_TT_Operator_Add:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 + i2), v1->line, v1->col);
-      case KLTT_Operator_Sub:
+      case KL_TT_Operator_Sub:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 - i2), v1->line, v1->col);
-      case KLTT_Operator_Mul:
+      case KL_TT_Operator_Mul:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 * i2), v1->line, v1->col);
-      case KLTT_Operator_Div:
+      case KL_TT_Operator_Div:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 / i2), v1->line, v1->col);
-      case KLTT_Operator_Mod:
+      case KL_TT_Operator_Mod:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 % i2), v1->line, v1->col);
-      case KLTT_Operator_Equal:
+      case KL_TT_Operator_Equal:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 == i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_NotEqual:
+      case KL_TT_Operator_NotEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 != i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_Less:
+      case KL_TT_Operator_Less:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 < i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_LessEqual:
+      case KL_TT_Operator_LessEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 <= i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_Greater:
+      case KL_TT_Operator_Greater:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 > i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_GreaterEqual:
+      case KL_TT_Operator_GreaterEqual:
         return make_unique<ASTExprValue>(BOOL_CONST, i1 >= i2 ? "true" : "false", v1->line, v1->col);
-      case KLTT_Operator_Shl:
+      case KL_TT_Operator_Shl:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 << i2), v1->line, v1->col);
-      case KLTT_Operator_Shr:
+      case KL_TT_Operator_Shr:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 >> i2), v1->line, v1->col);
-      case KLTT_Operator_BitwiseAnd:
+      case KL_TT_Operator_BitwiseAnd:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 & i2), v1->line, v1->col);
-      case KLTT_Operator_BitwiseOr:
+      case KL_TT_Operator_BitwiseOr:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 | i2), v1->line, v1->col);
-      case KLTT_Operator_BitwiseXor:
+      case KL_TT_Operator_BitwiseXor:
         return make_unique<ASTExprValue>(INT_CONST, to_string(i1 ^ i2), v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in int expression");

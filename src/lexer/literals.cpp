@@ -117,7 +117,7 @@ std::optional<char> Lexer::lexEscapeChar() {
   }
 }
 
-std::optional<Token> Lexer::lexStringLiteral() {
+std::optional<KL_Token> Lexer::lexStringLiteral() {
   advance();
   std::string str;
   while (*c != '"') {
@@ -135,10 +135,10 @@ std::optional<Token> Lexer::lexStringLiteral() {
     }
   }
   advance();
-  return Token{KLTokenType::KLTT_Literal_String, str, tokenStartLine, tokenStartCol};
+  return KL_Token{KL_TokenType::KL_TT_Literal_String, str, tokenStartLine, tokenStartCol};
 }
 
-std::optional<Token> Lexer::lexCharLiteral() {
+std::optional<KL_Token> Lexer::lexCharLiteral() {
   string charLiteralString = "";
   advance();
   if (*c == '\\') {
@@ -148,7 +148,7 @@ std::optional<Token> Lexer::lexCharLiteral() {
       if (*c == '\'') {
         advance();
         charLiteralString += escapeChar.value();
-        return Token{KLTokenType::KLTT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
       }
     }
   } else {
@@ -157,7 +157,7 @@ std::optional<Token> Lexer::lexCharLiteral() {
     if (*c == '\'') {
       advance();
       charLiteralString += escapeChar;
-      return Token{KLTokenType::KLTT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
     }
   }
   
@@ -165,7 +165,7 @@ std::optional<Token> Lexer::lexCharLiteral() {
   return std::nullopt;
 }
 
-std::optional<Token> Lexer::lexNumber() {
+std::optional<KL_Token> Lexer::lexNumber() {
   std::string num;
   while (isdigit(*c)) {
     num += *c;
@@ -179,8 +179,8 @@ std::optional<Token> Lexer::lexNumber() {
       num += *c;
       advance();
     }
-    return Token{KLTokenType::KLTT_Literal_Float, num, line, col};
+    return KL_Token{KL_TokenType::KL_TT_Literal_Float, num, line, col};
   }
   
-  return Token{KLTokenType::KLTT_Literal_Int, num, line, col};
+  return KL_Token{KL_TokenType::KL_TT_Literal_Int, num, line, col};
 }

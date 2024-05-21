@@ -14,12 +14,12 @@ class Parser {
 private:
   Lexer &lexer;
   
-  Token tk;
-  queue<Token> peekQueue;
+  KL_Token tk;
+  queue<KL_Token> peekQueue;
   
-  Token peek(int n);
+  KL_Token peek(int n);
   void nextToken();
-  void expect(KLTokenType type) const;
+  void expect(KL_TokenType type) const;
   
   static void parserError(const string &msg);
   

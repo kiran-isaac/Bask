@@ -10,77 +10,77 @@
 
 using namespace std;
 
-enum KLTokenType {
-  KLTT_Identifier,
-  KLTT_EndOfFile,
+enum KL_TokenType {
+  KL_TT_Identifier,
+  KL_TT_EndOfFile,
   
-  KLTT_Literal_Int,
-  KLTT_Literal_Float,
-  KLTT_Literal_String,
-  KLTT_Literal_Char,
-  KLTT_Literal_Bool,
+  KL_TT_Literal_Int,
+  KL_TT_Literal_Float,
+  KL_TT_Literal_String,
+  KL_TT_Literal_Char,
+  KL_TT_Literal_Bool,
   
-  KLTT_Punctuation_Comma,
-  KLTT_Punctuation_Semicolon,
-  KLTT_Punctuation_Colon,
-  KLTT_Punctuation_Dot,
-  KLTT_Punctuation_LParen,
-  KLTT_Punctuation_RParen,
-  KLTT_Punctuation_LBrace,
-  KLTT_Punctuation_RBrace,
-  KLTT_Punctuation_LBracket,
-  KLTT_Punctuation_RBracket,
+  KL_TT_Punctuation_Comma,
+  KL_TT_Punctuation_Semicolon,
+  KL_TT_Punctuation_Colon,
+  KL_TT_Punctuation_Dot,
+  KL_TT_Punctuation_LParen,
+  KL_TT_Punctuation_RParen,
+  KL_TT_Punctuation_LBrace,
+  KL_TT_Punctuation_RBrace,
+  KL_TT_Punctuation_LBracket,
+  KL_TT_Punctuation_RBracket,
   
-  KLTT_Operator_Add,
-  KLTT_Operator_Sub,
-  KLTT_Operator_Mul,
-  KLTT_Operator_Div,
-  KLTT_Operator_Mod,
-  KLTT_Operator_BitwiseAnd,
-  KLTT_Operator_BitwiseOr,
-  KLTT_Operator_BitwiseXor,
-  KLTT_Operator_BitwiseNot,
-  KLTT_Operator_LogicalAnd,
-  KLTT_Operator_LogicalOr,
-  KLTT_Operator_LogicalNot,
-  KLTT_Operator_Assign,
-  KLTT_Operator_Equal,
-  KLTT_Operator_NotEqual,
-  KLTT_Operator_Less,
-  KLTT_Operator_LessEqual,
-  KLTT_Operator_Greater,
-  KLTT_Operator_GreaterEqual,
-  KLTT_Operator_Shl,
-  KLTT_Operator_Shr,
+  KL_TT_Operator_Add,
+  KL_TT_Operator_Sub,
+  KL_TT_Operator_Mul,
+  KL_TT_Operator_Div,
+  KL_TT_Operator_Mod,
+  KL_TT_Operator_BitwiseAnd,
+  KL_TT_Operator_BitwiseOr,
+  KL_TT_Operator_BitwiseXor,
+  KL_TT_Operator_BitwiseNot,
+  KL_TT_Operator_LogicalAnd,
+  KL_TT_Operator_LogicalOr,
+  KL_TT_Operator_LogicalNot,
+  KL_TT_Operator_Assign,
+  KL_TT_Operator_Equal,
+  KL_TT_Operator_NotEqual,
+  KL_TT_Operator_Less,
+  KL_TT_Operator_LessEqual,
+  KL_TT_Operator_Greater,
+  KL_TT_Operator_GreaterEqual,
+  KL_TT_Operator_Shl,
+  KL_TT_Operator_Shr,
   
-  KLTT_KW_Int,
-  KLTT_KW_Float,
-  KLTT_KW_Char,
-  KLTT_KW_String,
-  KLTT_KW_Bool,
-  KLTT_KW_Const,
-  KLTT_KW_Void,
+  KL_TT_KW_Int,
+  KL_TT_KW_Float,
+  KL_TT_KW_Char,
+  KL_TT_KW_String,
+  KL_TT_KW_Bool,
+  KL_TT_KW_Const,
+  KL_TT_KW_Void,
   
-  KLTT_KW_If,
-  KLTT_KW_Else,
-  KLTT_KW_For,
-  KLTT_KW_While,
-  KLTT_KW_Break,
-  KLTT_KW_Return,
+  KL_TT_KW_If,
+  KL_TT_KW_Else,
+  KL_TT_KW_For,
+  KL_TT_KW_While,
+  KL_TT_KW_Break,
+  KL_TT_KW_Return,
 };
 
-struct Token {
-  KLTokenType type;
+struct KL_Token {
+  KL_TokenType type;
   string value;
   unsigned int line;
   unsigned int col;
 };
 
-int getOperatorPrecedence(KLTokenType type);
-bool isCommutative(KLTokenType op);
+int getOperatorPrecedence(KL_TokenType type);
+bool isCommutative(KL_TokenType op);
 
-const char *tokenTypeToString(KLTokenType type);
+const char *tokenTypeToString(KL_TokenType type);
 
-string tokenToString(const Token& token);
+string tokenToString(const KL_Token& token);
 
 #endif //KL_TOKENS_H

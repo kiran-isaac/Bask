@@ -17,9 +17,9 @@ unique_ptr<ASTExpr> ASTExpr::foldUnary(ASTExpr* expr) {
   if (value->type.primitive == KL_INT) {
     int val = stoi(value->value);
     switch (unary->op) {
-      case KLTT_Operator_Sub:
+      case KL_TT_Operator_Sub:
         return make_unique<ASTExprValue>(value->type, to_string(-val), value->line, value->col);
-      case KLTT_Operator_BitwiseNot:
+      case KL_TT_Operator_BitwiseNot:
         return make_unique<ASTExprValue>(value->type, to_string(!val), value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for int value");
@@ -27,7 +27,7 @@ unique_ptr<ASTExpr> ASTExpr::foldUnary(ASTExpr* expr) {
   } else if (value->type.primitive == KL_FLOAT) {
     float val = stof(value->value);
     switch (unary->op) {
-      case KLTT_Operator_Sub:
+      case KL_TT_Operator_Sub:
         return make_unique<ASTExprValue>(value->type, to_string(-val), value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for float value");
@@ -35,7 +35,7 @@ unique_ptr<ASTExpr> ASTExpr::foldUnary(ASTExpr* expr) {
   } else if (value->type.primitive == KL_BOOL) {
     bool val = value->value == "true";
     switch (unary->op) {
-      case KLTT_Operator_LogicalNot:
+      case KL_TT_Operator_LogicalNot:
         return make_unique<ASTExprValue>(value->type, val ? "false" : "true", value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for boolean value");

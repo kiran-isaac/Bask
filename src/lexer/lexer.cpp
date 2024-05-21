@@ -49,7 +49,7 @@ Lexer::Lexer(const Options& options) {
   pathway_found = false;
 }
 
-optional<Token> Lexer::lexWord() {
+optional<KL_Token> Lexer::lexWord() {
   string word;
   word += *c;
   advance();
@@ -62,72 +62,72 @@ optional<Token> Lexer::lexWord() {
   switch (word[0]) {
     case 'b':
       if (word == "break") {
-        return Token{KLTokenType::KLTT_KW_Break, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Break, word, tokenStartLine, tokenStartCol};
       } else if (word == "bool") {
-        return Token{KLTokenType::KLTT_KW_Bool, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'c':
       if (word == "char") {
-        return Token{KLTokenType::KLTT_KW_Char, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Char, word, tokenStartLine, tokenStartCol};
       } else if (word == "const") {
-        return Token{KLTokenType::KLTT_KW_Const, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Const, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'e':
       if (word == "else") {
-        return Token{KLTokenType::KLTT_KW_Else, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Else, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'f':
       if (word == "for") {
-        return Token{KLTokenType::KLTT_KW_For, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_For, word, tokenStartLine, tokenStartCol};
       } else if (word == "float") {
-        return Token{KLTokenType::KLTT_KW_Float, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Float, word, tokenStartLine, tokenStartCol};
       } else if (word == "false") {
-        return Token{KLTokenType::KLTT_Literal_Bool, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'i':
       if (word == "if") {
-        return Token{KLTokenType::KLTT_KW_If, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_If, word, tokenStartLine, tokenStartCol};
       } else if (word == "int") {
-        return Token{KLTokenType::KLTT_KW_Int, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Int, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'r':
       if (word == "return") {
-        return Token{KLTokenType::KLTT_KW_Return, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Return, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 's':
       if (word == "string") {
-        return Token{KLTokenType::KLTT_KW_String, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_String, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 't':
       if (word == "true") {
-        return Token{KLTokenType::KLTT_Literal_Bool, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'v':
       if (word == "void") {
-        return Token{KLTokenType::KLTT_KW_Void, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_Void, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'w':
       if (word == "while") {
-        return Token{KLTokenType::KLTT_KW_While, word, tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_KW_While, word, tokenStartLine, tokenStartCol};
       }
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
     default:
-      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
   }
   
   return nullopt;
 }
 
-optional<Token> Lexer::next() {
+optional<KL_Token> Lexer::next() {
   while (true) {
     tokenStartCol = col;
     tokenStartLine = line;
@@ -141,109 +141,109 @@ optional<Token> Lexer::next() {
         continue;
         
       case EOF:
-        return Token{KLTokenType::KLTT_EndOfFile, "", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_EndOfFile, "", tokenStartLine, tokenStartCol};
       
       case ',':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_Comma, ",", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_Comma, ",", tokenStartLine, tokenStartCol};
       case ';':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_Semicolon, ";", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_Semicolon, ";", tokenStartLine, tokenStartCol};
       case ':':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_Colon, ":", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_Colon, ":", tokenStartLine, tokenStartCol};
       case '.':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_Dot, ".", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_Dot, ".", tokenStartLine, tokenStartCol};
       case '(':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_LParen, "(", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_LParen, "(", tokenStartLine, tokenStartCol};
       case ')':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_RParen, ")", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_RParen, ")", tokenStartLine, tokenStartCol};
       case '{':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_LBrace, "{", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_LBrace, "{", tokenStartLine, tokenStartCol};
       case '}':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_RBrace, "}", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_RBrace, "}", tokenStartLine, tokenStartCol};
       case '[':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_LBracket, "[", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_LBracket, "[", tokenStartLine, tokenStartCol};
       case ']':
         advance();
-        return Token{KLTokenType::KLTT_Punctuation_RBracket, "]", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Punctuation_RBracket, "]", tokenStartLine, tokenStartCol};
       
       case '+':
         advance();
-        return Token{KLTokenType::KLTT_Operator_Add, "+", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Add, "+", tokenStartLine, tokenStartCol};
       case '-':
         advance();
-        return Token{KLTokenType::KLTT_Operator_Sub, "-", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Sub, "-", tokenStartLine, tokenStartCol};
       case '*':
         advance();
-        return Token{KLTokenType::KLTT_Operator_Mul, "*", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Mul, "*", tokenStartLine, tokenStartCol};
       case '/':
         advance();
-        return Token{KLTokenType::KLTT_Operator_Div, "/", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Div, "/", tokenStartLine, tokenStartCol};
       case '%':
         advance();
-        return Token{KLTokenType::KLTT_Operator_Mod, "%", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Mod, "%", tokenStartLine, tokenStartCol};
       case '&':
         advance();
         if (*c == '&') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_LogicalAnd, "&&", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_LogicalAnd, "&&", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_BitwiseAnd, "&", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseAnd, "&", tokenStartLine, tokenStartCol};
       case '|':
         advance();
         if (*c == '|') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_LogicalOr, "||", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_LogicalOr, "||", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_BitwiseOr, "|", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseOr, "|", tokenStartLine, tokenStartCol};
       case '^':
         advance();
-        return Token{KLTokenType::KLTT_Operator_BitwiseXor, "^", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseXor, "^", tokenStartLine, tokenStartCol};
       case '~':
         advance();
-        return Token{KLTokenType::KLTT_Operator_BitwiseNot, "~", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseNot, "~", tokenStartLine, tokenStartCol};
       case '!':
         advance();
         if (*c == '=') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_NotEqual, "!=", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_NotEqual, "!=", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_LogicalNot, "!", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_LogicalNot, "!", tokenStartLine, tokenStartCol};
       case '=':
         advance();
         if (*c == '=') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_Equal, "==", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_Equal, "==", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_Assign, "=", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Assign, "=", tokenStartLine, tokenStartCol};
       case '<':
         advance();
         if (*c == '=') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_LessEqual, "<=", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_LessEqual, "<=", tokenStartLine, tokenStartCol};
         } else if (*c == '<') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_Shl, "<<", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_Shl, "<<", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_Less, "<", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Less, "<", tokenStartLine, tokenStartCol};
         
       case '>':
         advance();
         if (*c == '=') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_GreaterEqual, ">=", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_GreaterEqual, ">=", tokenStartLine, tokenStartCol};
         } else if (*c == '>') {
           advance();
-          return Token{KLTokenType::KLTT_Operator_Shr, ">>", tokenStartLine, tokenStartCol};
+          return KL_Token{KL_TokenType::KL_TT_Operator_Shr, ">>", tokenStartLine, tokenStartCol};
         }
-        return Token{KLTokenType::KLTT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
+        return KL_Token{KL_TokenType::KL_TT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
       
       case '\'':
         return lexCharLiteral();

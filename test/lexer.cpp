@@ -13,16 +13,16 @@ TEST(Lexer, Keywords) {
   const char* argv[] = {"KL", insertIntoTempFile("if else\n"
                                                  " while for return\n"
                                                  " const int float char bool")};
-  Token expected[] = {Token{KLTokenType::KLTT_KW_If, "if", 1, 1},
-                      Token{KLTokenType::KLTT_KW_Else, "else", 1, 4},
-                      Token{KLTokenType::KLTT_KW_While, "while", 2, 2},
-                      Token{KLTokenType::KLTT_KW_For, "for", 2, 8},
-                      Token{KLTokenType::KLTT_KW_Return, "return", 2, 12},
-                      Token{KLTokenType::KLTT_KW_Const, "const", 3, 2},
-                      Token{KLTokenType::KLTT_KW_Int, "int", 3, 8},
-                      Token{KLTokenType::KLTT_KW_Float, "float", 3, 12},
-                      Token{KLTokenType::KLTT_KW_Char, "char", 3, 18},
-                      Token{KLTokenType::KLTT_KW_Bool, "bool", 3, 23}};
+  KL_Token expected[] = {KL_Token{KL_TokenType::KL_TT_KW_If, "if", 1, 1},
+                         KL_Token{KL_TokenType::KL_TT_KW_Else, "else", 1, 4},
+                         KL_Token{KL_TokenType::KL_TT_KW_While, "while", 2, 2},
+                         KL_Token{KL_TokenType::KL_TT_KW_For, "for", 2, 8},
+                         KL_Token{KL_TokenType::KL_TT_KW_Return, "return", 2, 12},
+                         KL_Token{KL_TokenType::KL_TT_KW_Const, "const", 3, 2},
+                         KL_Token{KL_TokenType::KL_TT_KW_Int, "int", 3, 8},
+                         KL_Token{KL_TokenType::KL_TT_KW_Float, "float", 3, 12},
+                         KL_Token{KL_TokenType::KL_TT_KW_Char, "char", 3, 18},
+                         KL_Token{KL_TokenType::KL_TT_KW_Bool, "bool", 3, 23}};
   
   Options options(2, argv);
   Lexer lexer(options);
@@ -32,7 +32,7 @@ TEST(Lexer, Keywords) {
     if (!token.has_value()) {
       FAIL() << string("Expected token not found. Expected: ") << tokenToString(i);
     }
-    tokenToString((const Token &) token);
+    tokenToString((const KL_Token &) token);
     ASSERT_EQ(token.value().type, i.type);
     ASSERT_EQ(token.value().value, i.value);
     ASSERT_EQ(token.value().line, i.line);
@@ -42,24 +42,24 @@ TEST(Lexer, Keywords) {
 
 TEST(Lexer, Punctuation) {
   const char* argv[] = {"KL", insertIntoTempFile("(){}[];.,= == != < <= > >= << >>")};
-  Token expected[] = {Token{KLTokenType::KLTT_Punctuation_LParen, "(", 1, 1},
-                      Token{KLTokenType::KLTT_Punctuation_RParen, ")", 1, 2},
-                      Token{KLTokenType::KLTT_Punctuation_LBrace, "{", 1, 3},
-                      Token{KLTokenType::KLTT_Punctuation_RBrace, "}", 1, 4},
-                      Token{KLTokenType::KLTT_Punctuation_LBracket, "[", 1, 5},
-                      Token{KLTokenType::KLTT_Punctuation_RBracket, "]", 1, 6},
-                      Token{KLTokenType::KLTT_Punctuation_Semicolon, ";", 1, 7},
-                      Token{KLTokenType::KLTT_Punctuation_Dot, ".", 1, 8},
-                      Token{KLTokenType::KLTT_Punctuation_Comma, ",", 1, 9},
-                      Token{KLTokenType::KLTT_Operator_Assign, "=", 1, 10},
-                      Token{KLTokenType::KLTT_Operator_Equal, "==", 1, 12},
-                      Token{KLTokenType::KLTT_Operator_NotEqual, "!=", 1, 15},
-                      Token{KLTokenType::KLTT_Operator_Less, "<", 1, 18},
-                      Token{KLTokenType::KLTT_Operator_LessEqual, "<=", 1, 20},
-                      Token{KLTokenType::KLTT_Operator_Greater, ">", 1, 23},
-                      Token{KLTokenType::KLTT_Operator_GreaterEqual, ">=", 1, 25},
-                      Token{KLTokenType::KLTT_Operator_Shl, "<<", 1, 28},
-                      Token{KLTokenType::KLTT_Operator_Shr, ">>", 1, 31}};
+  KL_Token expected[] = {KL_Token{KL_TokenType::KL_TT_Punctuation_LParen, "(", 1, 1},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_RParen, ")", 1, 2},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_LBrace, "{", 1, 3},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_RBrace, "}", 1, 4},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_LBracket, "[", 1, 5},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_RBracket, "]", 1, 6},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_Semicolon, ";", 1, 7},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_Dot, ".", 1, 8},
+                         KL_Token{KL_TokenType::KL_TT_Punctuation_Comma, ",", 1, 9},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Assign, "=", 1, 10},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Equal, "==", 1, 12},
+                         KL_Token{KL_TokenType::KL_TT_Operator_NotEqual, "!=", 1, 15},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Less, "<", 1, 18},
+                         KL_Token{KL_TokenType::KL_TT_Operator_LessEqual, "<=", 1, 20},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Greater, ">", 1, 23},
+                         KL_Token{KL_TokenType::KL_TT_Operator_GreaterEqual, ">=", 1, 25},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Shl, "<<", 1, 28},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Shr, ">>", 1, 31}};
   
   Options options(2, argv);
   Lexer lexer(options);
@@ -78,18 +78,18 @@ TEST(Lexer, Punctuation) {
 
 TEST(Lexer, Operators) {
   const char* argv[] = {"KL", insertIntoTempFile("+-*/%&|!^=&&||")};
-  Token expected[] = {Token{KLTokenType::KLTT_Operator_Add, "+", 1, 1},
-                      Token{KLTokenType::KLTT_Operator_Sub, "-", 1, 2},
-                      Token{KLTokenType::KLTT_Operator_Mul, "*", 1, 3},
-                      Token{KLTokenType::KLTT_Operator_Div, "/", 1, 4},
-                      Token{KLTokenType::KLTT_Operator_Mod, "%", 1, 5},
-                      Token{KLTokenType::KLTT_Operator_BitwiseAnd, "&", 1, 6},
-                      Token{KLTokenType::KLTT_Operator_BitwiseOr, "|", 1, 7},
-                      Token{KLTokenType::KLTT_Operator_LogicalNot, "!", 1, 8},
-                      Token{KLTokenType::KLTT_Operator_BitwiseXor, "^", 1, 9},
-                      Token{KLTokenType::KLTT_Operator_Assign, "=", 1, 10},
-                      Token{KLTokenType::KLTT_Operator_LogicalAnd, "&&", 1, 11},
-                      Token{KLTokenType::KLTT_Operator_LogicalOr, "||", 1, 13}};
+  KL_Token expected[] = {KL_Token{KL_TokenType::KL_TT_Operator_Add, "+", 1, 1},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Sub, "-", 1, 2},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Mul, "*", 1, 3},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Div, "/", 1, 4},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Mod, "%", 1, 5},
+                         KL_Token{KL_TokenType::KL_TT_Operator_BitwiseAnd, "&", 1, 6},
+                         KL_Token{KL_TokenType::KL_TT_Operator_BitwiseOr, "|", 1, 7},
+                         KL_Token{KL_TokenType::KL_TT_Operator_LogicalNot, "!", 1, 8},
+                         KL_Token{KL_TokenType::KL_TT_Operator_BitwiseXor, "^", 1, 9},
+                         KL_Token{KL_TokenType::KL_TT_Operator_Assign, "=", 1, 10},
+                         KL_Token{KL_TokenType::KL_TT_Operator_LogicalAnd, "&&", 1, 11},
+                         KL_Token{KL_TokenType::KL_TT_Operator_LogicalOr, "||", 1, 13}};
   
   Options options(2, argv);
   Lexer lexer(options);
@@ -112,20 +112,20 @@ TEST(Lexer, Identifiers) {
                                                  "_ __ ___ _a _1 _a1 _1a\n"
                                                  "longer_identifier")};
   
-  Token expected[] = {Token{KLTokenType::KLTT_Identifier, "a", 1, 1},
-                      Token{KLTokenType::KLTT_Identifier, "b", 1, 3},
-                      Token{KLTokenType::KLTT_Identifier, "c", 1, 5},
-                      Token{KLTokenType::KLTT_Identifier, "A", 2, 1},
-                      Token{KLTokenType::KLTT_Identifier, "B", 2, 3},
-                      Token{KLTokenType::KLTT_Identifier, "C", 2, 5},
-                      Token{KLTokenType::KLTT_Identifier, "_", 3, 1},
-                      Token{KLTokenType::KLTT_Identifier, "__", 3, 3},
-                      Token{KLTokenType::KLTT_Identifier, "___", 3, 6},
-                      Token{KLTokenType::KLTT_Identifier, "_a", 3, 10},
-                      Token{KLTokenType::KLTT_Identifier, "_1", 3, 13},
-                      Token{KLTokenType::KLTT_Identifier, "_a1", 3, 16},
-                      Token{KLTokenType::KLTT_Identifier, "_1a", 3, 20},
-                      Token{KLTokenType::KLTT_Identifier, "longer_identifier", 4, 1}};
+  KL_Token expected[] = {KL_Token{KL_TokenType::KL_TT_Identifier, "a", 1, 1},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "b", 1, 3},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "c", 1, 5},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "A", 2, 1},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "B", 2, 3},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "C", 2, 5},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "_", 3, 1},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "__", 3, 3},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "___", 3, 6},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "_a", 3, 10},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "_1", 3, 13},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "_a1", 3, 16},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "_1a", 3, 20},
+                         KL_Token{KL_TokenType::KL_TT_Identifier, "longer_identifier", 4, 1}};
   
   Options options(2, argv);
   Lexer lexer(options);
@@ -145,14 +145,14 @@ TEST(Lexer, Identifiers) {
 TEST(Lexer, CharLiterals) {
   const char *argv[] = {"KL", insertIntoTempFile("'a' 'b' 'c' '\\n' '\\t' '\\0' '\\'' '\\\\'")};
   
-  Token expected[] = {Token{KLTokenType::KLTT_Literal_Char, "a", 1, 1},
-                      Token{KLTokenType::KLTT_Literal_Char, "b", 1, 5},
-                      Token{KLTokenType::KLTT_Literal_Char, "c", 1, 9},
-                      Token{KLTokenType::KLTT_Literal_Char, "\n", 1, 13},
-                      Token{KLTokenType::KLTT_Literal_Char, "\t", 1, 18},
-                      Token{KLTokenType::KLTT_Literal_Char, "\0", 1, 23},
-                      Token{KLTokenType::KLTT_Literal_Char, "'", 1, 28},
-                      Token{KLTokenType::KLTT_Literal_Char, "\\", 1, 33}};
+  KL_Token expected[] = {KL_Token{KL_TokenType::KL_TT_Literal_Char, "a", 1, 1},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "b", 1, 5},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "c", 1, 9},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "\n", 1, 13},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "\t", 1, 18},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "\0", 1, 23},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "'", 1, 28},
+                         KL_Token{KL_TokenType::KL_TT_Literal_Char, "\\", 1, 33}};
   
   Options options(2, argv);
   Lexer lexer(options);

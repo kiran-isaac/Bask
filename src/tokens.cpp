@@ -4,46 +4,46 @@
 
 #include <tokens.h>
 
-int getOperatorPrecedence(KLTokenType type) {
+int getOperatorPrecedence(KL_TokenType type) {
   switch (type) {
-    case KLTT_Operator_Assign:
+    case KL_TT_Operator_Assign:
       return 1;
-    case KLTT_Operator_LogicalOr:
+    case KL_TT_Operator_LogicalOr:
       return 2;
-    case KLTT_Operator_LogicalAnd:
+    case KL_TT_Operator_LogicalAnd:
       return 3;
-    case KLTT_Operator_BitwiseOr:
+    case KL_TT_Operator_BitwiseOr:
       return 4;
-    case KLTT_Operator_BitwiseXor:
+    case KL_TT_Operator_BitwiseXor:
       return 5;
-    case KLTT_Operator_BitwiseAnd:
+    case KL_TT_Operator_BitwiseAnd:
       return 6;
-    case KLTT_Operator_Equal:
-    case KLTT_Operator_NotEqual:
+    case KL_TT_Operator_Equal:
+    case KL_TT_Operator_NotEqual:
       return 7;
-    case KLTT_Operator_Less:
-    case KLTT_Operator_LessEqual:
-    case KLTT_Operator_Greater:
-    case KLTT_Operator_GreaterEqual:
+    case KL_TT_Operator_Less:
+    case KL_TT_Operator_LessEqual:
+    case KL_TT_Operator_Greater:
+    case KL_TT_Operator_GreaterEqual:
       return 8;
-    case KLTT_Operator_Shl:
-    case KLTT_Operator_Shr:
+    case KL_TT_Operator_Shl:
+    case KL_TT_Operator_Shr:
       return 9;
-    case KLTT_Operator_Add:
-    case KLTT_Operator_Sub:
+    case KL_TT_Operator_Add:
+    case KL_TT_Operator_Sub:
       return 10;
-    case KLTT_Operator_Mul:
-    case KLTT_Operator_Div:
-    case KLTT_Operator_Mod:
+    case KL_TT_Operator_Mul:
+    case KL_TT_Operator_Div:
+    case KL_TT_Operator_Mod:
       return 11;
-    case KLTT_Operator_BitwiseNot:
-    case KLTT_Operator_LogicalNot:
+    case KL_TT_Operator_BitwiseNot:
+    case KL_TT_Operator_LogicalNot:
       return 12;
     default:
       return -1;
   }
 }
 
-bool isCommutative(KLTokenType op) {
-  return op == KLTT_Operator_Add || op == KLTT_Operator_Mul || op == KLTT_Operator_Equal || op == KLTT_Operator_NotEqual;
+bool isCommutative(KL_TokenType op) {
+  return op == KL_TT_Operator_Add || op == KL_TT_Operator_Mul || op == KL_TT_Operator_Equal || op == KL_TT_Operator_NotEqual;
 }

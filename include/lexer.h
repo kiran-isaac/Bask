@@ -21,7 +21,7 @@ public:
   
   string lexerError;
   
-  optional<Token> next();
+  optional<KL_Token> next();
 private:
   FILE *file{};
   
@@ -45,10 +45,10 @@ private:
   
   void advance();
   
-  optional<Token> lexWord();
-  optional<Token> lexNumber();
-  optional<Token> lexStringLiteral();
-  optional<Token> lexCharLiteral();
+  optional<KL_Token> lexWord();
+  optional<KL_Token> lexNumber();
+  optional<KL_Token> lexStringLiteral();
+  optional<KL_Token> lexCharLiteral();
   optional<char> lexEscapeChar();
 };
 

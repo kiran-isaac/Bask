@@ -40,7 +40,7 @@ TEST(Parser, Assignment) {
   auto ast = parser.parse();
   ast->fold_expressions();
   
-  auto stmt = ast->get_function("main")->get_statement(0);
+  auto stmt = ast->get_function("main")->body->get_statement(0);
   auto assignment = dynamic_cast<ASTStmtAssignment *>(stmt);
   auto expr = dynamic_cast<ASTExpr *>(assignment->value.get());
   auto value = dynamic_cast<ASTExprValue *>(expr);
@@ -59,7 +59,7 @@ TEST(Parser, FunctionCall) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  auto stmt = ast->get_function("main")->get_statement(0);
+  auto stmt = ast->get_function("main")->body->get_statement(0);
   auto expr = dynamic_cast<ASTExprFuncCall *>(dynamic_cast<ASTStmtExpr *>(stmt)->expr.get());
   
   ASSERT_NE(expr, nullptr);
@@ -101,6 +101,6 @@ TEST(Parser, BinaryExpression2) {
   Parser parser(lexer);
   
   unique_ptr<ASTProgram> ast = parser.parse();
-  ast->get_function("main")->get_statement(0)->print(0, std::cout);
+  ast->get_function("main")->body->get_statement(0)->print(0, std::cout);
 }
 

@@ -2,10 +2,10 @@
 // Created by kiran on 5/21/24.
 //
 
-#include <AST.h>
+#include "AST/AST.h"
 #include <cmath>
 
-unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *) {
+unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
   auto binary = dynamic_cast<ASTExprBinary *>(expr);
   binary->lhs = fold(binary->lhs.get());
   binary->rhs = fold(binary->rhs.get());

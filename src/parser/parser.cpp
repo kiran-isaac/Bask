@@ -100,6 +100,20 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
   return make_unique<ASTType>(type, line, col);
 }
 
+unique_ptr<ASTBlock> Parser::parse_block() {
+  expect(KL_TT_Punctuation_LBrace);
+  nextToken();
+  
+  vector<unique_ptr<ASTStmt>> body;
+  while (tk.type != KL_TT_Punctuation_RBrace) {
+    body.push_back(parse_statement());
+  }
+  
+  nextToken();
+  
+  return make_unique<ASTBlock>(std::move(body), tk.line, tk.col);
+}
+
 unique_ptr<ASTFuncDecl> Parser::parse_function() {
   unique_ptr<ASTType> return_type = parse_type_annotation();
   unsigned int line = tk.line;
@@ -114,20 +128,23 @@ unique_ptr<ASTFuncDecl> Parser::parse_function() {
   
   expect(KL_TT_Punctuation_LParen);
   nextToken();
-  expect(KL_TT_Punctuation_RParen);
-  nextToken();
   
-  expect(KL_TT_Punctuation_LBrace);
-  nextToken();
+  vector<unique_ptr<ASTType>> arg_types;
+  vector<string> arg_names;
   
-  vector<unique_ptr<ASTStmt>> body;
-  while (tk.type != KL_TT_Punctuation_RBrace) {
-    body.push_back(parse_statement());
+  while (tk.type != KL_TT_Punctuation_RParen) {
+    arg_types.push_back(parse_type_annotation());
+    expect(KL_TT_Identifier);
+    arg_names.push_back(tk.value);
+    nextToken();
+    if (tk.type == KL_TT_Punctuation_Comma) {
+      nextToken();
+    }
   }
   
   nextToken();
   
-  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(body), line, col);
+  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(arg_types), std::move(arg_names), std::move(parse_block()), line, col);
 }
 
 unique_ptr<ASTProgram> Parser::parse() {

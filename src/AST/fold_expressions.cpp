@@ -2,9 +2,11 @@
 // Created by kiran on 5/21/24.
 //
 
-#include <AST.h>
+#include "AST/AST.h"
+#include "AST/AST_Expressions.h"
 
-unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr*) {
+
+unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
   auto unary = dynamic_cast<ASTExprUnary *>(expr);
   unary->expr = fold(unary->expr.get());
   

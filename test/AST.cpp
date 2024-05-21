@@ -2,7 +2,7 @@
 // Created by kiran on 5/21/24.
 //
 
-#include <AST.h>
+#include "AST/AST.h"
 #include <gtest/gtest.h>
 #include <memory>
 #include <parser.h>
@@ -12,20 +12,20 @@
 using namespace std;
 
 TEST(ASTFolding, IntegerAdd) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = a + 10 + 10; }")};
+  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = a + print(10 + 11); }")};
   
   Options options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  auto stmt1 = ast->get_function("main")->get_statement(0);
+  auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
   expr->print(0, cout);
   
   ast->fold_expressions();
-  stmt1 = ast->get_function("main")->get_statement(0);
+  stmt1 = ast->get_function("main")->body->get_statement(0);
   decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
   expr->print(0, cout);

@@ -5,7 +5,7 @@
 #ifndef KL_PARSER_H
 #define KL_PARSER_H
 
-#include <AST.h>
+#include "AST/AST.h"
 #include <lexer.h>
 #include <types.h>
 #include <queue>
@@ -26,6 +26,7 @@ private:
   // program
   unique_ptr<ASTFuncDecl> parse_function();
   unique_ptr<ASTType> parse_type_annotation();
+  unique_ptr<ASTBlock> parse_block();
   
   // statements
   unique_ptr<ASTStmt> parse_statement();

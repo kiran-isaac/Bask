@@ -19,7 +19,7 @@ unique_ptr<ASTStmtDecl> Parser::parseDeclaration() {
   nextToken();
   expect(KLTT_Operator_Assign);
   nextToken();
-  auto value = parseExpression();
+  auto value= parseExpression();
   
   expect(KLTT_Punctuation_Semicolon);
   nextToken();

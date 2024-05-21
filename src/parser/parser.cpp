@@ -103,8 +103,6 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
     parserError("Expected identifier");
   }
   
-  peek(2);
-  
   string name = tk.value;
   nextToken();
   
@@ -126,7 +124,12 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
   return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(body));
 }
 
-unique_ptr<ASTNode> Parser::parse() {
-  nextToken();
-  return parseFunction();
+unique_ptr<ASTProgram> Parser::parse() {
+  vector<unique_ptr<ASTFuncDecl>> functions;
+  
+  while (tk.type != KLTT_EndOfFile) {
+    functions.push_back(parseFunction());
+  }
+  
+  return make_unique<ASTProgram>(std::move(functions));
 }

@@ -51,3 +51,5 @@ add_executable(KLTest ${TEST_SOURCES} ${INCLUDES})
 target_link_libraries(KLTest GTest::gtest_main)
 # Link against LLVM libraries
 target_link_libraries(KLTest LLVM)
+
+target_compile_definitions(KLTest PRIVATE KL_DEBUG)

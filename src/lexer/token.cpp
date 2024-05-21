@@ -14,6 +14,7 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "Identifier";
     case KLTT_EndOfFile:
       return "EndOfFile";
+      
     case KLTT_Literal_Int:
       return "Literal_Integer";
     case KLTT_Literal_Float:
@@ -24,6 +25,7 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "Literal_Char";
     case KLTT_Literal_Bool:
       return "Literal_Bool";
+      
     case KLTT_Punctuation_Comma:
       return "Punctuation_Comma";
     case KLTT_Punctuation_Semicolon:
@@ -44,6 +46,7 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "Punctuation_LBracket";
     case KLTT_Punctuation_RBracket:
       return "Punctuation_RBracket";
+      
     case KLTT_Operator_Add:
       return "Operator_Add";
     case KLTT_Operator_Sub:
@@ -70,6 +73,23 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "Operator_LogicalNot";
     case KLTT_Operator_Assign:
       return "Operator_Assign";
+    case KLTT_Operator_Equal:
+      return "Operator_Equal";
+    case KLTT_Operator_NotEqual:
+      return "Operator_NotEqual";
+    case KLTT_Operator_Less:
+      return "Operator_Less";
+    case KLTT_Operator_LessEqual:
+      return "Operator_LessEqual";
+    case KLTT_Operator_Greater:
+      return "Operator_Greater";
+    case KLTT_Operator_GreaterEqual:
+      return "Operator_GreaterEqual";
+    case KLTT_Operator_Shl:
+      return "Operator_Shl";
+    case KLTT_Operator_Shr:
+      return "Operator_Shr";
+      
     case KLTT_KW_Int:
       return "KW_Int";
     case KLTT_KW_Float:
@@ -82,6 +102,9 @@ const char* tokenTypeToString(KLTokenType type)  {
       return "KW_Bool";
     case KLTT_KW_Const:
       return "KW_Const";
+    case KLTT_KW_Void:
+      return "KW_Void";
+      
     case KLTT_KW_If:
       return "KW_If";
     case KLTT_KW_Else:

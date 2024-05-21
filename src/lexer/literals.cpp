@@ -163,3 +163,22 @@ std::optional<Token> Lexer::lexCharLiteral() {
   return std::nullopt;
 }
 
+std::optional<Token> Lexer::lexNumber() {
+  std::string num;
+  while (isdigit(*c)) {
+    num += *c;
+    advance();
+  }
+  
+  if (*c == '.') {
+    num += *c;
+    advance();
+    while (isdigit(*c)) {
+      num += *c;
+      advance();
+    }
+    return Token{KLTokenType::KLTT_Literal_Float, num, line, col};
+  }
+  
+  return Token{KLTokenType::KLTT_Literal_Int, num, line, col};
+}

@@ -84,6 +84,8 @@ optional<Token> Lexer::lexWord() {
         return Token{KLTokenType::KLTT_KW_For, word, tokenStartLine, tokenStartCol};
       } else if (word == "float") {
         return Token{KLTokenType::KLTT_KW_Float, word, tokenStartLine, tokenStartCol};
+      } else if (word == "false") {
+        return Token{KLTokenType::KLTT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
       return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'i':
@@ -101,6 +103,16 @@ optional<Token> Lexer::lexWord() {
     case 's':
       if (word == "string") {
         return Token{KLTokenType::KLTT_KW_String, word, tokenStartLine, tokenStartCol};
+      }
+      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+    case 't':
+      if (word == "true") {
+        return Token{KLTokenType::KLTT_Literal_Bool, word, tokenStartLine, tokenStartCol};
+      }
+      return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
+    case 'v':
+      if (word == "void") {
+        return Token{KLTokenType::KLTT_KW_Void, word, tokenStartLine, tokenStartCol};
       }
       return Token{KLTokenType::KLTT_Identifier, word, tokenStartLine, tokenStartCol};
     case 'w':
@@ -234,7 +246,7 @@ optional<Token> Lexer::next() {
         return Token{KLTokenType::KLTT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
       
       case '\'':
-        break;
+        return lexCharLiteral();
       case '"':
         return lexStringLiteral();
       
@@ -242,6 +254,9 @@ optional<Token> Lexer::next() {
       case 'A'...'Z':
       case '_':
         return lexWord();
+        
+      case '0'...'9':
+        return lexNumber();
       
       default:
         return nullopt;

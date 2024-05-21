@@ -29,16 +29,17 @@ private:
   unique_ptr<ASTStmtExpr> parseExpressionStatement();
   unique_ptr<ASTStmtDecl> parseDeclaration();
   
+  unique_ptr<ASTExpr> parseBinaryExpression(unique_ptr<ASTExpr> LHS, int min_precedence);
+  unique_ptr<ASTExpr> parseUnaryExpression();
   unique_ptr<ASTExpr> parseExpression();
   
   unique_ptr<ASTExprPrimary> parsePrimary();
   unique_ptr<ASTExprParen> parsePrimaryParens();
   unique_ptr<ASTExprFuncCall> parseFunctionCall();
 public:
-  explicit Parser(Lexer &lexer) : lexer(lexer) {}
+  explicit Parser(Lexer &lexer) : lexer(lexer) { nextToken(); }
 
-  unique_ptr<ASTNode> parse();
-  
+  unique_ptr<ASTProgram> parse();
 };
 
 #endif //KL_PARSER_H

@@ -59,6 +59,7 @@ enum KLTokenType {
   KLTT_KW_String,
   KLTT_KW_Bool,
   KLTT_KW_Const,
+  KLTT_KW_Void,
   
   KLTT_KW_If,
   KLTT_KW_Else,

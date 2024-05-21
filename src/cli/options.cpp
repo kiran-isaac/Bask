@@ -15,6 +15,11 @@ Options::Options(int argc, const char **argv) {
   argv++;
   argc--;
   
+  if (argc == 0) {
+    cerr << "Error: no input file specified" << endl;
+    exit(1);
+  }
+  
   while (argc > 0) {
     if (argv[0][0] == '-') {
       if (strcmp(argv[0], "-o") == 0) {

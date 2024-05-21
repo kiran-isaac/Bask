@@ -5,10 +5,89 @@
 #include <AST.h>
 #include <cmath>
 
+vector<ASTExpr *> getChildrenAndGrandChildren(ASTExprBinary *expr) {
+  vector<ASTExpr *> children;
+  
+  if (expr->rhs->getAstType() == ASTNode::ExprBinary) {
+    auto rhs = dynamic_cast<ASTExprBinary *>(expr->rhs.get());
+    children.push_back(rhs->lhs.get());
+    children.push_back(rhs->rhs.get());
+  } else {
+    children.push_back(expr->rhs.get());
+  }
+  
+  if (expr->lhs->getAstType() == ASTNode::ExprBinary) {
+    auto lhs = dynamic_cast<ASTExprBinary *>(expr->lhs.get());
+    children.push_back(lhs->lhs.get());
+    children.push_back(lhs->rhs.get());
+  } else {
+    children.push_back(expr->lhs.get());
+  }
+  
+  return children;
+}
+
+bool childrenHaveSameBinaryOpIfNotValues(ASTExprBinary *expr) {
+  auto op = expr->op;
+  
+  if (expr->lhs->getAstType() == ASTNode::ExprBinary) {
+    auto lhs = dynamic_cast<ASTExprBinary *>(expr->lhs.get());
+    if (lhs->op != op) {
+      return false;
+    }
+  }
+  if (expr->rhs->getAstType() == ASTNode::ExprBinary) {
+    auto rhs = dynamic_cast<ASTExprBinary *>(expr->rhs.get());
+    if (rhs->op != op) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+unique_ptr<ASTExprBinary> constructBinaryExpressionFromListAndOp(vector<ASTExpr *> &children, KL_TokenType op) {
+  if (children.size() == 1) {
+    return make_unique<ASTExprBinary>(make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(children[0])), make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(children[1])), op, line, col);
+  }
+  
+  auto new_lhs = make_unique<ASTExprBinary>(make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(children[0])), make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(children[1])), op, line, col);
+  for (int i = 2; i < children.size(); i++) {
+    new_lhs = make_unique<ASTExprBinary>(std::move(new_lhs), make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(children[i])), op, line, col);
+  }
+  return new_lhs;
+}
+
 unique_ptr<ASTExpr> ASTExpr::foldBinary(ASTExpr *expr) {
   auto binary = dynamic_cast<ASTExprBinary *>(expr);
   binary->lhs = fold(binary->lhs.get());
   binary->rhs = fold(binary->rhs.get());
+  
+  if (childrenHaveSameBinaryOpIfNotValues(binary)) {
+    auto children = getChildrenAndGrandChildren(binary);
+    vector<ASTExpr *> constants;
+    vector<ASTExpr *> non_constants;
+    
+    for (auto &child: children) {
+      if (child->getAstType() == ASTNode::ExprValue) {
+        constants.push_back(child);
+      } else {
+        non_constants.push_back(child);
+      }
+    }
+    
+    // Put all constants on one side of a binary expression. Dont evaluate them
+    if (constants.size() > 1) {
+      auto new_lhs = make_unique<ASTExprBinary>(std::move(constants[0]), std::move(constants[1]), binary->op, binary->line, binary->col);
+      for (int i = 2; i < constants.size(); i++) {
+        new_lhs = make_unique<ASTExprBinary>(std::move(new_lhs), std::move(constants[i]), binary->op, binary->line, binary->col);
+      }
+      if (non_constants.size() > 0) {
+        return make_unique<ASTExprBinary>(std::move(new_lhs), std::move(non_constants[0]), binary->op, binary->line, binary->col);
+      }
+      return new_lhs;
+    }
+  }
   
   // Optimisation: Extract as many constants as possible. At the moment expressions aren't re-arranged if the operator is commutative
   if (binary->lhs->getAstType() != ASTNode::ASTNodeType::ExprValue || binary->rhs->getAstType() != ASTNode::ASTNodeType::ExprValue) {

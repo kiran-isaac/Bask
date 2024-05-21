@@ -46,6 +46,9 @@ void Parser::parserError(const string &msg) {
 }
 
 unique_ptr<ASTType> Parser::parseType() {
+  unsigned int line = tk.line;
+  unsigned int col = tk.col;
+  
   KL_Type type;
   
   if (tk.type == KLTT_KW_Const) {
@@ -86,6 +89,7 @@ unique_ptr<ASTType> Parser::parseType() {
           parserError("Expected ']' after integer in array declaration");
         }
       case KLTT_Punctuation_RBracket:
+        type.array_sizes.push_back(0);
         nextToken();
         break;
       default:
@@ -93,11 +97,13 @@ unique_ptr<ASTType> Parser::parseType() {
     }
   }
   
-  return make_unique<ASTType>(type);
+  return make_unique<ASTType>(type, line, col);
 }
 
 unique_ptr<ASTFuncDecl> Parser::parseFunction() {
   unique_ptr<ASTType> return_type = parseType();
+  unsigned int line = tk.line;
+  unsigned int col = tk.col;
   
   if (tk.type != KLTT_Identifier) {
     parserError("Expected identifier");
@@ -121,7 +127,7 @@ unique_ptr<ASTFuncDecl> Parser::parseFunction() {
   
   nextToken();
   
-  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(body));
+  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(body), line, col);
 }
 
 unique_ptr<ASTProgram> Parser::parse() {

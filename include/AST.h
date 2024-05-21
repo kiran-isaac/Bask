@@ -18,22 +18,56 @@ using namespace std;
 
 void printIndent(int indent);
 
+
 class ASTNode {
 public:
+  enum ASTNodeType {
+    Root,
+    Type,
+    Expr,
+    ExprValue,
+    ExprIdentifier,
+    ExprFuncCall,
+    ExprBinary,
+    ExprUnary,
+    Stmt,
+    StmtExpr,
+    StmtAssignment,
+    StmtDecl,
+    Program,
+    FuncDecl
+  };
+  
   virtual ~ASTNode() = default;
-
-
+  
+  virtual void foldExpr() {}
+  
+  [[nodiscard]] virtual ASTNodeType getAstType() const = 0;
+  
+  unsigned int line = 0;
+  unsigned int col = 0;
+  
   virtual void print(int indent) const = 0;
+  
+  static void SyntaxError(ASTNode *node, const string &message) {
+    printf("Syntax Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+    exit(1);
+  }
 };
 
 class ASTType : public ASTNode {
 public:
   KL_Type type;
+  unsigned int line;
+  unsigned int col;
   
-  explicit ASTType(KL_Type type) : type(std::move(type)) {}
-
-
-void print(int indent) const override {
+  explicit ASTType(KL_Type type, unsigned int line, unsigned int col) : type(std::move(type)), line(line), col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return Type;
+  }
+  
+  void print(int indent) const override {
     printIndent(indent);
     printf("Type: %s\n", type_to_string(type).c_str());
   }
@@ -41,98 +75,102 @@ void print(int indent) const override {
 
 // --------------------------- Expressions ---------------------------
 class ASTExpr : public ASTNode {
-};
-
-// Two types of expressions: primary and operator
-class ASTExprPrimary : public ASTExpr {};
-class ASTExprOperator : public ASTExpr {};
-
-// The primary expressions
-class ASTExprLiteral : public ASTExprPrimary {
-public:
-  KLTokenType type;
-  string value;
+private:
+  static unique_ptr<ASTExpr> foldBinary(ASTExpr *);
   
-  explicit ASTExprLiteral(KLTokenType type, string value) : type(type), value(std::move(value)) {}
-
-
-void print(int indent) const override {
-    printIndent(indent);
-    printf("%s: %s\n", tokenTypeToString(type), value.c_str());
+  static unique_ptr<ASTExpr> foldUnary(ASTExpr *);
+public:
+  unsigned int line{};
+  unsigned int col{};
+  
+  static unique_ptr<ASTExpr> fold(ASTExpr *);
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return Expr;
   }
 };
 
-class ASTExprIdentifier : public ASTExprPrimary {
+
+// The primary expressions
+class ASTExprValue : public ASTExpr {
+public:
+  KL_Type type;
+  string value;
+  unsigned int line;
+  unsigned int col;
+  
+  explicit ASTExprValue(KL_Type type, string value, unsigned int line, unsigned int col) : type(std::move(type)),
+                                                                                           value(std::move(value)),line(line), col(col) {}
+  
+                                                                                           [[nodiscard]] ASTNodeType getAstType() const override {
+    return ExprValue;
+  }
+  
+  void print(int indent) const override {
+    printIndent(indent);
+    printf("%s: %s\n", type_to_string(type).c_str(), value.c_str());
+  }
+};
+
+class ASTExprIdentifier : public ASTExpr {
 public:
   string name;
+  unsigned int line;
+  unsigned int col;
   
-  explicit ASTExprIdentifier(string name) : name(std::move(name)) {}
-
-
-
+  explicit ASTExprIdentifier(string name, unsigned int line, unsigned int col) : name(std::move(name)), line(line),
+                                                                                 col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return ExprIdentifier;
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Identifier: %s\n", name.c_str());
   }
 };
 
-class ASTExprFuncCall : public ASTExprPrimary {
+class ASTExprFuncCall : public ASTExpr {
 public:
   string name;
   unique_ptr<vector<unique_ptr<ASTExpr>>> args;
+  unsigned int line;
+  unsigned int col;
   
-  ASTExprFuncCall(string name, unique_ptr<vector<unique_ptr<ASTExpr>>> args) : name(std::move(name)), args(std::move(args)) {}
-
-
+  ASTExprFuncCall(string name, unique_ptr<vector<unique_ptr<ASTExpr>>> args, unsigned int line, unsigned int col)
+    : name(std::move(name)), args(std::move(args)), line(line), col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return ExprFuncCall;
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Function Call: \"%s\" Args:\n", name.c_str());
     
-    for (const auto &arg : *args) {
+    for (const auto &arg: *args) {
       arg->print(indent + 1);
     }
   }
 };
 
-class ASTExprParen : public ASTExprPrimary {
-public:
-  unique_ptr<ASTExpr> expr;
-  
-  explicit ASTExprParen(unique_ptr<ASTExpr> expr) : expr(std::move(expr)) {}
-
-
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Parenthesized Expression:\n");
-    expr->print(indent + 1);
-  }
-};
-
-class ASTExprArrayAccess : public ASTExprPrimary {
-public:
-  string name;
-  unique_ptr<ASTExpr> index;
-  
-  ASTExprArrayAccess(string name, unique_ptr<ASTExpr> index) : name(std::move(name)), index(std::move(index)) {}
-
-
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Array Access: %s\n", name.c_str());
-    index->print(indent + 1);
-  }
-};
-
 // The operator expressions
-class ASTExprBinary : public ASTExprOperator {
+class ASTExprBinary : public ASTExpr {
 public:
   unique_ptr<ASTExpr> lhs;
   unique_ptr<ASTExpr> rhs;
   KLTokenType op;
+  unsigned int line;
+  unsigned int col;
   
-  ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KLTokenType op) : lhs(std::move(lhs)), rhs(std::move(rhs)), op(op) {}
-
-
+  ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs, KLTokenType op, unsigned int line, unsigned int col)
+    : lhs(std::move(lhs)), rhs(std::move(rhs)), op(op), line(line), col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return ExprBinary;
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Binary Expression: %s\n", tokenTypeToString(op));
@@ -145,14 +183,21 @@ public:
   }
 };
 
-class ASTExprUnary : public ASTExprOperator {
+class ASTExprUnary : public ASTExpr {
 public:
   unique_ptr<ASTExpr> expr;
   KLTokenType op;
+  unsigned int line;
+  unsigned int col;
   
-  ASTExprUnary(KLTokenType op, unique_ptr<ASTExpr> expr) : expr(std::move(expr)), op(op) {}
-
-
+  ASTExprUnary(KLTokenType op, unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
+                                                                                                op(op), line(line),
+                                                                                                col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return ExprUnary;
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Unary Expression: %s\n", tokenTypeToString(op));
@@ -163,31 +208,35 @@ public:
 // --------------------------- Statements ---------------------------
 class ASTStmt : public ASTNode {
 public:
-
-  virtual string getInfo() const = 0;
-  virtual ASTExpr *getExpr() const { return nullptr; }
+  unsigned int line = 0;
+  unsigned int col = 0;
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return Stmt;
+  }
 };
 
 // used for expressions that are statements (e.g. function calls)
 class ASTStmtExpr : public ASTStmt {
 public:
   unique_ptr<ASTExpr> expr;
+  unsigned int line;
+  unsigned int col;
   
-  explicit ASTStmtExpr(unique_ptr<ASTExpr> expr) : expr(std::move(expr)) {}
-
-
+  explicit ASTStmtExpr(unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
+                                                                                        line(line), col(col) {}
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return StmtExpr;
+  }
+  
+  void foldExpr() override {
+    expr = ASTExpr::fold(expr.get());
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Expression Statement\n");
     expr->print(indent + 1);
-  }
-  
-  [[nodiscard]] string getInfo() const override {
-    return "Expression";
-  }
-  
-  [[nodiscard]] ASTExpr *getExpr() const override {
-    return expr.get();
   }
 };
 
@@ -195,47 +244,51 @@ class ASTStmtAssignment : public ASTStmt {
 public:
   string name;
   unique_ptr<ASTExpr> value;
+  unsigned int line;
+  unsigned int col;
   
-  ASTStmtAssignment(string name, unique_ptr<ASTExpr> value) : name(std::move(name)), value(std::move(value)) {}
-
-
+  ASTStmtAssignment(string name, unique_ptr<ASTExpr> value, unsigned int line, unsigned int col) : name(
+    std::move(name)), value(std::move(value)), line(line), col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return StmtAssignment;
+  }
+  
+  void foldExpr() override {
+    value = ASTExpr::fold(value.get());
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Assignment: %s\n", name.c_str());
     value->print(indent + 1);
   }
-  
-  [[nodiscard]] string getInfo() const override {
-    return "Assignment";
-  }
-  
-  [[nodiscard]] ASTExpr *getExpr() const override {
-    return value.get();
-  }
 };
 
 class ASTStmtDecl : public ASTStmt {
 public:
-  bool is_const;
   unique_ptr<ASTType> type;
   string name;
   unique_ptr<ASTExpr> value;
+  unsigned int line;
+  unsigned int col;
   
-  ASTStmtDecl(bool is_const, unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value) : is_const(is_const), type(std::move(type)), name(std::move(name)), value(std::move(value)) {}
-
-
+  ASTStmtDecl(unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value, unsigned int line,
+              unsigned int col): type(std::move(type)), name(std::move(name)),
+                                  value(std::move(value)), line(line), col(col) {}
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return StmtDecl;
+  }
+  
+  void foldExpr() override {
+    value = ASTExpr::fold(value.get());
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("Declaration: %s %s\n", type_to_string(type->type).c_str(), name.c_str());
     value->print(indent + 1);
-  }
-  
-  [[nodiscard]] string getInfo() const override {
-    return "Declaration";
-  }
-  
-  [[nodiscard]] ASTExpr *getExpr() const override {
-    return value.get();
   }
 };
 
@@ -245,19 +298,32 @@ public:
   string name;
   unique_ptr<ASTType> returnType;
   vector<unique_ptr<ASTStmt>> body;
+  unsigned int line;
+  unsigned int col;
   
-  ASTFuncDecl(string name, unique_ptr<ASTType> returnType, vector<unique_ptr<ASTStmt>> body) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)) {}
-
-
+  ASTFuncDecl(string name, unique_ptr<ASTType> returnType, vector<unique_ptr<ASTStmt>> body, unsigned int line,
+              unsigned int col) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)),
+                                  line(line), col(col) {}
+                                  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return FuncDecl;
+  }
+  
+  void foldExpr() override {
+    for (auto &stmt: body) {
+      stmt->foldExpr();
+    }
+  }
+  
   void print(int indent) const override {
     printIndent(indent);
     printf("%s Function: %s\n", type_to_string(returnType->type).c_str(), name.c_str());
     
-    for (const auto &stmt : body) {
+    for (const auto &stmt: body) {
       stmt->print(indent + 1);
     }
   }
-
+  
   [[nodiscard]] ASTStmt *getStatement(int index) const {
     if (index >= body.size()) {
       throw runtime_error("debugging function access statement index out of bounds");
@@ -271,24 +337,33 @@ public:
   vector<unique_ptr<ASTFuncDecl>> funcs;
   
   explicit ASTProgram(vector<unique_ptr<ASTFuncDecl>> funcs) : funcs(std::move(funcs)) {}
-
-
+  
+  [[nodiscard]] ASTNodeType getAstType() const override {
+    return Program;
+  }
+  
+  void foldExpr() override {
+    for (auto &func: funcs) {
+      func->foldExpr();
+    }
+  }
+  
   void print(int indent) const override {
     printf("Program:\n");
     
-    for (const auto &func : funcs) {
+    for (const auto &func: funcs) {
       func->print(indent + 1);
     }
   }
   
   void getFunctionNames(vector<string> &names) const {
-    for (const auto &func : funcs) {
+    for (const auto &func: funcs) {
       names.push_back(func->name);
     }
   }
   
   [[nodiscard]] const ASTFuncDecl *getFunction(const string &name) const {
-    for (const auto &func : funcs) {
+    for (const auto &func: funcs) {
       if (func->name == name) {
         return func.get();
       }

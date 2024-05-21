@@ -59,7 +59,6 @@ TEST(Parser, BinaryExpression) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->getFunction("main")->getStatement(0)->getExpr()->print(0);
 }
 
 TEST(Parser, BinaryExpression2) {
@@ -72,3 +71,4 @@ TEST(Parser, BinaryExpression2) {
   unique_ptr<ASTProgram> ast = parser.parse();
   ast->getFunction("main")->getStatement(0)->print(0);
 }
+

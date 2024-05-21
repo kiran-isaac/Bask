@@ -33,8 +33,8 @@ private:
   unique_ptr<ASTExpr> parseUnaryExpression();
   unique_ptr<ASTExpr> parseExpression();
   
-  unique_ptr<ASTExprPrimary> parsePrimary();
-  unique_ptr<ASTExprParen> parsePrimaryParens();
+  unique_ptr<ASTExpr> parsePrimary();
+  unique_ptr<ASTExpr> parsePrimaryParens();
   unique_ptr<ASTExprFuncCall> parseFunctionCall();
 public:
   explicit Parser(Lexer &lexer) : lexer(lexer) { nextToken(); }

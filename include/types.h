@@ -31,6 +31,12 @@ struct KL_Type {
   vector<unsigned int> array_sizes;
 };
 
+#define BOOL_CONST KL_Type{true, KL_PRIMITIVE, KL_BOOL, {}}
+#define INT_CONST KL_Type{true, KL_PRIMITIVE, KL_INT, {}}
+#define FLOAT_CONST KL_Type{true, KL_PRIMITIVE, KL_FLOAT, {}}
+#define CHAR_CONST KL_Type{true, KL_PRIMITIVE, KL_CHAR, {}}
+#define STRING_CONST KL_Type{true, KL_PRIMITIVE, KL_STRING, {}}
+
 string type_to_string(const KL_Type &type);
 
 #endif //KL_TYPES_H

@@ -7,11 +7,8 @@
 using namespace std;
 
 unique_ptr<ASTStmtDecl> Parser::parseDeclaration() {
-  bool is_const = false;
-  if (tk.type == KLTT_KW_Const) {
-    is_const = true;
-    nextToken();
-  }
+  unsigned int line = tk.line;
+  unsigned int col = tk.col;
   
   auto type= parseType();
   expect(KLTT_Identifier);
@@ -24,14 +21,16 @@ unique_ptr<ASTStmtDecl> Parser::parseDeclaration() {
   expect(KLTT_Punctuation_Semicolon);
   nextToken();
   
-  return make_unique<ASTStmtDecl>(is_const, std::move(type), name, std::move(value));
+  return make_unique<ASTStmtDecl>(std::move(type), name, std::move(value), line, col);
 }
 
 unique_ptr<ASTStmtExpr> Parser::parseExpressionStatement() {
+  unsigned int line = tk.line;
+  unsigned int col = tk.col;
   auto expr = parseExpression();
   expect(KLTT_Punctuation_Semicolon);
   nextToken();
-  return make_unique<ASTStmtExpr>(std::move(expr));
+  return make_unique<ASTStmtExpr>(std::move(expr), line, col);
 }
 
 unique_ptr<ASTStmt> Parser::parseStatement() {

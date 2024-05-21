@@ -37,7 +37,7 @@ TEST(Parser, FunctionCall) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->print(0);
+  ast->print(0, std::cout);
 }
 
 TEST(Parser, TinyBinaryExpression) {
@@ -48,7 +48,7 @@ TEST(Parser, TinyBinaryExpression) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->print(0);
+  ast->print(0, std::cout);
 }
 
 TEST(Parser, BinaryExpression) {
@@ -69,6 +69,6 @@ TEST(Parser, BinaryExpression2) {
   Parser parser(lexer);
   
   unique_ptr<ASTProgram> ast = parser.parse();
-  ast->getFunction("main")->getStatement(0)->print(0);
+  ast->getFunction("main")->getStatement(0)->print(0, std::cout);
 }
 

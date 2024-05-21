@@ -10,14 +10,15 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <iostream>
+#include <ostream>
 #include "lexer.h"
 #include "tokens.h"
 #include "types.h"
 
 using namespace std;
 
-void printIndent(int indent);
-
+void printIndent(int indent, ostream &out);
 
 class ASTNode {
 public:
@@ -47,7 +48,7 @@ public:
   unsigned int line = 0;
   unsigned int col = 0;
   
-  virtual void print(int indent) const = 0;
+  virtual void print(int indent, ostream &out) const = 0;
   
   static void SyntaxError(ASTNode *node, const string &message) {
     printf("Syntax Error at [%d, %d]: %s", node->line, node->col, message.c_str());
@@ -67,9 +68,9 @@ public:
     return Type;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Type: %s\n", type_to_string(type).c_str());
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << type_to_string(type) << std::endl;
   }
 };
 
@@ -79,6 +80,7 @@ private:
   static unique_ptr<ASTExpr> foldBinary(ASTExpr *);
   
   static unique_ptr<ASTExpr> foldUnary(ASTExpr *);
+
 public:
   unsigned int line{};
   unsigned int col{};
@@ -100,15 +102,16 @@ public:
   unsigned int col;
   
   explicit ASTExprValue(KL_Type type, string value, unsigned int line, unsigned int col) : type(std::move(type)),
-                                                                                           value(std::move(value)),line(line), col(col) {}
+                                                                                           value(std::move(value)),
+                                                                                           line(line), col(col) {}
   
-                                                                                           [[nodiscard]] ASTNodeType getAstType() const override {
+  [[nodiscard]] ASTNodeType getAstType() const override {
     return ExprValue;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("%s: %s\n", type_to_string(type).c_str(), value.c_str());
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Value: " << value << std::endl;
   }
 };
 
@@ -125,9 +128,9 @@ public:
     return ExprIdentifier;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Identifier: %s\n", name.c_str());
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Identifier: " << name << std::endl;
   }
 };
 
@@ -145,12 +148,12 @@ public:
     return ExprFuncCall;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Function Call: \"%s\" Args:\n", name.c_str());
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
     
+    out << "Function Call: " << name << " : Args" << std::endl;
     for (const auto &arg: *args) {
-      arg->print(indent + 1);
+      arg->print(indent + 1, out);
     }
   }
 };
@@ -171,15 +174,15 @@ public:
     return ExprBinary;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Binary Expression: %s\n", tokenTypeToString(op));
-    printIndent(indent);
-    printf("LHS\n");
-    lhs->print(indent + 1);
-    printIndent(indent);
-    printf("RHS\n");
-    rhs->print(indent + 1);
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Binary Expression: " << tokenTypeToString(op) << std::endl;
+    printIndent(indent, out);
+    out << "LHS:" << std::endl;
+    lhs->print(indent + 1, out);
+    printIndent(indent, out);
+    out << "RHS:" << std::endl;
+    rhs->print(indent + 1, out);
   }
 };
 
@@ -198,10 +201,10 @@ public:
     return ExprUnary;
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Unary Expression: %s\n", tokenTypeToString(op));
-    expr->print(indent + 1);
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Unary Expression: " << tokenTypeToString(op) << std::endl;
+    expr->print(indent + 1, out);
   }
 };
 
@@ -225,6 +228,7 @@ public:
   
   explicit ASTStmtExpr(unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col) : expr(std::move(expr)),
                                                                                         line(line), col(col) {}
+  
   [[nodiscard]] ASTNodeType getAstType() const override {
     return StmtExpr;
   }
@@ -233,10 +237,10 @@ public:
     expr = ASTExpr::fold(expr.get());
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Expression Statement\n");
-    expr->print(indent + 1);
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Expression Statement:" << std::endl;
+    expr->print(indent + 1, out);
   }
 };
 
@@ -258,10 +262,10 @@ public:
     value = ASTExpr::fold(value.get());
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Assignment: %s\n", name.c_str());
-    value->print(indent + 1);
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Assignment: " << name << std::endl;
+    value->print(indent + 1, out);
   }
 };
 
@@ -274,7 +278,7 @@ public:
   unsigned int col;
   
   ASTStmtDecl(unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value, unsigned int line,
-              unsigned int col): type(std::move(type)), name(std::move(name)),
+              unsigned int col) : type(std::move(type)), name(std::move(name)),
                                   value(std::move(value)), line(line), col(col) {}
   
   [[nodiscard]] ASTNodeType getAstType() const override {
@@ -285,10 +289,13 @@ public:
     value = ASTExpr::fold(value.get());
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("Declaration: %s %s\n", type_to_string(type->type).c_str(), name.c_str());
-    value->print(indent + 1);
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Declaration: " << name << std::endl;
+    type->print(indent + 1, out);
+    if (value) {
+      value->print(indent + 1, out);
+    }
   }
 };
 
@@ -304,7 +311,7 @@ public:
   ASTFuncDecl(string name, unique_ptr<ASTType> returnType, vector<unique_ptr<ASTStmt>> body, unsigned int line,
               unsigned int col) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)),
                                   line(line), col(col) {}
-                                  
+  
   [[nodiscard]] ASTNodeType getAstType() const override {
     return FuncDecl;
   }
@@ -315,12 +322,12 @@ public:
     }
   }
   
-  void print(int indent) const override {
-    printIndent(indent);
-    printf("%s Function: %s\n", type_to_string(returnType->type).c_str(), name.c_str());
-    
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Function: " << name << std::endl;
+    returnType->print(indent + 1, out);
     for (const auto &stmt: body) {
-      stmt->print(indent + 1);
+      stmt->print(indent + 1, out);
     }
   }
   
@@ -348,11 +355,11 @@ public:
     }
   }
   
-  void print(int indent) const override {
-    printf("Program:\n");
-    
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Program:" << std::endl;
     for (const auto &func: funcs) {
-      func->print(indent + 1);
+      func->print(indent + 1, out);
     }
   }
   

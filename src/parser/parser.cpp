@@ -81,15 +81,16 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
   while (tk.type == KL_TT_Punctuation_LBracket) {
     nextToken();
     type.kind = KL_ARRAY;
+    type.array_sizes = new vector<unsigned int>();
     switch (tk.type) {
       case KL_TT_Literal_Int:
-        type.array_sizes.push_back(stoi(tk.value));
+        type.array_sizes->push_back(stoi(tk.value));
         nextToken();
         if (tk.type != KL_TT_Punctuation_RBracket) {
           parserError("Expected ']' after integer in array declaration");
         }
       case KL_TT_Punctuation_RBracket:
-        type.array_sizes.push_back(0);
+        type.array_sizes->push_back(0);
         nextToken();
         break;
       default:

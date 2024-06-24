@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 # set c++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 project(KL)
 
 include(FetchContent)
@@ -44,6 +46,8 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+add_definitions(-DTESTING)
 
 add_executable(KLTest ${TEST_SOURCES} ${INCLUDES})
 

@@ -11,13 +11,13 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
   binary->rhs = fold(binary->rhs.get());
   
   // Optimisation: Extract as many constants as possible. At the moment expressions aren't re-arranged if the operator is commutative
-  if (binary->lhs->get_AST_type() != ASTNode::ASTNodeType::ExprValue ||
-    binary->rhs->get_AST_type() != ASTNode::ASTNodeType::ExprValue) {
+  if (binary->lhs->get_AST_type() != ASTNode::ASTNodeType::ExprConstValue ||
+    binary->rhs->get_AST_type() != ASTNode::ASTNodeType::ExprConstValue) {
     return make_unique<ASTExprBinary>(std::move(binary->lhs), std::move(binary->rhs), binary->op, binary->line, binary->col);
   }
   
-  auto lhs = dynamic_cast<ASTExprValue *>(binary->lhs.get());
-  auto rhs = dynamic_cast<ASTExprValue *>(binary->rhs.get());
+  auto lhs = dynamic_cast<ASTExprConstantValue *>(binary->lhs.get());
+  auto rhs = dynamic_cast<ASTExprConstantValue *>(binary->rhs.get());
   
   if (!lhs || !rhs || lhs->type.kind != KL_PRIMITIVE || rhs->type.kind != KL_PRIMITIVE) {
     throw std::runtime_error("Binary expression does not have constant values");
@@ -42,11 +42,13 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
     
     switch (binary->op) {
       case KL_TT_Operator_Add:
-        return make_unique<ASTExprValue>(v1->type, s1 + s2, v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(v1->type, s1 + s2, v1->line, v1->col);
       case KL_TT_Operator_Equal:
-        return make_unique<ASTExprValue>(BOOL_CONST, s1 == s2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(
+            BOOL_CONST, s1 == s2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_NotEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, s1 != s2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(
+            BOOL_CONST, s1 != s2 ? "true" : "false", v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in string expression");
     }
@@ -74,27 +76,27 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
     
     switch (binary->op) {
       case KL_TT_Operator_Add:
-        return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 + f2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(FLOAT_CONST, to_string(f1 + f2), v1->line, v1->col);
       case KL_TT_Operator_Sub:
-        return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 - f2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(FLOAT_CONST, to_string(f1 - f2), v1->line, v1->col);
       case KL_TT_Operator_Mul:
-        return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 * f2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(FLOAT_CONST, to_string(f1 * f2), v1->line, v1->col);
       case KL_TT_Operator_Div:
-        return make_unique<ASTExprValue>(FLOAT_CONST, to_string(f1 / f2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(FLOAT_CONST, to_string(f1 / f2), v1->line, v1->col);
       case KL_TT_Operator_Mod:
-        return make_unique<ASTExprValue>(FLOAT_CONST, to_string(fmod(f1, f2)), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(FLOAT_CONST, to_string(fmod(f1, f2)), v1->line, v1->col);
       case KL_TT_Operator_Equal:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 == f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 == f2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_NotEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 != f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 != f2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_Less:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 < f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 < f2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_LessEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 <= f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 <= f2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_Greater:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 > f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 > f2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_GreaterEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, f1 >= f2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, f1 >= f2 ? "true" : "false", v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in float expression");
     }
@@ -120,37 +122,37 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
     
     switch (binary->op) {
       case KL_TT_Operator_Add:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 + i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 + i2), v1->line, v1->col);
       case KL_TT_Operator_Sub:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 - i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 - i2), v1->line, v1->col);
       case KL_TT_Operator_Mul:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 * i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 * i2), v1->line, v1->col);
       case KL_TT_Operator_Div:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 / i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 / i2), v1->line, v1->col);
       case KL_TT_Operator_Mod:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 % i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 % i2), v1->line, v1->col);
       case KL_TT_Operator_Equal:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 == i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 == i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_NotEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 != i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 != i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_Less:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 < i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 < i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_LessEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 <= i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 <= i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_Greater:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 > i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 > i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_GreaterEqual:
-        return make_unique<ASTExprValue>(BOOL_CONST, i1 >= i2 ? "true" : "false", v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(BOOL_CONST, i1 >= i2 ? "true" : "false", v1->line, v1->col);
       case KL_TT_Operator_Shl:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 << i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 << i2), v1->line, v1->col);
       case KL_TT_Operator_Shr:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 >> i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 >> i2), v1->line, v1->col);
       case KL_TT_Operator_BitwiseAnd:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 & i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 & i2), v1->line, v1->col);
       case KL_TT_Operator_BitwiseOr:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 | i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 | i2), v1->line, v1->col);
       case KL_TT_Operator_BitwiseXor:
-        return make_unique<ASTExprValue>(INT_CONST, to_string(i1 ^ i2), v1->line, v1->col);
+        return make_unique<ASTExprConstantValue>(INT_CONST, to_string(i1 ^ i2), v1->line, v1->col);
       default:
         ASTNode::SyntaxError(binary, "Invalid operator in int expression");
     }

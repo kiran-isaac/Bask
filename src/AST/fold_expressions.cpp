@@ -11,18 +11,18 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
   unary->expr = fold(unary->expr.get());
   
   // If it not a constant, return the expression as is
-  if (unary->expr->get_AST_type() != ASTNode::ASTNodeType::ExprValue) {
+  if (unary->expr->get_AST_type() != ASTNode::ASTNodeType::ExprConstValue) {
     return make_unique<ASTExprUnary>(unary->op, fold(unary->expr.get()), unary->line, unary->col);
   }
   
-  auto value = dynamic_cast<ASTExprValue *>(unary->expr.get());
+  auto value = dynamic_cast<ASTExprConstantValue *>(unary->expr.get());
   if (value->type.primitive == KL_INT) {
     int val = stoi(value->value);
     switch (unary->op) {
       case KL_TT_Operator_Sub:
-        return make_unique<ASTExprValue>(value->type, to_string(-val), value->line, value->col);
+        return make_unique<ASTExprConstantValue>(value->type, to_string(-val), value->line, value->col);
       case KL_TT_Operator_BitwiseNot:
-        return make_unique<ASTExprValue>(value->type, to_string(!val), value->line, value->col);
+        return make_unique<ASTExprConstantValue>(value->type, to_string(!val), value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for int value");
     }
@@ -30,7 +30,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
     float val = stof(value->value);
     switch (unary->op) {
       case KL_TT_Operator_Sub:
-        return make_unique<ASTExprValue>(value->type, to_string(-val), value->line, value->col);
+        return make_unique<ASTExprConstantValue>(value->type, to_string(-val), value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for float value");
     }
@@ -38,7 +38,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
     bool val = value->value == "true";
     switch (unary->op) {
       case KL_TT_Operator_LogicalNot:
-        return make_unique<ASTExprValue>(value->type, val ? "false" : "true", value->line, value->col);
+        return make_unique<ASTExprConstantValue>(value->type, val ? "false" : "true", value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for boolean value");
     }
@@ -48,8 +48,9 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
 }
 
 unique_ptr<ASTExpr> ASTExpr::fold(ASTExpr *expr) {
-  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprValue) {
-    return make_unique<ASTExprValue>(*dynamic_cast<ASTExprValue *>(expr));
+  if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprConstValue) {
+    return make_unique<ASTExprConstantValue>(
+        *dynamic_cast<ASTExprConstantValue *>(expr));
   }
   
   if (expr->get_AST_type() == ASTNode::ASTNodeType::ExprIdentifier) {

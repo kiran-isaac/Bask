@@ -26,7 +26,7 @@ public:
     Type,
     
     Expr,
-    ExprValue,
+    ExprConstValue,
     ExprIdentifier,
     ExprFuncCall,
     ExprBinary,
@@ -47,9 +47,7 @@ public:
     Program,
     FuncDecl
   };
-  
-  virtual ~ASTNode() = default;
-  
+    
   virtual void fold_expressions() {}
   
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
@@ -58,9 +56,22 @@ public:
   unsigned int col = 0;
   
   virtual void print(int indent, ostream &out) const = 0;
+
+  virtual void check_semantics() {}
   
   static void SyntaxError(ASTNode *node, const string &message) {
     printf("Syntax Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+    exit(1);
+  }
+
+  static void ValueError(ASTNode *node, const string &message) {
+    printf("Value Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+    exit(1);
+  }
+
+  static void ValueError(const ASTNode *node, const string &message) {
+    printf("Value Error at [%d, %d]: %s", node->line, node->col,
+           message.c_str());
     exit(1);
   }
 };
@@ -79,9 +90,11 @@ public:
   
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << type_to_string(type) << std::endl;
+    out << type.to_string() << std::endl;
   }
 };
+
+class ASTProgram;
 
 // --------------------------- Expressions ---------------------------
 #include "AST_Expressions.h"
@@ -102,6 +115,7 @@ public:
   vector<string> argNames;
   unsigned int line;
   unsigned int col;
+  ASTProgram *program;
   
   ASTFuncDecl(string name, unique_ptr<ASTType> returnType, vector<unique_ptr<ASTType>> argTypes, vector<string> argNames, unique_ptr<ASTBlock> body, unsigned int line,
               unsigned int col) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)),
@@ -114,15 +128,21 @@ public:
   void fold_expressions() override {
     body->fold_expressions();
   }
-  
+
+  void check_semantics() override {
+    body->check_semantics();
+  }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << type_to_string(returnType->type) << " function: " << name << std::endl;
+    out << returnType->type.to_string() << " function: " << name << std::endl;
     body->print(indent + 1, out);
   }
 };
 
 class ASTProgram : public ASTNode {
+protected:
+  SymTab symtab;
 public:
   vector<unique_ptr<ASTFuncDecl>> funcs;
   
@@ -151,7 +171,13 @@ public:
       names.push_back(func->name);
     }
   }
-  
+
+  void check_semantics() override {
+    for (auto &func : funcs) {
+      func->check_semantics();
+    }
+  }
+
   [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
     for (const auto &func: funcs) {
       if (func->name == name) {

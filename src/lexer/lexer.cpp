@@ -31,7 +31,7 @@ void Lexer::advance() {
   col++;
 }
 
-Lexer::Lexer(const Options& options) {
+Lexer::Lexer(const CommandLineArguments& options) {
   file = fopen(options.file.c_str(), "r");
   if (file == nullptr) {
     lexerError = "Error: could not open file " + options.file;

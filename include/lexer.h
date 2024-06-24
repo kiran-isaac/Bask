@@ -17,7 +17,7 @@ using namespace std;
 
 class Lexer {
 public:
-  explicit Lexer(const Options& options);
+  explicit Lexer(const CommandLineArguments& options);
   
   string lexerError;
   

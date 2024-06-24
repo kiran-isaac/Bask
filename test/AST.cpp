@@ -14,7 +14,7 @@ using namespace std;
 TEST(ASTFolding, IntegerAdd) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = a + print(10 + 11); }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -41,7 +41,7 @@ TEST(ASTFolding, String) {
     })";
   const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   auto ast = parser.parse();

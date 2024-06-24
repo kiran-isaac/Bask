@@ -7,9 +7,10 @@
 
 #include "AST_Statements.h"
 #include "AST_Expressions.h"
-#include "AST.h"
+
 
 class ASTControLFlowIf : ASTStmt {
+  ASTProgram *program;
   unique_ptr<ASTExpr> condition;
   unique_ptr<ASTStmt> then_block;
   unique_ptr<ASTStmt> else_block;

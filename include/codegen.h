@@ -10,16 +10,35 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/ADT/StringRef.h"
+#include <map>
 
-using namespace llvm;
+static llvm::LLVMContext TheContext;
+static llvm::IRBuilder<> Builder(TheContext);
+static std::unique_ptr<llvm::Module> TheModule;
 
-class CodeGen {
-private:
-  LLVMContext context;
-public:
-  explicit CodeGen(const std::string& filename);
-  
-  void generate();
-};
+std::vector<std::map<std::string, llvm::Value*>> NamedValuesStack;
+
+void enterScope() { NamedValuesStack.push_back({}); }
+
+void exitScope() { NamedValuesStack.pop_back(); }
+
+llvm::Value* findValue(const std::string& name) {
+  for (auto it = NamedValuesStack.rbegin(); it != NamedValuesStack.rend();
+       ++it) {
+    auto& NamedValues = *it;
+    auto found = NamedValues.find(name);
+    if (found != NamedValues.end()) {
+      return found->second;
+    }
+  }
+  return nullptr;  // or throw an error
+}
+
+void addValue(const std::string& name, llvm::Value* value) {
+  NamedValuesStack.back()[name] = value;
+}
 
 #endif //KL_CODEGEN_H

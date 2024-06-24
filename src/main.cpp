@@ -4,7 +4,7 @@
 #include <lexer.h>
 
 int main(int argc, const char **argv) {
-  Options options(argc, argv);
+  CommandLineArguments options(argc, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   

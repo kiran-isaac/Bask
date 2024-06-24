@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Options::Options(int argc, const char **argv) {
+CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
   cwd = getcwd(nullptr, 0);
   
   argv++;

@@ -12,7 +12,7 @@ using namespace std;
 TEST(Parser, ParseFunction) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() {  }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -22,7 +22,7 @@ TEST(Parser, ParseFunction) {
 TEST(Parser, Declaration) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 * 10; }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -33,7 +33,7 @@ TEST(Parser, Declaration) {
 TEST(Parser, Assignment) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { a = 5 * 10; }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -43,7 +43,7 @@ TEST(Parser, Assignment) {
   auto stmt = ast->get_function("main")->body->get_statement(0);
   auto assignment = dynamic_cast<ASTStmtAssignment *>(stmt);
   auto expr = dynamic_cast<ASTExpr *>(assignment->value.get());
-  auto value = dynamic_cast<ASTExprValue *>(expr);
+  auto value = dynamic_cast<ASTExprConstantValue *>(expr);
   
   ASSERT_NE(value, nullptr);
   
@@ -54,7 +54,7 @@ TEST(Parser, Assignment) {
 TEST(Parser, FunctionCall) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { print(\"Hello, World!\"); }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -67,7 +67,7 @@ TEST(Parser, FunctionCall) {
   ASSERT_EQ(expr->name, "print");
   ASSERT_EQ(expr->args->size(), 1);
   
-  auto arg = dynamic_cast<ASTExprValue *>(expr->args->at(0).get());
+  auto arg = dynamic_cast<ASTExprConstantValue *>(expr->args->at(0).get());
   ASSERT_NE(arg, nullptr);
   ASSERT_EQ(arg->value, "Hello, World!");
 }
@@ -75,7 +75,7 @@ TEST(Parser, FunctionCall) {
 TEST(Parser, TinyBinaryExpression) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 + 3; }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -86,7 +86,7 @@ TEST(Parser, TinyBinaryExpression) {
 TEST(Parser, BinaryExpression) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = -(5 + 3) * echo(2); }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   
@@ -96,7 +96,7 @@ TEST(Parser, BinaryExpression) {
 TEST(Parser, BinaryExpression2) {
   const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 + 3 * -(2 + 10); }")};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
   

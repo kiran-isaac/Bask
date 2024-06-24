@@ -10,13 +10,13 @@
 
 using namespace std;
 
-class Options {
+class CommandLineArguments {
 public:
   string cwd;
   string file;
   string out;
   
-  Options(int argc, const char **argv);
+  CommandLineArguments(int argc, const char **argv);
 };
 
 #endif //KL_OPTIONS_H

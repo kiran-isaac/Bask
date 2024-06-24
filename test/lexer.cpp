@@ -24,7 +24,7 @@ TEST(Lexer, Keywords) {
                          KL_Token{KL_TokenType::KL_TT_KW_Char, "char", 3, 18},
                          KL_Token{KL_TokenType::KL_TT_KW_Bool, "bool", 3, 23}};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
 
   for (auto & i : expected) {
@@ -61,7 +61,7 @@ TEST(Lexer, Punctuation) {
                          KL_Token{KL_TokenType::KL_TT_Operator_Shl, "<<", 1, 28},
                          KL_Token{KL_TokenType::KL_TT_Operator_Shr, ">>", 1, 31}};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
 
   for (auto & i : expected) {
@@ -91,7 +91,7 @@ TEST(Lexer, Operators) {
                          KL_Token{KL_TokenType::KL_TT_Operator_LogicalAnd, "&&", 1, 11},
                          KL_Token{KL_TokenType::KL_TT_Operator_LogicalOr, "||", 1, 13}};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
 
   for (auto & i : expected) {
@@ -127,7 +127,7 @@ TEST(Lexer, Identifiers) {
                          KL_Token{KL_TokenType::KL_TT_Identifier, "_1a", 3, 20},
                          KL_Token{KL_TokenType::KL_TT_Identifier, "longer_identifier", 4, 1}};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   
   for (auto & i : expected) {
@@ -154,7 +154,7 @@ TEST(Lexer, CharLiterals) {
                          KL_Token{KL_TokenType::KL_TT_Literal_Char, "'", 1, 28},
                          KL_Token{KL_TokenType::KL_TT_Literal_Char, "\\", 1, 33}};
   
-  Options options(2, argv);
+  CommandLineArguments options(2, argv);
   Lexer lexer(options);
   
   for (auto & i : expected) {

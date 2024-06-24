@@ -4,29 +4,42 @@
 
 #include <symtab.h>
 
-optional<SymTabEntry> SymTab::get(const std::string &name) {
-  if (entries.find(name) == entries.end()) {
-    return nullopt;
+using namespace std;
+
+bool SymTab::name_is_in_scope(std::string name) {
+  for (auto scope = scope_stack.rbegin(); scope != scope_stack.rend();
+       scope++) {
+    std::unordered_map<std::string, KL_Type>::iterator value =
+        scope->find(name);
+
+    if (value != scope->end()) {
+      return true;
+    }
   }
-  
-  SymTabEntry entry;
-  entry.name = name;
-  entry.type = entries[name].type;
-  entry.scope = entries[name].scope;
-  entry.stmt_num = entries[name].stmt_num;
-  return entry;
+
+  return false;
 }
 
-bool SymTab::insert(const SymTabEntry &entry) {
-  if (entries.find(entry.name) != entries.end()) {
-    return false;
+optional<KL_Type> SymTab::get_name_type(std::string name) {
+  for (auto scope = scope_stack.rbegin(); scope != scope_stack.rend(); scope++) {
+    std::unordered_map<std::string, KL_Type>::iterator value = scope->find(name);
+
+    if (value != scope->end()) {
+      return value->second;
+    }
   }
-  
-  InternalEntry internal_entry;
-  internal_entry.type = entry.type;
-  internal_entry.scope = entry.scope;
-  internal_entry.stmt_num = entry.stmt_num;
-  entries[entry.name] = internal_entry;
-  
-  return true;
+
+  return nullopt;
+}
+
+void SymTab::add_name(std::string name, KL_Type type) {
+  scope_stack.back()[name] = type;
+}
+
+void SymTab::enter_block() {
+  scope_stack.emplace_back();
+}
+
+void SymTab::exit_block() {
+  scope_stack.pop_back();
 }

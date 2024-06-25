@@ -1,2 +1,4 @@
 CompileFlags:
-  CompilationDatabase: build/ 
+  Add: [-std=c++17, -Wall]
+  Remove: [-Wno-unused-parameter]
+  CompilationDatabase: "build/"

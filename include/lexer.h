@@ -21,7 +21,7 @@ public:
   
   string lexerError;
   
-  optional<KL_Token> next();
+	optional<KL_Token> next();
 private:
   FILE *file{};
   

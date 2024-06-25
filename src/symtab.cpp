@@ -2,7 +2,7 @@
 // Created by kiran on 5/21/24.
 //
 
-#include <symtab.h>
+#include "symtab.h"
 
 using namespace std;
 

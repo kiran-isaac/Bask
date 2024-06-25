@@ -20,6 +20,8 @@ public:
   unsigned int col{};
   
   static unique_ptr<ASTExpr> fold(ASTExpr *);
+  
+  virtual KL_Type get_expr_type();
 
   [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Expr;
@@ -46,7 +48,7 @@ public:
 
   void check_semantics() override {}
 
-  KL_Type *get_expr_type() { return &type; };
+  KL_Type get_expr_type() { return KL_Type(type); };
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -69,7 +71,7 @@ public:
     return ExprIdentifier;
   }
 
-  KL_Type *get_expr_type();
+  KL_Type get_expr_type();
 
   void check_semantics() override;
 
@@ -98,6 +100,20 @@ public:
   void fold_expressions() override {
     for (auto &arg: *args) {
       arg = ASTExpr::fold(arg.get());
+    }
+  }
+
+  KL_Type get_expr_type() {
+    auto type = SYMTAB.get_name_type(name);
+    if (!type) {
+      throw std::runtime_error("Function " + name + " not found");
+    }
+    return type->get_return_type();
+  }
+
+  void check_semantics() override {
+    for (const auto &arg: *args) {
+      arg->check_semantics();
     }
   }
   
@@ -130,6 +146,8 @@ public:
 
   void check_semantics();
 
+  KL_Type get_expr_type();
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Binary Expression: " << token_type_to_string(op) << std::endl;
@@ -160,6 +178,8 @@ public:
   }
 
   void check_semantics();
+
+  KL_Type get_expr_type();
   
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

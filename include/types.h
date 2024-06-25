@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 using namespace std;
 
@@ -78,6 +79,17 @@ struct KL_Type {
       if (*signature != *other.signature) return false;
     }
     return true;
+  }
+
+  bool operator!=(const KL_Type &other) const {
+    return !(*this == other);
+  }
+
+  KL_Type get_return_type() {
+    if (kind != KL_FUNCTION) {
+      throw std::runtime_error("Type is not a function");
+    }
+    return signature->back();
   }
 };
 

@@ -13,8 +13,11 @@
 #include <iostream>
 #include <ostream>
 #include "lexer.h"
+#include "symtab.h"
 #include "tokens.h"
 #include "types.h"
+
+#define SYMTAB ASTNode::symtab
 
 using namespace std;
 
@@ -47,6 +50,8 @@ public:
     Program,
     FuncDecl
   };
+
+  static SymTab symtab;
     
   virtual void fold_expressions() {}
   

@@ -55,3 +55,5 @@ void ASTExprUnary::check_semantics() {
     throw std::runtime_error("Unknown unary operator");
   }
 }
+
+KL_Type ASTExprUnary::get_expr_type() { return KL_Type(expr->get_expr_type()); }

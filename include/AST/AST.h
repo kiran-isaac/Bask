@@ -53,12 +53,13 @@ public:
 
   static SymTab symtab;
     
-  virtual void fold_expressions() {}
   
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
   
   unsigned int line = 0;
   unsigned int col = 0;
+  
+  virtual void fold_expressions() {}
   
   virtual void print(int indent, ostream &out) const = 0;
 

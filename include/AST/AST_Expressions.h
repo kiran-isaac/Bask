@@ -21,7 +21,13 @@ public:
   
   static unique_ptr<ASTExpr> fold(ASTExpr *);
   
-  virtual KL_Type get_expr_type();
+  virtual KL_Type get_expr_type() {
+    return KL_Type();
+  };
+
+  virtual void print(int indent, ostream &out) const {};
+
+  virtual void check_semantics() {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override {
     return Expr;
@@ -48,7 +54,7 @@ public:
 
   void check_semantics() override {}
 
-  KL_Type get_expr_type() { return KL_Type(type); };
+  KL_Type get_expr_type() override { return KL_Type(type); };
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

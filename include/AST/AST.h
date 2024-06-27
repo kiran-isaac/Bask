@@ -5,13 +5,14 @@
 #ifndef KL_AST_H
 #define KL_AST_H
 
+#include <iostream>
 #include <memory>
+#include <ostream>
+#include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
-#include <stdexcept>
-#include <iostream>
-#include <ostream>
+
 #include "symtab.h"
 #include "tokens.h"
 #include "types.h"
@@ -23,23 +24,23 @@ using namespace std;
 void printIndent(int indent, ostream &out);
 
 class ASTNode {
-public:
+ public:
   enum ASTNodeType {
     Type,
-    
+
     Expr,
     ExprConstValue,
     ExprIdentifier,
     ExprFuncCall,
     ExprBinary,
     ExprUnary,
-    
+
     Stmt,
     StmtExpr,
     StmtAssignment,
     StmtDecl,
     Block,
-    
+
     ControlFlowIf,
     ControlFlowWhile,
     ControlFlowFor,
@@ -51,56 +52,51 @@ public:
   };
 
   static SymTab symtab;
-    
-  
+
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
-  
-  unsigned int line = 0;
-  unsigned int col = 0;
+
+  unsigned int line;
+  unsigned int col;
 
   virtual void fold_expressions() {}
-  
+
   virtual void print(int indent, ostream &out) const = 0;
 
   virtual void check_semantics() {}
-  
-  // 
-  static void SyntaxError(ASTNode *node, const string &message) {
-    printf("Syntax Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+
+  //
+  static void SyntaxError(unsigned int line, unsigned int col,
+                          const string &message) {
+    printf("Syntax Error at [%d, %d]: %s", line, col, message.c_str());
     exit(1);
   }
 
   // Variable already exists etc
-  static void ValueError(ASTNode *node, const string &message) {
-    printf("Value Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+  static void ValueError(unsigned int line, unsigned int col,
+                         const string &message) {
+    printf("Value Error at [%d, %d]: %s", line, col, message.c_str());
     exit(1);
   }
 
   // Type mismatch etc
-  static void TypeError(ASTNode *node, const string &message) {
-    printf("Type Error at [%d, %d]: %s", node->line, node->col, message.c_str());
-    exit(1);
-  }
-
-  static void ValueError(const ASTNode *node, const string &message) {
-    printf("Value Error at [%d, %d]: %s", node->line, node->col,
-           message.c_str());
+  static void TypeError(unsigned int line, unsigned int col,
+                        const string &message) {
+    printf("Type Error at [%d, %d]: %s", line, col, message.c_str());
     exit(1);
   }
 };
 
 class ASTType : public ASTNode {
-public:
+ public:
   KL_Type type;
   unsigned int line;
   unsigned int col;
-  
-  explicit ASTType(KL_Type type, unsigned int line, unsigned int col) : type(std::move(type)), line(line), col(col) {}
-  
-  [[nodiscard]] ASTNodeType get_AST_type() const override {
-    return Type;
-  }
-  
+
+  explicit ASTType(KL_Type type, unsigned int line, unsigned int col)
+      : type(std::move(type)), line(line), col(col) {}
+
+  [[nodiscard]] ASTNodeType get_AST_type() const override { return Type; }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << type.to_string() << std::endl;
@@ -120,7 +116,7 @@ class ASTProgram;
 
 // --------------------------- Program ---------------------------
 class ASTFuncDecl : public ASTNode {
-public:
+ public:
   string name;
   unique_ptr<ASTType> returnType;
   unique_ptr<ASTBlock> body;
@@ -129,22 +125,23 @@ public:
   unsigned int line;
   unsigned int col;
   ASTProgram *program;
-  
-  ASTFuncDecl(string name, unique_ptr<ASTType> returnType, vector<unique_ptr<ASTType>> argTypes, vector<string> argNames, unique_ptr<ASTBlock> body, unsigned int line,
-              unsigned int col) : name(std::move(name)), returnType(std::move(returnType)), body(std::move(body)),
-                                  line(line), col(col), argTypes(std::move(argTypes)), argNames(std::move(argNames)) {}
-  
-  [[nodiscard]] ASTNodeType get_AST_type() const override {
-    return FuncDecl;
-  }
-  
-  void fold_expressions() override {
-    body->fold_expressions();
-  }
 
-  void check_semantics() override {
-    body->check_semantics();
-  }
+  ASTFuncDecl(string name, unique_ptr<ASTType> returnType,
+              vector<unique_ptr<ASTType>> argTypes, vector<string> argNames,
+              unique_ptr<ASTBlock> body, unsigned int line, unsigned int col)
+      : name(std::move(name)),
+        returnType(std::move(returnType)),
+        body(std::move(body)),
+        line(line),
+        col(col),
+        argTypes(std::move(argTypes)),
+        argNames(std::move(argNames)) {}
+
+  [[nodiscard]] ASTNodeType get_AST_type() const override { return FuncDecl; }
+
+  void fold_expressions() override { body->fold_expressions(); }
+
+  void check_semantics() override { body->check_semantics(); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -154,33 +151,33 @@ public:
 };
 
 class ASTProgram : public ASTNode {
-protected:
+ protected:
   SymTab symtab;
-public:
+
+ public:
   vector<unique_ptr<ASTFuncDecl>> funcs;
-  
-  explicit ASTProgram(vector<unique_ptr<ASTFuncDecl>> funcs) : funcs(std::move(funcs)) {}
-  
-  [[nodiscard]] ASTNodeType get_AST_type() const override {
-    return Program;
-  }
-  
+
+  explicit ASTProgram(vector<unique_ptr<ASTFuncDecl>> funcs)
+      : funcs(std::move(funcs)) {}
+
+  [[nodiscard]] ASTNodeType get_AST_type() const override { return Program; }
+
   void fold_expressions() override {
-    for (auto &func: funcs) {
+    for (auto &func : funcs) {
       func->fold_expressions();
     }
   }
-  
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Program:" << std::endl;
-    for (const auto &func: funcs) {
+    for (const auto &func : funcs) {
       func->print(indent + 1, out);
     }
   }
-  
+
   void get_function_names(vector<string> &names) const {
-    for (const auto &func: funcs) {
+    for (const auto &func : funcs) {
       names.push_back(func->name);
     }
   }
@@ -192,7 +189,7 @@ public:
   }
 
   [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
-    for (const auto &func: funcs) {
+    for (const auto &func : funcs) {
       if (func->name == name) {
         return func.get();
       }
@@ -201,4 +198,4 @@ public:
   }
 };
 
-#endif //KL_AST_H
+#endif  // KL_AST_H

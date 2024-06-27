@@ -26,6 +26,9 @@ TEST(ASTFolding, IntBinary) {
         int i = 5 >= 5;
         int j = 5 == 5;
         int k = 5 != 5;
+        int l = 5 & 5;
+        int m = 5 | 5;
+        int n = 5 ^ 5;
     })";
 
   const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
@@ -112,6 +115,27 @@ TEST(ASTFolding, IntBinary) {
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
   ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
+
+  // 5 & 5
+  auto stmt12 = ast->get_function("main")->body->get_statement(11);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt12);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "5");
+
+  // 5 | 5
+  auto stmt13 = ast->get_function("main")->body->get_statement(12);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt13);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "5");
+
+  // 5 ^ 5
+  auto stmt14 = ast->get_function("main")->body->get_statement(13);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt14);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0");
 }
 
 // Binary expressions with both float types
@@ -495,4 +519,58 @@ TEST(ASTFolding, IntFloatBinary) {
   ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "25.000000");
 
+  // 5.0 / 5
+  auto stmt4 = ast->get_function("main")->body->get_statement(3);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt4);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "1.000000");
+
+  // 5 % 5.0
+  auto stmt5 = ast->get_function("main")->body->get_statement(4);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt5);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0.000000");
+
+  // 5.0 < 5
+  auto stmt6 = ast->get_function("main")->body->get_statement(5);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt6);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
+
+  // 5 <= 5.0
+  auto stmt7 = ast->get_function("main")->body->get_statement(6);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt7);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
+
+  // 5 > 5
+  auto stmt8 = ast->get_function("main")->body->get_statement(7);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt8);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
+
+  // 5 >= 5.0
+  auto stmt9 = ast->get_function("main")->body->get_statement(8);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt9);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
+
+  // 5 == 5
+  auto stmt10 = ast->get_function("main")->body->get_statement(9);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt10);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+
+  // 5 != 5.0
+  auto stmt11 = ast->get_function("main")->body->get_statement(10);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt11);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 }

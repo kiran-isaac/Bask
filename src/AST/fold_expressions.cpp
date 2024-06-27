@@ -24,7 +24,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       case KL_TT_Operator_BitwiseNot:
         return make_unique<ASTExprConstantValue>(value->type, to_string(~val), value->line, value->col);
       default:
-        ASTNode::SyntaxError(unary, "Invalid unary operator for int value");
+        ASTNode::SyntaxError(unary->line, unary->col, "Invalid unary operator for int value");
     }
   } else if (value->type.primitive == KL_FLOAT) {
     float val = stof(value->value);
@@ -32,7 +32,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       case KL_TT_Operator_Sub:
         return make_unique<ASTExprConstantValue>(value->type, to_string(-val), value->line, value->col);
       default:
-        ASTNode::SyntaxError(unary, "Invalid unary operator for float value");
+        ASTNode::SyntaxError(unary->line, unary->col, "Invalid unary operator for float value");
     }
   } else if (value->type.primitive == KL_BOOL) {
     bool val = value->value == "true";
@@ -40,11 +40,11 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       case KL_TT_Operator_LogicalNot:
         return make_unique<ASTExprConstantValue>(value->type, val ? "false" : "true", value->line, value->col);
       default:
-        ASTNode::SyntaxError(unary, "Invalid unary operator for boolean value");
+        ASTNode::SyntaxError(unary->line, unary->col, "Invalid unary operator for boolean value");
     }
   }
   
-  ASTNode::SyntaxError(unary, "Unary operators are only supported for int, float and bool types");
+  ASTNode::SyntaxError(unary->line, unary->col, "Unary operators are only supported for int, float and bool types");
 }
 
 unique_ptr<ASTExpr> ASTExpr::fold(ASTExpr *expr) {

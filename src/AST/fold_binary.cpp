@@ -42,7 +42,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
 
     switch (v2->type.primitive) {
       default:
-        ASTNode::SyntaxError(binary, "Invalid type in string expression");
+        ASTNode::SyntaxError(binary->line, binary->col, "Invalid type in string expression");
       case KL_STRING:
       case KL_CHAR:
         s2 = v2->value;

@@ -13,6 +13,19 @@
         "cwd": "${workspaceFolder}/build"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "build with ninja",
+      "type": "shell",
+      "command": "ninja",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "problemMatcher": []
     }
   ]
 }

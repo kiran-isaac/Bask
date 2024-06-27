@@ -22,7 +22,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       case KL_TT_Operator_Sub:
         return make_unique<ASTExprConstantValue>(value->type, to_string(-val), value->line, value->col);
       case KL_TT_Operator_BitwiseNot:
-        return make_unique<ASTExprConstantValue>(value->type, to_string(!val), value->line, value->col);
+        return make_unique<ASTExprConstantValue>(value->type, to_string(~val), value->line, value->col);
       default:
         ASTNode::SyntaxError(unary, "Invalid unary operator for int value");
     }

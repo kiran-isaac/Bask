@@ -12,7 +12,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <ostream>
-#include "lexer.h"
 #include "symtab.h"
 #include "tokens.h"
 #include "types.h"
@@ -58,20 +57,28 @@ public:
   
   unsigned int line = 0;
   unsigned int col = 0;
-  
+
   virtual void fold_expressions() {}
   
   virtual void print(int indent, ostream &out) const = 0;
 
   virtual void check_semantics() {}
   
+  // 
   static void SyntaxError(ASTNode *node, const string &message) {
     printf("Syntax Error at [%d, %d]: %s", node->line, node->col, message.c_str());
     exit(1);
   }
 
+  // Variable already exists etc
   static void ValueError(ASTNode *node, const string &message) {
     printf("Value Error at [%d, %d]: %s", node->line, node->col, message.c_str());
+    exit(1);
+  }
+
+  // Type mismatch etc
+  static void TypeError(ASTNode *node, const string &message) {
+    printf("Type Error at [%d, %d]: %s", node->line, node->col, message.c_str());
     exit(1);
   }
 

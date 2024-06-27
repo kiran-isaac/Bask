@@ -59,14 +59,27 @@ unique_ptr<ASTStmt> Parser::parse_statement() {
     case KL_TT_KW_Char:
     case KL_TT_KW_String:
       return parse_declaration();
+
+    // if identifier then check if it is a function call, an assignment or an expression statement
     case KL_TT_Identifier:
       switch (peek(1).type) {
+        // Function call
         case KL_TT_Punctuation_LParen:
+        // Or binary operator
+        case BIN_OP_CASES:
           return parse_expression_statement();
+
         case KL_TT_Operator_Assign:
           return parse_assignment();
       }
+
+    // if it is a literal or a unary operator then it is an expression statement
+    case LITERAL_CASES:
+    case UN_OP_CASES:
+      return parse_expression_statement();
+
+    
     default:
-      parserError("Expected assignment");
+      parserError("Invalid token to start a statement");
   }
 }

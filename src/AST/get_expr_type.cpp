@@ -10,9 +10,10 @@ KL_Type ASTExprIdentifier::get_expr_type() {
 }
 
 KL_Type ASTExprBinary::get_expr_type() {
-  KL_Type lhs_type = lhs->get_expr_type();
-  KL_Type rhs_type = rhs->get_expr_type();
-  if (lhs_type != rhs_type) {
-    throw std::runtime_error("Type mismatch in binary expression");
+  if (checked) {
+    return type;
   }
+
+  check_semantics();
+  return type;
 }

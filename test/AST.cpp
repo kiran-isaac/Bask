@@ -374,6 +374,13 @@ TEST(ASTFolding, CharBinary) {
     R"(int main() {
         char j = 'a' == 'b';
         char k = 'a' != 'b';
+        char l = 'a' > 'b';
+        char m = 'a' >= 'b';
+        char n = 'a' < 'b';
+        char o = 'a' <= 'b';
+        char p = 'a' & 'b';
+        char q = 'a' | 'b';
+        char r = 'a' ^ 'b';
     })";
   const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
   
@@ -397,6 +404,55 @@ TEST(ASTFolding, CharBinary) {
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
   ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
+
+  // 'a' > 'b'
+  auto stmt3 = ast->get_function("main")->body->get_statement(2);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt3);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
+
+  // 'a' >= 'b'
+  auto stmt4 = ast->get_function("main")->body->get_statement(3);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt4);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
+
+  // 'a' < 'b'
+  auto stmt5 = ast->get_function("main")->body->get_statement(4);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt5);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
+
+  // 'a' <= 'b'
+  auto stmt6 = ast->get_function("main")->body->get_statement(5);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt6);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
+
+  // 'a' & 'b'
+  auto stmt7 = ast->get_function("main")->body->get_statement(6);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt7);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_CHAR);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "\x01");
+
+  // 'a' | 'b'
+  auto stmt8 = ast->get_function("main")->body->get_statement(7);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt8);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_CHAR);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "b");
+
+  // 'a' ^ 'b'
+  auto stmt9 = ast->get_function("main")->body->get_statement(8);
+  decl = dynamic_cast<ASTStmtDecl *>(stmt9);
+  expr = dynamic_cast<ASTExpr *>(decl->value.get());
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_CHAR);
+  ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "b");
 }
 
 TEST(ASTFolding, IntUnary) {

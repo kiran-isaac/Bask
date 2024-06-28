@@ -93,6 +93,8 @@ struct KL_Type {
   }
 };
 
+string primitive_to_string(const KL_PrimitiveType &type);
+
 #define BOOL_CONST KL_Type(true, KL_BOOL)
 #define INT_CONST KL_Type(true, KL_INT)
 #define FLOAT_CONST KL_Type(true, KL_FLOAT)

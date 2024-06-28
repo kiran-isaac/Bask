@@ -35,26 +35,27 @@ void ASTExprBinary::check_semantics() {
         this->line, this->col, "Binary operation can only be applied to primitive types");
   }
 
-  type = KL_Type(lhs_type);
+  bool is_const = lhs_type.is_const && rhs_type.is_const;
 
   if (lhs_type.primitive == KL_STRING || rhs_type.primitive == KL_STRING) {
     auto t1 = lhs_type.primitive == KL_STRING ? lhs_type : rhs_type;
     auto t2 = lhs_type.primitive == KL_STRING ? rhs_type : lhs_type;
 
-    if (t2.primitive != KL_STRING && t2.primitive != KL_CHAR) {
+    if (t2.primitive != KL_STRING) {
       ASTNode::TypeError(this->line, this->col, "Invalid type in string expression");
     }
 
-    // t1 is definitely a string
-    // t2 could be a string or char
+    // both t1 and t2 are strings
     switch (op) {
       // Valid operations for t2 being a string or char
       case KL_TT_Operator_Add:
+        type = KL_Type(is_const, KL_STRING);
         break;
 
       // Valid operations for t2 being a string
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
+        type = KL_Type(is_const, KL_BOOL);
         break;
 
       default:
@@ -77,6 +78,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_Mul:
       case KL_TT_Operator_Div:
       case KL_TT_Operator_Mod:
+        type = KL_Type(is_const, KL_FLOAT);
         break;
 
       // Valid operations for t2 being a float
@@ -86,6 +88,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_LessEqual:
       case KL_TT_Operator_Greater:
       case KL_TT_Operator_GreaterEqual:
+        type = KL_Type(is_const, KL_BOOL);
         break;
 
       default:
@@ -95,7 +98,7 @@ void ASTExprBinary::check_semantics() {
     auto t1 = lhs_type.primitive == KL_INT ? lhs_type : rhs_type;
     auto t2 = lhs_type.primitive == KL_INT ? rhs_type : lhs_type;
 
-    if (t2.primitive != KL_INT && t2.primitive != KL_CHAR) {
+    if (t2.primitive != KL_INT) {
       ASTNode::TypeError(this->line, this->col, "Invalid type in int expression");
     }
 
@@ -111,6 +114,8 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_Mod:
       case KL_TT_Operator_Shl:
       case KL_TT_Operator_Shr:
+        type = KL_Type(is_const, KL_INT);
+        break;
       // Comparisons 
       case KL_TT_Operator_Less:
       case KL_TT_Operator_LessEqual:
@@ -118,13 +123,17 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_GreaterEqual:
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
+        type = KL_Type(is_const, KL_BOOL);
         break;
 
       // Valid operations for t2 being an int
       case KL_TT_Operator_BitwiseAnd:
       case KL_TT_Operator_BitwiseOr:
       case KL_TT_Operator_BitwiseXor:
-        if (t2.primitive == KL_INT) break;
+        if (t2.primitive == KL_INT) {
+          type = KL_Type(is_const, KL_INT);
+          break;
+        }
 
       default:
         ASTNode::SyntaxError(this->line, this->col, "Invalid operator in " + t1.to_string() + " and " + t2.to_string() + " binary expression");
@@ -137,6 +146,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_NotEqual:
       case KL_TT_Operator_LogicalAnd:
       case KL_TT_Operator_LogicalOr:
+        type = KL_Type(is_const, KL_BOOL);
         break;
 
       default:
@@ -148,15 +158,8 @@ void ASTExprBinary::check_semantics() {
       // Valid operations for char
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
-      case KL_TT_Operator_Less:
-      case KL_TT_Operator_LessEqual:
-      case KL_TT_Operator_Greater:
-      case KL_TT_Operator_GreaterEqual:
-      case KL_TT_Operator_BitwiseAnd:
-      case KL_TT_Operator_BitwiseOr:
-      case KL_TT_Operator_BitwiseXor:
+        type = KL_Type(is_const, KL_BOOL);
         break;
-
       default:
         ASTNode::SyntaxError(this->line, this->col, "Invalid operator in " + lhs_type.to_string() + " and " + rhs_type.to_string() + " binary expression");
     }

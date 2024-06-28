@@ -64,25 +64,28 @@ class ASTNode {
 
   virtual void check_semantics() {}
 
-  //
   static void SyntaxError(unsigned int line, unsigned int col,
                           const string &message) {
-    printf("Syntax Error at [%d, %d]: %s", line, col, message.c_str());
-    exit(1);
+    string msg = "Syntax Error at [" + to_string(line) + ", " + to_string(col) +
+                 "]: " + message;
+    throw std::runtime_error(msg);
   }
 
   // Variable already exists etc
   static void ValueError(unsigned int line, unsigned int col,
                          const string &message) {
-    printf("Value Error at [%d, %d]: %s", line, col, message.c_str());
-    exit(1);
+    string msg = "Value Error at [" + to_string(line) + ", " + to_string(col) +
+                  "]: " + message;
+    throw std::runtime_error(msg);
   }
 
   // Type mismatch etc
   static void TypeError(unsigned int line, unsigned int col,
                         const string &message) {
-    printf("Type Error at [%d, %d]: %s", line, col, message.c_str());
-    exit(1);
+    string msg = "Type Error at [" + to_string(line) + ", " + to_string(col) +
+                  "]: " + message;
+    throw std::runtime_error(msg);
+
   }
 };
 

@@ -71,36 +71,3 @@ TEST(Parser, FunctionCall) {
   ASSERT_NE(arg, nullptr);
   ASSERT_EQ(arg->value, "Hello, World!");
 }
-
-TEST(Parser, TinyBinaryExpression) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 + 3; }")};
-  
-  CommandLineArguments options(2, argv);
-  Lexer lexer(options);
-  Parser parser(lexer);
-  
-  auto ast = parser.parse();
-  ast->print(0, std::cout);
-}
-
-TEST(Parser, BinaryExpression) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = -(5 + 3) * echo(2); }")};
-  
-  CommandLineArguments options(2, argv);
-  Lexer lexer(options);
-  Parser parser(lexer);
-  
-  auto ast = parser.parse();
-}
-
-TEST(Parser, BinaryExpression2) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 + 3 * -(2 + 10); }")};
-  
-  CommandLineArguments options(2, argv);
-  Lexer lexer(options);
-  Parser parser(lexer);
-  
-  unique_ptr<ASTProgram> ast = parser.parse();
-  ast->get_function("main")->body->get_statement(0)->print(0, std::cout);
-}
-

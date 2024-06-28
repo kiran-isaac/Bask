@@ -251,13 +251,13 @@ unique_ptr<ASTExpr> ASTExpr::fold_binary(ASTExpr *expr) {
         return make_unique<ASTExprConstantValue>(
             BOOL_CONST, c1 >= c2 ? "true" : "false", lhs->line, lhs->col);
       case KL_TT_Operator_BitwiseAnd:
-        return make_unique<ASTExprConstantValue>(CHAR_CONST, to_string(c1 & c2),
+        return make_unique<ASTExprConstantValue>(CHAR_CONST, string(1, c1 & c2),
                                                  lhs->line, lhs->col);
       case KL_TT_Operator_BitwiseOr:
-        return make_unique<ASTExprConstantValue>(CHAR_CONST, to_string(c1 | c2),
+        return make_unique<ASTExprConstantValue>(CHAR_CONST, string(1, c1 | c2),
                                                  lhs->line, lhs->col);
       case KL_TT_Operator_BitwiseXor:
-        return make_unique<ASTExprConstantValue>(CHAR_CONST, to_string(c1 ^ c2),
+        return make_unique<ASTExprConstantValue>(CHAR_CONST, string(1, c1 ^ c2),
                                                  lhs->line, lhs->col);
       default:
         throw std::runtime_error(

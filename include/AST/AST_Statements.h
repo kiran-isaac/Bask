@@ -128,6 +128,8 @@ class ASTBlock : public ASTNode {
 
   ASTStmt *get_statement(int i) { return body[i].get(); }
 
+  int size() { return body.size(); }
+
   void check_semantics() {
     for (auto &stmt : body) {
       stmt->check_semantics();

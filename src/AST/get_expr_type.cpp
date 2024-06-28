@@ -4,7 +4,7 @@
 KL_Type ASTExprIdentifier::get_expr_type() {
   auto type = SYMTAB.get_name_type(name);
   if (!type) {
-    throw std::runtime_error("Variable " + name + " not found");
+    ASTNode::ValueError(this->line, this->col, "Variable " + name + " does not exist");
   }
   return *type;
 }

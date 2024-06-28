@@ -58,7 +58,8 @@ void ASTStmtDecl::check_semantics() {
   KL_Type lhstype = KL_Type(type->type);
   KL_Type rhstype = value->get_expr_type();
   if (lhstype.kind != rhstype.kind) {
-    ASTNode::TypeError(this->line, this->col, "Type mismatch in declaration");
+    ASTNode::TypeError(this->line, this->col, "Type mismatch in declaration. Expected '" +
+        lhstype.to_string() + "' but got '" + rhstype.to_string() + "'");
   }
   if (lhstype.is_const && !rhstype.is_const) {
     ASTNode::TypeError(this->line, this->col,
@@ -69,18 +70,25 @@ void ASTStmtDecl::check_semantics() {
     case KL_PRIMITIVE:
       if (lhstype.primitive != rhstype.primitive) {
         ASTNode::TypeError(this->line, this->col,
-                           "Type mismatch in declaration");
+                           "Type mismatch in declaration. Expected '" +
+                               lhstype.to_string() + "' but got '" +
+                               rhstype.to_string() + "'");
       }
       break;
     case KL_ARRAY:
       if (lhstype.array_sizes != rhstype.array_sizes) {
         ASTNode::TypeError(this->line, this->col,
-                           "Incompatible array sizes in declaration");
+                           "Incompatible array sizes in declaration. Expected '" +
+                               lhstype.to_string() + "' but got '" +
+                               rhstype.to_string() + "'");
       }
       if (lhstype.primitive != rhstype.primitive) {
         ASTNode::TypeError(this->line, this->col,
-                           "Incompatible array type in declaration");
+                           "Incompatible array type in declaration. Expected '" +
+                               lhstype.to_string() + "' but got '" +
+                               rhstype.to_string() + "'");
       }
+      
       break;
     case KL_FUNCTION:
       throw std::runtime_error(
@@ -88,6 +96,8 @@ void ASTStmtDecl::check_semantics() {
     default:
       ASTNode::TypeError(this->line, this->col, "Type mismatch in declaration");
   }
+
+  SYMTAB.add_name(name, lhstype);
 }
 
 void ASTExprBinary::check_semantics() {

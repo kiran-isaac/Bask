@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/KLTest",
-      "args": ["--gtest_filter=GetExprType.Binary"],
+      "args": [""],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],

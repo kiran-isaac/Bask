@@ -87,6 +87,8 @@ class ASTNode {
     throw std::runtime_error(msg);
 
   }
+
+  // TODO add warning functions
 };
 
 class ASTType : public ASTNode {

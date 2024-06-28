@@ -2,11 +2,13 @@
 // Created by kiran on 5/21/24.
 //
 
-#include "AST/AST.h"
 #include <gtest/gtest.h>
+
 #include <memory>
-#include <parser.h>
 #include <sstream>
+
+#include "AST/AST.h"
+#include "parser.h"
 #include "utils/utils.h"
 
 using namespace std;
@@ -14,7 +16,7 @@ using namespace std;
 // Binary expressions with both int types
 TEST(ASTFolding, IntBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         int a = 5 + 5;
         int b = 5 - 5;
         int c = 5 * 5;
@@ -31,7 +33,7 @@ TEST(ASTFolding, IntBinary) {
         int n = 5 ^ 5;
     })";
 
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -141,7 +143,7 @@ TEST(ASTFolding, IntBinary) {
 // Binary expressions with both float types
 TEST(ASTFolding, FloatBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         float a = 5.0 + 5.0;
         float b = 5.0 - 5.0;
         float c = 5.0 * 5.0;
@@ -155,7 +157,7 @@ TEST(ASTFolding, FloatBinary) {
         float k = 5.0 != 5.0;
     })";
 
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -245,14 +247,14 @@ TEST(ASTFolding, FloatBinary) {
 // Binary expressions with both string types
 TEST(ASTFolding, StringBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         string d = "Hello, " + "World!";
         string a = "Hello, " + "World!";
         bool b = "Hello, " == "World!";
         bool c = "Hello, " != "World!";
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -292,7 +294,7 @@ TEST(ASTFolding, StringBinary) {
 // Binary expressions with both bool types
 TEST(ASTFolding, BoolBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         bool a = true && true;
         bool b = true || false;
         bool c = true && false;
@@ -302,8 +304,8 @@ TEST(ASTFolding, BoolBinary) {
         bool g = false && true;
         bool h = false || false;
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -371,12 +373,12 @@ TEST(ASTFolding, BoolBinary) {
 // Binary expressions with both char types
 TEST(ASTFolding, CharBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         char j = 'a' == 'b';
         char k = 'a' != 'b';
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -401,12 +403,12 @@ TEST(ASTFolding, CharBinary) {
 
 TEST(ASTFolding, IntUnary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         int a = -5;
         int b = ~5;
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -431,11 +433,11 @@ TEST(ASTFolding, IntUnary) {
 
 TEST(ASTFolding, FloatUnary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         float a = -5.0;
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -453,11 +455,11 @@ TEST(ASTFolding, FloatUnary) {
 
 TEST(ASTFolding, BoolUnary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         bool a = !true;
     })";
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
-  
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
   Parser parser(lexer);
@@ -475,7 +477,7 @@ TEST(ASTFolding, BoolUnary) {
 
 TEST(ASTFolding, IntFloatBinary) {
   string program =
-    R"(int main() {
+      R"(int main() {
         float a = 5 + 5.0;
         float b = 5.0 - 5;
         float c = 5 * 5.0;
@@ -489,7 +491,7 @@ TEST(ASTFolding, IntFloatBinary) {
         float k = 5 != 5.0;
     })";
 
-  const char* argv[] = {"KL", insertIntoTempFile(program.c_str())};
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);

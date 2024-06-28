@@ -28,6 +28,10 @@ public:
   void add_name(std::string, KL_Type);
   void enter_block();
   void exit_block();
+  void wipe() {
+    scope_stack.clear();
+    enter_block();
+  }
   void print() {
     cout << "Scope Stack" << endl;
     for (auto scope = scope_stack.rbegin(); scope != scope_stack.rend(); scope++) {

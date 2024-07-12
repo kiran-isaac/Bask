@@ -7,6 +7,7 @@
 
 #include "AST.h"
 #include "symtab.h"
+#include <llvm/IR/Value.h>
 
 class ASTExpr : public ASTNode {
  private:
@@ -27,6 +28,8 @@ class ASTExpr : public ASTNode {
   virtual void print(int indent, ostream &out) const {};
 
   virtual void check_semantics() {}
+
+  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Expr; }
 };
@@ -53,6 +56,8 @@ class ASTExprConstantValue : public ASTExpr {
 
   KL_Type get_expr_type() override { return KL_Type(type); };
 
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Value: " << value << std::endl;
@@ -77,6 +82,8 @@ class ASTExprIdentifier : public ASTExpr {
   KL_Type get_expr_type();
 
   void check_semantics() override;
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -122,6 +129,8 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
 
@@ -164,6 +173,8 @@ class ASTExprBinary : public ASTExpr {
 
   KL_Type get_expr_type();
 
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Binary Expression: " << token_type_to_string(op) << std::endl;
@@ -195,18 +206,13 @@ class ASTExprUnary : public ASTExpr {
 
   KL_Type get_expr_type();
 
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Unary Expression: " << token_type_to_string(op) << std::endl;
     expr->print(indent + 1, out);
   }
-};
-
-class ASTExpressionCast : public ASTExpr {
- public:
-  ASTProgram *program;
-  unique_ptr<ASTExpr> expr;
-  unique_ptr<ASTType> type;
 };
 
 #endif  // KL_AST_EXPRESSIONS_H

@@ -16,6 +16,7 @@
 #include "symtab.h"
 #include "tokens.h"
 #include "types.h"
+#include "codegen.h"
 
 #define SYMTAB ASTNode::symtab
 
@@ -64,6 +65,8 @@ class ASTNode {
 
   virtual void check_semantics() {}
 
+  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
+
   static void SyntaxError(unsigned int line, unsigned int col,
                           const string &message) {
     string msg = "Syntax Error at [" + to_string(line) + ", " + to_string(col) +
@@ -101,6 +104,8 @@ class ASTType : public ASTNode {
       : type(std::move(type)), line(line), col(col) {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Type; }
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -148,6 +153,8 @@ class ASTFuncDecl : public ASTNode {
 
   void check_semantics() override { body->check_semantics(); }
 
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << returnType->type.to_string() << " function: " << name << std::endl;
@@ -192,6 +199,8 @@ class ASTProgram : public ASTNode {
       func->check_semantics();
     }
   }
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
     for (const auto &func : funcs) {

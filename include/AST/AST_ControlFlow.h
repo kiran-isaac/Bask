@@ -18,7 +18,9 @@ class ASTControLFlowIf : ASTStmt {
   [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ControlFlowIf;
   }
-  
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   ASTControLFlowIf(unique_ptr<ASTExpr> condition, unique_ptr<ASTStmt> then_block, unique_ptr<ASTStmt> else_block)
     : condition(std::move(condition)), then_block(std::move(then_block)), else_block(std::move(else_block)) {}
 };

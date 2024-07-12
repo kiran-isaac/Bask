@@ -19,6 +19,8 @@ class ASTStmt : public ASTNode {
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
 
   virtual void print(int indent, ostream &out) const = 0;
+
+  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
 };
 
 class ASTStmtExpr : public ASTStmt {
@@ -38,6 +40,8 @@ class ASTStmtExpr : public ASTStmt {
   void check_semantics() override { expr->check_semantics(); }
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtExpr; }
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -66,6 +70,8 @@ class ASTStmtAssignment : public ASTStmt {
   [[nodiscard]] ASTNodeType get_AST_type() const override {
     return StmtAssignment;
   }
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -96,6 +102,8 @@ class ASTStmtDecl : public ASTStmt {
   void fold_expressions() override { value = ASTExpr::fold(value.get()); }
 
   void check_semantics() override;
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -135,6 +143,8 @@ class ASTBlock : public ASTNode {
       stmt->check_semantics();
     }
   }
+
+  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

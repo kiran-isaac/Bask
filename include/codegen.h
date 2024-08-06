@@ -57,17 +57,23 @@ public:
   }
 };
 
-enum CodeGenResultType { CodeGenResultType_Value, CodeGenResultType_Error };
+enum CodeGenResultType {
+  CodeGenResultType_Value,
+  CodeGenResultType_Error,
+  CodeGenResultType_None,
+  CodeGenResultType_Type
+};
 
 class KLCodeGenResult {
 private:
   CodeGenResultType type;
   union {
     llvm::Value *value;
+    llvm::Type *llvm_type;
     std::string error;
   };
 
-  KLCodeGenResult(CodeGenResultType type, llvm::Value *value, std::string error)
+  KLCodeGenResult(CodeGenResultType type, llvm::Value *value, std::string error, llvm::Type *llvm_type)
       : type(type) {
     switch (type) {
     case CodeGenResultType_Value:
@@ -75,6 +81,11 @@ private:
       break;
     case CodeGenResultType_Error:
       this->error = error;
+      break;
+    case CodeGenResultType_Type:
+      this->llvm_type = llvm_type;
+      break;
+    case CodeGenResultType_None:
       break;
     }
   }
@@ -97,11 +108,19 @@ public:
   }
 
   static KLCodeGenResult *Error(const std::string &error) {
-    return new KLCodeGenResult(CodeGenResultType_Error, nullptr, error);
+    return new KLCodeGenResult(CodeGenResultType_Error, nullptr, error, nullptr);
   }
 
   static KLCodeGenResult *Value(llvm::Value *value) {
-    return new KLCodeGenResult(CodeGenResultType_Value, value, "");
+    return new KLCodeGenResult(CodeGenResultType_Value, value, nullptr, nullptr);
+  }
+
+  static KLCodeGenResult *Type(llvm::Type *llvm_type) {
+    return new KLCodeGenResult(CodeGenResultType_Type, nullptr, nullptr, llvm_type);
+  }
+
+  static KLCodeGenResult *None() {
+    return new KLCodeGenResult(CodeGenResultType_None, nullptr, nullptr, nullptr);
   }
 };
 

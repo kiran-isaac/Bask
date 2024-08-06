@@ -173,7 +173,7 @@ TEST(GetExprType, Binary) {
         bool contained = false;
         KL_PrimitiveType result = KL_VOID;
         for (auto& type : types) {
-          if (type.lhs == p1 && type.rhs == p2 || type.rhs == p1 && type.lhs == p2) {
+          if ((type.lhs == p1 && type.rhs == p2) || (type.rhs == p1 && type.lhs == p2)) {
             contained = true;
             result = type.result;
             break;

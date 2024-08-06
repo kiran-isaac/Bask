@@ -2,6 +2,7 @@
 #define BB6A20A0_E738_4288_B176_043F7A743F89
 
 #include <iostream>
+#include <llvm-14/llvm/IR/Type.h>
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -106,6 +107,8 @@ public:
     printIndent(indent, out);
     out << type.to_string() << std::endl;
   }
+
+  llvm::Type *to_llvm_type();
 };
 
 class ASTProgram;

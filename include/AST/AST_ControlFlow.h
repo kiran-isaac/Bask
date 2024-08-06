@@ -6,11 +6,8 @@
 #define KL_AST_CONTROLFLOW_H
 
 #include "AST_Statements.h"
-#include "AST_Expressions.h"
-
 
 class ASTControLFlowIf : ASTStmt {
-  ASTProgram *program;
   unique_ptr<ASTExpr> condition;
   unique_ptr<ASTStmt> then_block;
   unique_ptr<ASTStmt> else_block;
@@ -19,7 +16,7 @@ class ASTControLFlowIf : ASTStmt {
     return ControlFlowIf;
   }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   ASTControLFlowIf(unique_ptr<ASTExpr> condition, unique_ptr<ASTStmt> then_block, unique_ptr<ASTStmt> else_block)
     : condition(std::move(condition)), then_block(std::move(then_block)), else_block(std::move(else_block)) {}

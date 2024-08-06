@@ -3,10 +3,10 @@
 
 using namespace llvm;
 
-CodeGenResult KLCodeGenVisitor::visit(ASTStmtExpr *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtExpr *node) {}
 
-CodeGenResult KLCodeGenVisitor::visit(ASTStmtAssignment *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtAssignment *node) {}
 
-CodeGenResult KLCodeGenVisitor::visit(ASTStmtDecl *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {}
 
-CodeGenResult KLCodeGenVisitor::visit(ASTBlock *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTBlock *node) {}

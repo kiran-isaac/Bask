@@ -6,6 +6,7 @@
 #define KL_CODEGEN_H
 
 #include <map>
+#include <string>
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -31,10 +32,10 @@ class ASTBlock;
 class ASTControLFlowIf;
 
 class NamedValuesClass {
- private:
+private:
   std::vector<std::map<std::string, llvm::Value *>> NamedValuesStack;
 
- public:
+public:
   void enterScope() { NamedValuesStack.push_back({}); }
 
   void exitScope() { NamedValuesStack.pop_back(); }
@@ -48,7 +49,7 @@ class NamedValuesClass {
         return found->second;
       }
     }
-    return nullptr;  // or throw an error
+    return nullptr; // or throw an error
   }
 
   void addValue(const std::string &name, llvm::Value *value) {
@@ -56,43 +57,87 @@ class NamedValuesClass {
   }
 };
 
-static NamedValuesClass NamedValues;
+enum CodeGenResultType { CodeGenResultType_Value, CodeGenResultType_Error };
 
-struct CodeGenResult {
-  llvm::Value *value;
+class KLCodeGenResult {
+private:
+  CodeGenResultType type;
+  union {
+    llvm::Value *value;
+    std::string error;
+  };
+
+  KLCodeGenResult(CodeGenResultType type, llvm::Value *value, std::string error)
+      : type(type) {
+    switch (type) {
+    case CodeGenResultType_Value:
+      this->value = value;
+      break;
+    case CodeGenResultType_Error:
+      this->error = error;
+      break;
+    }
+  }
+
+public:
+  CodeGenResultType getTypeOfResult() { return type; }
+
+  llvm::Value *getValue() {
+    if (type != CodeGenResultType_Value) {
+      throw std::runtime_error("Value is not available");
+    }
+    return value;
+  }
+
+  std::string getError() {
+    if (type != CodeGenResultType_Error) {
+      throw std::runtime_error("Error is not available");
+    }
+    return error;
+  }
+
+  static KLCodeGenResult *Error(const std::string &error) {
+    return new KLCodeGenResult(CodeGenResultType_Error, nullptr, error);
+  }
+
+  static KLCodeGenResult *Value(llvm::Value *value) {
+    return new KLCodeGenResult(CodeGenResultType_Value, value, "");
+  }
 };
 
 class KLCodeGenVisitor {
- private:
+private:
   llvm::LLVMContext TheContext;
   llvm::IRBuilder<> Builder;
   llvm::Module *TheModule;
 
- public:
+public:
+  NamedValuesClass NamedValues;
+
   KLCodeGenVisitor(const char *module_name) : Builder(TheContext) {
     TheModule = new llvm::Module(module_name, TheContext);
   }
 
   // Declared in AST.h
-  CodeGenResult visit(ASTType *node);
-  CodeGenResult visit(ASTFuncDecl *node);
-  CodeGenResult visit(ASTProgram *node);
+  KLCodeGenResult *visit(ASTType *node);
+  KLCodeGenResult *visit(ASTFuncDecl *node);
+  KLCodeGenResult *visit(ASTProgram *node);
 
   // Declared in AST_Expressions.h
-  CodeGenResult visit(ASTExprConstantValue *node);
-  CodeGenResult visit(ASTExprIdentifier *node);
-  CodeGenResult visit(ASTExprFuncCall *node);
-  CodeGenResult visit(ASTExprBinary *node);
-  CodeGenResult visit(ASTExprUnary *node);
+  KLCodeGenResult *visit(ASTExprConstantValue *node);
+  KLCodeGenResult *visit(ASTExprIdentifier *node);
+  KLCodeGenResult *visit(ASTExprFuncCall *node);
+  KLCodeGenResult *visit(ASTExprBinary *node);
+  KLCodeGenResult *visit(ASTExprUnary *node);
 
   // Declared in AST_Statements.h
-  CodeGenResult visit(ASTStmtExpr *node);
-  CodeGenResult visit(ASTStmtAssignment *node);
-  CodeGenResult visit(ASTStmtDecl *node);
-  CodeGenResult visit(ASTBlock *node);
+  KLCodeGenResult *visit(ASTStmtExpr *node);
+  KLCodeGenResult *visit(ASTStmtAssignment *node);
+  KLCodeGenResult *visit(ASTStmtDecl *node);
+  KLCodeGenResult *visit(ASTBlock *node);
 
   // Declared in AST_ControlFlow.h
-  CodeGenResult visit(ASTControLFlowIf *node);
+  KLCodeGenResult *visit(ASTControLFlowIf *node);
 };
 
-#endif  // KL_CODEGEN_H
+#endif // KL_CODEGEN_H

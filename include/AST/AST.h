@@ -18,103 +18,6 @@
 #include "types.h"
 #include "codegen.h"
 
-#define SYMTAB ASTNode::symtab
-
-using namespace std;
-
-void printIndent(int indent, ostream &out);
-
-class ASTNode {
- public:
-  enum ASTNodeType {
-    Type,
-
-    Expr,
-    ExprConstValue,
-    ExprIdentifier,
-    ExprFuncCall,
-    ExprBinary,
-    ExprUnary,
-
-    Stmt,
-    StmtExpr,
-    StmtAssignment,
-    StmtDecl,
-    Block,
-
-    ControlFlowIf,
-    ControlFlowWhile,
-    ControlFlowFor,
-    ControlFlowReturn,
-    ControlFlowContinue,
-    ControlFlowBreak,
-    Program,
-    FuncDecl
-  };
-
-  static SymTab symtab;
-
-  [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
-
-  unsigned int line;
-  unsigned int col;
-
-  virtual void fold_expressions() {}
-
-  virtual void print(int indent, ostream &out) const = 0;
-
-  virtual void check_semantics() {}
-
-  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
-
-  static void SyntaxError(unsigned int line, unsigned int col,
-                          const string &message) {
-    string msg = "Syntax Error at [" + to_string(line) + ", " + to_string(col) +
-                 "]: " + message;
-    throw std::runtime_error(msg);
-  }
-
-  // Variable already exists etc
-  static void ValueError(unsigned int line, unsigned int col,
-                         const string &message) {
-    string msg = "Value Error at [" + to_string(line) + ", " + to_string(col) +
-                  "]: " + message;
-    throw std::runtime_error(msg);
-  }
-
-  // Type mismatch etc
-  static void TypeError(unsigned int line, unsigned int col,
-                        const string &message) {
-    string msg = "Type Error at [" + to_string(line) + ", " + to_string(col) +
-                  "]: " + message;
-    throw std::runtime_error(msg);
-
-  }
-
-  // TODO add warning functions
-};
-
-class ASTType : public ASTNode {
- public:
-  KL_Type type;
-  unsigned int line;
-  unsigned int col;
-
-  explicit ASTType(KL_Type type, unsigned int line, unsigned int col)
-      : type(std::move(type)), line(line), col(col) {}
-
-  [[nodiscard]] ASTNodeType get_AST_type() const override { return Type; }
-
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
-
-  void print(int indent, ostream &out) const override {
-    printIndent(indent, out);
-    out << type.to_string() << std::endl;
-  }
-};
-
-class ASTProgram;
-
 // --------------------------- Expressions ---------------------------
 #include "AST_Expressions.h"
 
@@ -153,7 +56,7 @@ class ASTFuncDecl : public ASTNode {
 
   void check_semantics() override { body->check_semantics(); }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -200,7 +103,7 @@ class ASTProgram : public ASTNode {
     }
   }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
     for (const auto &func : funcs) {

@@ -2,4 +2,4 @@
 
 using namespace llvm;
 
-CodeGenResult KLCodeGenVisitor::visit(ASTControLFlowIf *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTControLFlowIf *node) {}

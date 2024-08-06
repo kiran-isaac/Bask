@@ -5,7 +5,8 @@
 #ifndef KL_AST_EXPRESSIONS_H
 #define KL_AST_EXPRESSIONS_H
 
-#include "AST.h"
+#include "AST/AST_Preamble.h"
+#include "codegen.h"
 #include "symtab.h"
 #include <llvm/IR/Value.h>
 
@@ -29,7 +30,7 @@ class ASTExpr : public ASTNode {
 
   virtual void check_semantics() {}
 
-  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
+  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v)  = 0;
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Expr; }
 };
@@ -56,7 +57,7 @@ class ASTExprConstantValue : public ASTExpr {
 
   KL_Type get_expr_type() override { return KL_Type(type); };
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -83,7 +84,7 @@ class ASTExprIdentifier : public ASTExpr {
 
   void check_semantics() override;
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -129,7 +130,7 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -173,7 +174,7 @@ class ASTExprBinary : public ASTExpr {
 
   KL_Type get_expr_type();
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -206,7 +207,7 @@ class ASTExprUnary : public ASTExpr {
 
   KL_Type get_expr_type();
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

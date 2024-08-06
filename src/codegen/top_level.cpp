@@ -3,8 +3,8 @@
 
 using namespace llvm;
 
-CodeGenResult KLCodeGenVisitor::visit(ASTProgram *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {}
 
-CodeGenResult KLCodeGenVisitor::visit(ASTFuncDecl *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {}
 
-CodeGenResult KLCodeGenVisitor::visit(ASTType *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTType *node) {}

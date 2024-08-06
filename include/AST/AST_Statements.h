@@ -5,8 +5,7 @@
 #ifndef KL_AST_STATEMENTS_H
 #define KL_AST_STATEMENTS_H
 
-#include "AST.h"
-#include "AST_Expressions.h"
+#include "AST/AST_Expressions.h"
 
 class ASTStmt : public ASTNode {
  public:
@@ -20,7 +19,7 @@ class ASTStmt : public ASTNode {
 
   virtual void print(int indent, ostream &out) const = 0;
 
-  virtual CodeGenResult accept(KLCodeGenVisitor *v) = 0;
+  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v) = 0;
 };
 
 class ASTStmtExpr : public ASTStmt {
@@ -41,7 +40,7 @@ class ASTStmtExpr : public ASTStmt {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtExpr; }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -71,7 +70,7 @@ class ASTStmtAssignment : public ASTStmt {
     return StmtAssignment;
   }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -103,7 +102,7 @@ class ASTStmtDecl : public ASTStmt {
 
   void check_semantics() override;
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -144,7 +143,7 @@ class ASTBlock : public ASTNode {
     }
   }
 
-  CodeGenResult accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

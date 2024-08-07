@@ -6,6 +6,7 @@
 #define KL_CODEGEN_H
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "llvm/ADT/StringRef.h"
@@ -73,17 +74,19 @@ private:
     std::string error;
   };
 
-  KLCodeGenResult(CodeGenResultType type, llvm::Value *value, std::string error, llvm::Type *llvm_type)
+  KLCodeGenResult(CodeGenResultType type, std::optional<llvm::Value *> value,
+                  std::optional<std::string> error,
+                  std::optional <llvm::Type *> llvm_type)
       : type(type) {
     switch (type) {
     case CodeGenResultType_Value:
-      this->value = value;
+      this->value = value.value();
       break;
     case CodeGenResultType_Error:
-      this->error = error;
+      this->error = error.value();
       break;
     case CodeGenResultType_Type:
-      this->llvm_type = llvm_type;
+      this->llvm_type = llvm_type.value();
       break;
     case CodeGenResultType_None:
       break;
@@ -108,19 +111,23 @@ public:
   }
 
   static KLCodeGenResult *Error(const std::string &error) {
-    return new KLCodeGenResult(CodeGenResultType_Error, nullptr, error, nullptr);
+    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, error,
+                               std::nullopt);
   }
 
   static KLCodeGenResult *Value(llvm::Value *value) {
-    return new KLCodeGenResult(CodeGenResultType_Value, value, nullptr, nullptr);
+    return new KLCodeGenResult(CodeGenResultType_Value, value, std::nullopt,
+                               std::nullopt);
   }
 
   static KLCodeGenResult *Type(llvm::Type *llvm_type) {
-    return new KLCodeGenResult(CodeGenResultType_Type, nullptr, nullptr, llvm_type);
+    return new KLCodeGenResult(CodeGenResultType_Type, std::nullopt,
+                               std::nullopt, llvm_type);
   }
 
   static KLCodeGenResult *None() {
-    return new KLCodeGenResult(CodeGenResultType_None, nullptr, nullptr, nullptr);
+    return new KLCodeGenResult(CodeGenResultType_None, std::nullopt,
+                               std::nullopt, std::nullopt);
   }
 };
 

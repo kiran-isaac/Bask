@@ -1,12 +1,13 @@
+#include "AST/AST.h"
 #include "codegen.h"
+#include "types.h"
 #include "llvm/IR/Constants.h"
+#include "llvm/IR/Value.h"
 #include <llvm-14/llvm/ADT/StringRef.h>
 #include <llvm-14/llvm/IR/DerivedTypes.h>
 #include <llvm-14/llvm/IR/InstrTypes.h>
 #include <llvm-14/llvm/IR/Type.h>
 #include <llvm-14/llvm/IR/Value.h>
-#include "AST/AST.h"
-#include "types.h"
 
 using namespace llvm;
 
@@ -18,31 +19,30 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprConstantValue *node) {
   }
 
   auto string = llvm::StringRef(node->value);
+  Value *constant;
 
   switch (type.primitive) {
-    case KL_INT:
-      return KLCodeGenResult::Value(
-          ConstantInt::get(TheContext, APInt(32, string, 10)));
-
-    case KL_FLOAT:
-      return KLCodeGenResult::Value(
-          ConstantFP::get(TheContext, APFloat(APFloat::IEEEsingle(), string)));
-
-    case KL_BOOL:
-      return KLCodeGenResult::Value(
-              ConstantInt::get(TheContext, APInt(1, string == "true" ? "1" : "0", 2)));
-
-    case KL_CHAR:
-      return KLCodeGenResult::Value(
-          ConstantInt::get(TheContext, APInt(8, node->value[0], 10)));
-
-    case KL_STRING :
-        return KLCodeGenResult::Value(
-          ConstantDataArray::getString(TheContext, node->value));
-
-    default:
-      return KLCodeGenResult::Error("Unknown type");
+  case KL_INT:
+    constant = ConstantInt::get(TheContext, APInt(32, string, 10));
+    break;
+  case KL_FLOAT:
+    constant =
+        ConstantFP::get(TheContext, APFloat(APFloat::IEEEsingle(), string));
+    break;
+  case KL_BOOL:
+    constant = ConstantInt::get(TheContext, APInt(1, string == "true" ? "1" : "0", 2));
+    break;
+  case KL_CHAR:
+    constant = ConstantInt::get(TheContext, APInt(8, node->value[0], 10));
+    break;
+  case KL_STRING:
+    constant = ConstantDataArray::getString(TheContext, node->value);
+    break;
+  default:
+    return KLCodeGenResult::Error("Unknown type");
   }
+
+  return KLCodeGenResult::Value(constant);
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprIdentifier *node) {
@@ -59,7 +59,8 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
   auto lhs = node->lhs->accept(this);
   auto rhs = node->rhs->accept(this);
 
-  if (lhs->getTypeOfResult() != CodeGenResultType_Value || rhs->getTypeOfResult() != CodeGenResultType_Value) {
+  if (lhs->getTypeOfResult() != CodeGenResultType_Value ||
+      rhs->getTypeOfResult() != CodeGenResultType_Value) {
     return KLCodeGenResult::Error("Binary operation requires two values");
   }
 }

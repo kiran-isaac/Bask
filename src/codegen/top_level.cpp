@@ -15,7 +15,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   // Create the function prototype
   vector<Type *> argTypes;
   for (auto &argType : node->argTypes) {
-    argTypes.push_back(argType->to_llvm_type());
+    // argTypes.push_back(argType->to_llvm_type());
   }
   
   return KLCodeGenResult::None();

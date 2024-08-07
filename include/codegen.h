@@ -112,15 +112,15 @@ public:
   }
 
   static KLCodeGenResult *Value(llvm::Value *value) {
-    return new KLCodeGenResult(CodeGenResultType_Value, value, nullptr, nullptr);
+    return new KLCodeGenResult(CodeGenResultType_Value, value, "", nullptr);
   }
 
   static KLCodeGenResult *Type(llvm::Type *llvm_type) {
-    return new KLCodeGenResult(CodeGenResultType_Type, nullptr, nullptr, llvm_type);
+    return new KLCodeGenResult(CodeGenResultType_Type, nullptr, "", llvm_type);
   }
 
   static KLCodeGenResult *None() {
-    return new KLCodeGenResult(CodeGenResultType_None, nullptr, nullptr, nullptr);
+    return new KLCodeGenResult(CodeGenResultType_None, nullptr, "", nullptr);
   }
 };
 

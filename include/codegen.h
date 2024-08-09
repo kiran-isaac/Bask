@@ -110,6 +110,27 @@ public:
     return error;
   }
 
+  llvm::Type *getLLVMType() {
+    if (type != CodeGenResultType_Type) {
+      throw std::runtime_error("Type is not available");
+    }
+    return llvm_type;
+  }
+
+  void prepend_error(const std::string &error) {
+    if (type != CodeGenResultType_Error) {
+      throw std::runtime_error("Error is not available");
+    }
+    this->error = error + this->error;
+  }
+
+  void append_error(const std::string &error) {
+    if (type != CodeGenResultType_Error) {
+      throw std::runtime_error("Error is not available");
+    }
+    this->error += error;
+  }
+
   static KLCodeGenResult *Error(const std::string &error) {
     return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, error,
                                std::nullopt);

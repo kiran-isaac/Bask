@@ -3,11 +3,11 @@
 #include "types.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Value.h"
-#include <llvm-14/llvm/ADT/StringRef.h>
-#include <llvm-14/llvm/IR/DerivedTypes.h>
-#include <llvm-14/llvm/IR/InstrTypes.h>
-#include <llvm-14/llvm/IR/Type.h>
-#include <llvm-14/llvm/IR/Value.h>
+#include <llvm/ADT/StringRef.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/InstrTypes.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
 
 using namespace llvm;
 

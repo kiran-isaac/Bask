@@ -5,6 +5,9 @@
 #ifndef KL_TYPES_H
 #define KL_TYPES_H
 
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Type.h>
+
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -91,6 +94,8 @@ struct KL_Type {
     }
     return signature->back();
   }
+
+  llvm::Type *get_llvm_type(llvm::LLVMContext &TheContext) const;
 };
 
 string primitive_to_string(const KL_PrimitiveType &type);

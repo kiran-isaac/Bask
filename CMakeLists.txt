@@ -9,6 +9,9 @@ project(KL)
 include(FetchContent)
 find_package(LLVM REQUIRED CONFIG)
 
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -30,6 +33,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 # Add the executable
 add_executable(KL src/main.cpp ${SOURCES} ${INCLUDES})
+target_link_libraries(KL LLVMSupport)
 
 # Link against LLVM libraries
 target_link_libraries(KL LLVM)
@@ -57,3 +61,4 @@ target_link_libraries(KLTest GTest::gtest_main)
 target_link_libraries(KLTest LLVM)
 
 target_compile_definitions(KLTest PRIVATE KL_DEBUG)
+target_link_libraries(KLTest LLVMSupport)

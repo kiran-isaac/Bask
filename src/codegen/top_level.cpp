@@ -20,3 +20,5 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   
   return KLCodeGenResult::None();
 }
+
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTType *node) {}

@@ -10,13 +10,13 @@
 TEST(CodeGen, VisitConstantInt) {
   KLCodeGenVisitor visitor("CodeGen.VistConstantInt");
   ASTExprConstantValue node(INT_CONST, "Replace", 0, 0);
+  
+  // Generate a random number
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(INT_MIN, INT_MAX);
 
   for (int i = 0; i < 1000; i++) {
-    // Generate a random number
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(INT_MIN, INT_MAX);
-
     int value = dis(gen);
     node.value = std::to_string(value);
 
@@ -32,12 +32,12 @@ TEST(CodeGen, VisitConstantFloat) {
   KLCodeGenVisitor visitor("CodeGen.VisitConstantFloat");
   ASTExprConstantValue node(FLOAT_CONST, "42.0", 0, 0);
 
-  for (int i = 0; i < 1000; i++) {
-    // Generate a random number
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(FLT_MIN, FLT_MAX);
+  // Generate a random number
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(FLT_MIN, FLT_MAX);
 
+  for (int i = 0; i < 1000; i++) {
     float value = dis(gen);
     node.value = std::to_string(value);
 

@@ -81,9 +81,9 @@ llvm::Type *KL_Type::get_llvm_type(llvm::LLVMContext &TheContext) const {
   } else if (kind == KL_ARRAY) {
       auto depth = array_sizes->size();
       auto base_type = KL_Type(is_const, primitive).get_llvm_type(TheContext);
-      auto array_type = llvm::ArrayType::get(base_type, (*array_sizes)[0]);
+      auto array_type = llvm::ArrayType::get(base_type, (*array_sizes)[depth - 1]);
       for (int i = 1; i < depth; i++) {
-        array_type = llvm::ArrayType::get(array_type, (*array_sizes)[i]);
+        array_type = llvm::ArrayType::get(array_type, (*array_sizes)[depth - i - 1]);
       }
       return array_type;
   } else if (kind == KL_FUNCTION) {

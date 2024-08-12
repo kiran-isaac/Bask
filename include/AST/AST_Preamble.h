@@ -101,7 +101,7 @@ public:
   unsigned int col;
 
   explicit ASTType(KL_Type type, unsigned int line, unsigned int col)
-      : type(std::move(type)), line(line), col(col) {}
+      : type(type), line(line), col(col) {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Type; }
 

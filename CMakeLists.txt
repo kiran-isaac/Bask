@@ -20,7 +20,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "-g")
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wno-trigraphs")
+set(CMAKE_CXX_FLAGS "-Wno-trigraphs -Wno-delete-abstract-non-virtual-dtor -Wno-return-type")
 
 include_directories(include)
 include_directories(${LLVM_INCLUDE_DIRS})

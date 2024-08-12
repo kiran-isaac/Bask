@@ -2,6 +2,7 @@
 #include <climits>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <llvm-14/llvm/Support/Casting.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Type.h>
@@ -46,9 +47,9 @@ TEST(TypeToLLVMType, ArrayTypes) {
 
   for (int i = 1; i < 20; i++) {
     // vector of i random numbers
-    std::vector<unsigned int> *array_sizes = new std::vector<unsigned int>();
+    std::vector<unsigned int> array_sizes;
     for (int j = 0; j < i; j++) {
-      array_sizes->push_back(j + 1);
+      array_sizes.push_back(j + 1);
     }
 
     ASTType type_node(KL_Type(false, KL_INT, array_sizes), 0, 0);
@@ -60,14 +61,14 @@ TEST(TypeToLLVMType, ArrayTypes) {
     assert(llvm::isa<llvm::Type>(llvm_type));
     assert(llvm_type->getTypeID() == llvm::Type::TypeID::ArrayTyID);
 
-    llvm::ArrayType *array_type = llvm::cast<llvm::ArrayType>(llvm_type);
+    llvm::Type *array_type = llvm::cast<llvm::ArrayType>(llvm_type);
 
-    auto array_sizes_it = type_node.type.array_sizes->begin();
-    do {
-      cout << "Expected: " << *array_sizes_it << " Actual: " << array_type->getNumElements() << endl;
-      assert(array_type->getNumElements() == *array_sizes_it);
-      array_sizes_it = std::next(array_sizes_it);
-      array_type = llvm::cast<llvm::ArrayType>(array_type->getElementType());
-    } while (array_type->isArrayTy());
+    while (array_type->isArrayTy()) {
+      llvm::ArrayType *array_type_casted = llvm::cast<llvm::ArrayType>(array_type);
+      cout << array_type_casted->getNumElements() << " " << array_sizes.front() << endl;
+      assert(array_type_casted->getNumElements() == array_sizes.front());
+      array_sizes.erase(array_sizes.begin());
+      array_type = array_type_casted->getElementType();
+    }
   }
 }

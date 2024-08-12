@@ -137,7 +137,7 @@ class ASTBlock : public ASTNode {
 
   int size() { return body.size(); }
 
-  void check_semantics() {
+  void check_semantics() override {
     for (auto &stmt : body) {
       stmt->check_semantics();
     }

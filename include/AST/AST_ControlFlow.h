@@ -9,17 +9,20 @@
 
 class ASTControLFlowIf : ASTStmt {
   unique_ptr<ASTExpr> condition;
-  unique_ptr<ASTStmt> then_block;
-  unique_ptr<ASTStmt> else_block;
-  
+  unique_ptr<ASTBlock> then_block;
+  unique_ptr<ASTBlock> else_block;
+
   [[nodiscard]] ASTNodeType get_AST_type() const override {
     return ControlFlowIf;
   }
 
   KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
-  ASTControLFlowIf(unique_ptr<ASTExpr> condition, unique_ptr<ASTStmt> then_block, unique_ptr<ASTStmt> else_block)
-    : condition(std::move(condition)), then_block(std::move(then_block)), else_block(std::move(else_block)) {}
+  ASTControLFlowIf(unique_ptr<ASTExpr> condition,
+                   unique_ptr<ASTBlock> then_block,
+                   unique_ptr<ASTBlock> else_block)
+      : condition(std::move(condition)), then_block(std::move(then_block)),
+        else_block(std::move(else_block)) {}
 };
 
 #endif //KL_AST_CONTROLFLOW_H

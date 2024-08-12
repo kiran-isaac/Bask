@@ -26,11 +26,9 @@ class ASTExpr : public ASTNode {
 
   virtual KL_Type get_expr_type() { return KL_Type(); };
 
-  virtual void print(int indent, ostream &out) const {};
+  virtual void print(int indent, ostream &out) const override {};
 
-  virtual void check_semantics() {}
-
-  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v)  = 0;
+  virtual void check_semantics() override {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Expr; }
 };
@@ -80,7 +78,7 @@ class ASTExprIdentifier : public ASTExpr {
     return ExprIdentifier;
   }
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
 
   void check_semantics() override;
 
@@ -116,7 +114,7 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
-  KL_Type get_expr_type() {
+  KL_Type get_expr_type() override {
     auto type = SYMTAB.get_name_type(name);
     if (!type) {
       throw std::runtime_error("Function " + name + " not found");
@@ -170,9 +168,9 @@ class ASTExprBinary : public ASTExpr {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return ExprBinary; }
 
-  void check_semantics();
+  void check_semantics() override;
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
 
   KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
@@ -203,9 +201,9 @@ class ASTExprUnary : public ASTExpr {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return ExprUnary; }
 
-  void check_semantics();
+  void check_semantics() override;
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
 
   KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 

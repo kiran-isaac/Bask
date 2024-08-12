@@ -71,6 +71,9 @@ unique_ptr<ASTStmt> Parser::parse_statement() {
 
         case KL_TT_Operator_Assign:
           return parse_assignment();
+
+        default:
+          parserError("Invalid token after identifier");
       }
 
     // if it is a literal or a unary operator then it is an expression statement

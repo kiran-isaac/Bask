@@ -2,10 +2,10 @@
 #include <climits>
 #include <gtest/gtest.h>
 #include <iostream>
-#include <llvm/Support/Casting.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Type.h>
+#include <llvm/Support/Casting.h>
 #include <random>
 #include <vector>
 

@@ -1,7 +1,7 @@
 #include "AST/AST.h"
 #include "codegen.h"
-#include <llvm/IR/Constants.h>
 #include <llvm/ADT/StringExtras.h>
+#include <llvm/IR/Constants.h>
 #include <string>
 
 using namespace llvm;
@@ -22,7 +22,9 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   for (auto &argType : node->argTypes) {
     llvmTypeResult = argType->accept(this);
     if (llvmTypeResult->getTypeOfResult() != CodeGenResultType_Type) {
-      llvmTypeResult->prepend_error("Function " + node->name + node->positionString() + " has bad argument: "); // Propagate the error
+      llvmTypeResult->prepend_error(
+          "Function " + node->name + node->positionString() +
+          " has bad argument: "); // Propagate the error
     }
 
     argTypes.push_back(llvmTypeResult->getLLVMType());
@@ -32,13 +34,16 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
 
   if (return_type->getTypeOfResult() != CodeGenResultType_Type) {
     return_type->prepend_error("Function " + node->name +
-                               node->positionString() + " has bad return type: ");
+                               node->positionString() +
+                               " has bad return type: ");
     return return_type;
   }
 
-  FunctionType *FT = FunctionType::get(return_type->getLLVMType(), argTypes, false);
+  FunctionType *FT =
+      FunctionType::get(return_type->getLLVMType(), argTypes, false);
 
-  Function *F = Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);
+  Function *F =
+      Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);
 
   // Set names for all arguments
   unsigned idx = 0;
@@ -59,12 +64,13 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
 
   // Visit the function body
   auto body_result = node->body->accept(this);
-  
+
   // Pop the function arguments from the NamedValues map.
   NamedValues.exitScope();
 
   if (body_result->getTypeOfResult() == CodeGenResultType_Error) {
-    body_result->prepend_error("Error in function " + node->name + node->positionString() + ":\n");
+    body_result->prepend_error("Error in function " + node->name +
+                               node->positionString() + ":\n");
   }
 
   return body_result;

@@ -1,9 +1,8 @@
 #include "AST/AST.h"
 #include "codegen.h"
 #include "types.h"
-#include <llvm/IR/Constants.h>
-#include <llvm/IR/Value.h>
 #include <llvm/ADT/StringRef.h>
+#include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/InstrTypes.h>
 #include <llvm/IR/Type.h>

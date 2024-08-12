@@ -27,7 +27,6 @@ TEST(Parser, Declaration) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->print(0, std::cout);
 }
 
 TEST(Parser, Assignment) {

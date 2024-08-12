@@ -24,9 +24,9 @@ TEST(TypeToLLVMType, PrimitiveTypes) {
       llvm::Type::TypeID::PointerTyID, llvm::Type::TypeID::VoidTyID};
 
   auto expected_results_it = expected_results.begin();
-  for (auto type : {KL_INT, KL_FLOAT, KL_BOOL, KL_CHAR, KL_STRING, KL_VOID}) {
+  for (auto type : {KL_INT_PRIMITIVE, KL_FLOAT_PRIMITIVE, KL_BOOL_PRIMITIVE, KL_CHAR_PRIMITIVE, KL_STRING_PRIMITIVE, KL_VOID_PRIMITIVE}) {
     KL_Type kl_type;
-    kl_type.kind = KL_PRIMITIVE;
+    kl_type.kind = KL_PRIMITIVE_TYPEKIND;
     kl_type.primitive = type;
 
     ASTType type_node(kl_type, 0, 0);
@@ -59,7 +59,7 @@ TEST(TypeToLLVMType, ArrayTypes) {
       array_sizes.push_back(dis(gen));
     }
 
-    ASTType type_node(KL_Type(false, KL_INT, array_sizes), 0, 0);
+    ASTType type_node(KL_Type(false, KL_INT_PRIMITIVE, array_sizes), 0, 0);
 
     KLCodeGenResult *llvm_type_result = type_node.accept(&visitor);
     assert(llvm_type_result->getTypeOfResult() == CodeGenResultType_Type);
@@ -83,9 +83,9 @@ TEST(TypeToLLVMType, FunctionType) {
   KLCodeGenVisitor visitor("TypeToLLVMType.FunctionType");
 
   auto *signature = new std::vector<KL_Type>();
-  signature->push_back(KL_Type(false, KL_FLOAT));
-  signature->push_back(KL_Type(false, KL_INT));
-  signature->push_back(KL_Type(false, KL_INT));
+  signature->push_back(KL_Type(false, KL_FLOAT_PRIMITIVE));
+  signature->push_back(KL_Type(false, KL_INT_PRIMITIVE));
+  signature->push_back(KL_Type(false, KL_INT_PRIMITIVE));
 
   KL_Type kl_type(true, signature);
 

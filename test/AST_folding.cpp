@@ -46,97 +46,97 @@ TEST(ASTFolding, IntBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "10");
 
   // 5 - 5
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0");
 
   // 5 * 5
   auto stmt3 = ast->get_function("main")->body->get_statement(2);
   decl = dynamic_cast<ASTStmtDecl *>(stmt3);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "25");
 
   // 5 / 5
   auto stmt4 = ast->get_function("main")->body->get_statement(3);
   decl = dynamic_cast<ASTStmtDecl *>(stmt4);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "1");
 
   // 5 % 5
   auto stmt5 = ast->get_function("main")->body->get_statement(4);
   decl = dynamic_cast<ASTStmtDecl *>(stmt5);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0");
 
   // 5 < 5
   auto stmt6 = ast->get_function("main")->body->get_statement(5);
   decl = dynamic_cast<ASTStmtDecl *>(stmt6);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5 <= 5
   auto stmt7 = ast->get_function("main")->body->get_statement(6);
   decl = dynamic_cast<ASTStmtDecl *>(stmt7);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5 > 5
   auto stmt8 = ast->get_function("main")->body->get_statement(7);
   decl = dynamic_cast<ASTStmtDecl *>(stmt8);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5 >= 5
   auto stmt9 = ast->get_function("main")->body->get_statement(8);
   decl = dynamic_cast<ASTStmtDecl *>(stmt9);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5 == 5
   auto stmt10 = ast->get_function("main")->body->get_statement(9);
   decl = dynamic_cast<ASTStmtDecl *>(stmt10);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
 
   // 5 != 5
   auto stmt11 = ast->get_function("main")->body->get_statement(10);
   decl = dynamic_cast<ASTStmtDecl *>(stmt11);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5 & 5
   auto stmt12 = ast->get_function("main")->body->get_statement(11);
   decl = dynamic_cast<ASTStmtDecl *>(stmt12);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "5");
 
   // 5 | 5
   auto stmt13 = ast->get_function("main")->body->get_statement(12);
   decl = dynamic_cast<ASTStmtDecl *>(stmt13);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "5");
 
   // 5 ^ 5
   auto stmt14 = ast->get_function("main")->body->get_statement(13);
   decl = dynamic_cast<ASTStmtDecl *>(stmt14);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0");
 }
 
@@ -170,77 +170,77 @@ TEST(ASTFolding, FloatBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "10.000000");
 
   // 5.0 - 5.0
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0.000000");
 
   // 5.0 * 5.0
   auto stmt3 = ast->get_function("main")->body->get_statement(2);
   decl = dynamic_cast<ASTStmtDecl *>(stmt3);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "25.000000");
 
   // 5.0 / 5.0
   auto stmt4 = ast->get_function("main")->body->get_statement(3);
   decl = dynamic_cast<ASTStmtDecl *>(stmt4);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "1.000000");
 
   // 5.0 % 5.0
   auto stmt5 = ast->get_function("main")->body->get_statement(4);
   decl = dynamic_cast<ASTStmtDecl *>(stmt5);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0.000000");
 
   // 5.0 < 5.0
   auto stmt6 = ast->get_function("main")->body->get_statement(5);
   decl = dynamic_cast<ASTStmtDecl *>(stmt6);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5.0 <= 5.0
   auto stmt7 = ast->get_function("main")->body->get_statement(6);
   decl = dynamic_cast<ASTStmtDecl *>(stmt7);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5.0 > 5.0
   auto stmt8 = ast->get_function("main")->body->get_statement(7);
   decl = dynamic_cast<ASTStmtDecl *>(stmt8);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5.0 >= 5.0
   auto stmt9 = ast->get_function("main")->body->get_statement(8);
   decl = dynamic_cast<ASTStmtDecl *>(stmt9);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5.0 == 5.0
   auto stmt10 = ast->get_function("main")->body->get_statement(9);
   decl = dynamic_cast<ASTStmtDecl *>(stmt10);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5.0 != 5.0
   auto stmt11 = ast->get_function("main")->body->get_statement(10);
   decl = dynamic_cast<ASTStmtDecl *>(stmt11);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 }
 
@@ -266,28 +266,28 @@ TEST(ASTFolding, StringBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_STRING);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_STRING_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "Hello, World!");
 
   // "Hello, " + "World!"
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_STRING);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_STRING_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "Hello, World!");
 
   // "Hello, " == "World!"
   auto stmt3 = ast->get_function("main")->body->get_statement(2);
   decl = dynamic_cast<ASTStmtDecl *>(stmt3);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // "Hello, " != "World!"
   auto stmt4 = ast->get_function("main")->body->get_statement(3);
   decl = dynamic_cast<ASTStmtDecl *>(stmt4);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 }
 
@@ -317,56 +317,56 @@ TEST(ASTFolding, BoolBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // true || false
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // true && false
   auto stmt3 = ast->get_function("main")->body->get_statement(2);
   decl = dynamic_cast<ASTStmtDecl *>(stmt3);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // true || true
   auto stmt4 = ast->get_function("main")->body->get_statement(3);
   decl = dynamic_cast<ASTStmtDecl *>(stmt4);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // false && false
   auto stmt5 = ast->get_function("main")->body->get_statement(4);
   decl = dynamic_cast<ASTStmtDecl *>(stmt5);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // false || true
   auto stmt6 = ast->get_function("main")->body->get_statement(5);
   decl = dynamic_cast<ASTStmtDecl *>(stmt6);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // false && true
   auto stmt7 = ast->get_function("main")->body->get_statement(6);
   decl = dynamic_cast<ASTStmtDecl *>(stmt7);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // false || false
   auto stmt8 = ast->get_function("main")->body->get_statement(7);
   decl = dynamic_cast<ASTStmtDecl *>(stmt8);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 }
 
@@ -390,14 +390,14 @@ TEST(ASTFolding, CharBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 'a' != 'b'
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 }
 
@@ -420,14 +420,14 @@ TEST(ASTFolding, IntUnary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "-5");
 
   // ~5
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "-6");
 }
 
@@ -449,7 +449,7 @@ TEST(ASTFolding, FloatUnary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "-5.000000");
 }
 
@@ -471,7 +471,7 @@ TEST(ASTFolding, BoolUnary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 }
 
@@ -504,75 +504,75 @@ TEST(ASTFolding, IntFloatBinary) {
   auto stmt1 = ast->get_function("main")->body->get_statement(0);
   auto decl = dynamic_cast<ASTStmtDecl *>(stmt1);
   auto expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "10.000000");
 
   // 5.0 - 5
   auto stmt2 = ast->get_function("main")->body->get_statement(1);
   decl = dynamic_cast<ASTStmtDecl *>(stmt2);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0.000000");
 
   // 5 * 5.0
   auto stmt3 = ast->get_function("main")->body->get_statement(2);
   decl = dynamic_cast<ASTStmtDecl *>(stmt3);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "25.000000");
 
   // 5.0 / 5
   auto stmt4 = ast->get_function("main")->body->get_statement(3);
   decl = dynamic_cast<ASTStmtDecl *>(stmt4);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "1.000000");
 
   // 5 % 5.0
   auto stmt5 = ast->get_function("main")->body->get_statement(4);
   decl = dynamic_cast<ASTStmtDecl *>(stmt5);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_FLOAT_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "0.000000");
 
   // 5.0 < 5
   auto stmt6 = ast->get_function("main")->body->get_statement(5);
   decl = dynamic_cast<ASTStmtDecl *>(stmt6);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5 <= 5.0
   auto stmt7 = ast->get_function("main")->body->get_statement(6);
   decl = dynamic_cast<ASTStmtDecl *>(stmt7);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5 > 5
   auto stmt8 = ast->get_function("main")->body->get_statement(7);
   decl = dynamic_cast<ASTStmtDecl *>(stmt8);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 
   // 5 >= 5.0
   auto stmt9 = ast->get_function("main")->body->get_statement(8);
   decl = dynamic_cast<ASTStmtDecl *>(stmt9);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "true");
 
   // 5 == 5
   auto stmt10 = ast->get_function("main")->body->get_statement(9);
   decl = dynamic_cast<ASTStmtDecl *>(stmt10);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
 
   // 5 != 5.0
   auto stmt11 = ast->get_function("main")->body->get_statement(10);
   decl = dynamic_cast<ASTStmtDecl *>(stmt11);
   expr = dynamic_cast<ASTExpr *>(decl->value.get());
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL);
+  ASSERT_EQ(expr->get_expr_type().primitive, KL_BOOL_PRIMITIVE);
   ASSERT_EQ(dynamic_cast<ASTExprConstantValue *>(expr)->value, "false");
 }

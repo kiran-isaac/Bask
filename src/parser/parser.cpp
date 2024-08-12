@@ -56,22 +56,22 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
     nextToken();
   }
   
-  type.kind = KL_PRIMITIVE;
+  type.kind = KL_PRIMITIVE_TYPEKIND;
   switch (tk.type) {
     case KL_TT_KW_Int:
-      type.primitive = KL_INT;
+      type.primitive = KL_INT_PRIMITIVE;
       break;
     case KL_TT_KW_Float:
-      type.primitive = KL_FLOAT;
+      type.primitive = KL_FLOAT_PRIMITIVE;
       break;
     case KL_TT_KW_Bool:
-      type.primitive = KL_BOOL;
+      type.primitive = KL_BOOL_PRIMITIVE;
       break;
     case KL_TT_KW_Char:
-      type.primitive = KL_CHAR;
+      type.primitive = KL_CHAR_PRIMITIVE;
       break;
     case KL_TT_KW_String:
-      type.primitive = KL_STRING;
+      type.primitive = KL_STRING_PRIMITIVE;
       break;
     default:
       parserError("Expected type");
@@ -80,7 +80,7 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
   nextToken();
   while (tk.type == KL_TT_Punctuation_LBracket) {
     nextToken();
-    type.kind = KL_ARRAY;
+    type.kind = KL_ARRAY_TYPEKIND;
     type.array_sizes = new vector<unsigned int>();
     switch (tk.type) {
       case KL_TT_Literal_Int:

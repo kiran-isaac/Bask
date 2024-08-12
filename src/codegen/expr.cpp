@@ -22,20 +22,20 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprConstantValue *node) {
   Value *constant;
 
   switch (type.primitive) {
-  case KL_INT:
+  case KL_INT_PRIMITIVE:
     constant = ConstantInt::get(TheContext, APInt(32, string, 10));
     break;
-  case KL_FLOAT:
+  case KL_FLOAT_PRIMITIVE:
     constant =
         ConstantFP::get(TheContext, APFloat(APFloat::IEEEsingle(), string));
     break;
-  case KL_BOOL:
+  case KL_BOOL_PRIMITIVE:
     constant = ConstantInt::get(TheContext, APInt(1, string == "true" ? "1" : "0", 2));
     break;
-  case KL_CHAR:
+  case KL_CHAR_PRIMITIVE:
     constant = ConstantInt::get(TheContext, APInt(8, node->value[0], 10));
     break;
-  case KL_STRING:
+  case KL_STRING_PRIMITIVE:
     constant = ConstantDataArray::getString(TheContext, node->value);
     break;
   default:

@@ -72,6 +72,12 @@ struct KL_Type {
       : is_const(is_const), kind(KL_FUNCTION), primitive(KL_VOID),
         signature(signature) {}
 
+  // Function type
+  KL_Type(bool is_const, vector<KL_Type> signature)
+      : is_const(is_const), kind(KL_FUNCTION), primitive(KL_VOID) {
+    this->signature = new vector<KL_Type>(signature);
+  }
+
   ~KL_Type() {
     if (kind == KL_ARRAY) {
       delete array_sizes;

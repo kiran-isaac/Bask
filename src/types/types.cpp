@@ -3,7 +3,7 @@
 //
 
 #include "types.h"
-#include <llvm-14/llvm/IR/LLVMContext.h>
+#include <llvm/IR/LLVMContext.h>
 
 string primitive_to_string(const KL_PrimitiveType &type) {
   switch (type)

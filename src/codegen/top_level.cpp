@@ -1,7 +1,7 @@
 #include "AST/AST.h"
 #include "codegen.h"
-#include "llvm/IR/Constants.h"
-#include <llvm-14/llvm/ADT/StringExtras.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/ADT/StringExtras.h>
 #include <string>
 
 using namespace llvm;

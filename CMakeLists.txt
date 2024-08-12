@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(KL)
 
 include(FetchContent)
-find_package(LLVM REQUIRED CONFIG)
+find_package(LLVM 14 REQUIRED CONFIG EXACT)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")

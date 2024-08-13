@@ -7,7 +7,7 @@
 
 #include "AST_Statements.h"
 
-class ASTControLFlowIf : ASTStmt {
+class ASTControLFlowIf : public ASTStmt {
 public:
   unique_ptr<ASTExpr> condition;
   unique_ptr<ASTBlock> then_block;

@@ -2,7 +2,6 @@
 // Created by kiran on 5/20/24.
 //
 
-#include "codegen.h"
 #include "tokens.h"
 #include <memory>
 #include <parser.h>
@@ -66,6 +65,9 @@ unique_ptr<ASTStmt> Parser::parse_statement() {
   switch (tk.type) {
   case KL_TT_KW_Return:
     return parse_return();
+  
+  case KL_TT_KW_If:
+    return parse_if();
 
   case KL_TT_KW_Const:
   case KL_TT_KW_Int:

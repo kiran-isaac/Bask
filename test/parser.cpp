@@ -2,10 +2,11 @@
 // Created by kiran on 5/20/24.
 //
 
+#include "codegen.h"
+#include "utils/utils.h"
 #include <gtest/gtest.h>
 #include <memory>
 #include <parser.h>
-#include "utils/utils.h"
 
 using namespace std;
 
@@ -69,4 +70,22 @@ TEST(Parser, FunctionCall) {
   auto arg = dynamic_cast<ASTExprConstantValue *>(expr->args->at(0).get());
   ASSERT_NE(arg, nullptr);
   ASSERT_EQ(arg->value, "Hello, World!");
+}
+
+TEST(Parser, Return) {
+  const char *argv[] = {"KL", insertIntoTempFile("int main() { return 5; }")};
+
+  CommandLineArguments options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+
+  auto ast = parser.parse();
+  auto stmt = ast->get_function("main")->body->get_statement(0);
+  auto ret = dynamic_cast<ASTStmtReturn *>(stmt);
+  auto expr = dynamic_cast<ASTExprConstantValue *>(ret->return_expr.get());
+
+  ASSERT_NE(ret, nullptr);
+  ASSERT_NE(expr, nullptr);
+
+  ASSERT_EQ(expr->value, "5");
 }

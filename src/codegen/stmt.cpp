@@ -49,3 +49,13 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTBlock *node) {
   }
   return KLCodeGenResult::None();
 }
+
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtReturn *node) {
+  auto expr_result = node->return_expr->accept(this);
+  auto expr = expr_result->getValue();
+  if (!expr)
+    return KLCodeGenResult::Error("Failed to get value of return expression");
+
+  Builder.CreateRet(expr);
+  return KLCodeGenResult::None();
+}

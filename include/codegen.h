@@ -32,8 +32,10 @@ class ASTExprUnary;
 class ASTStmtExpr;
 class ASTStmtAssignment;
 class ASTStmtDecl;
+class ASTStmtReturn;
 class ASTBlock;
 class ASTControLFlowIf;
+class ASTControlFlowWhile;
 
 class NamedValuesClass {
 private:
@@ -187,6 +189,8 @@ public:
 
   // Declared in AST_ControlFlow.h
   KLCodeGenResult *visit(ASTControLFlowIf *node);
+  KLCodeGenResult *visit(ASTControlFlowWhile *node);
+  KLCodeGenResult *visit(ASTStmtReturn *node);
 
   llvm::Module *getModule() { return TheModule; }
 

@@ -42,7 +42,7 @@ public:
     ControlFlowIf,
     ControlFlowWhile,
     ControlFlowFor,
-    ControlFlowReturn,
+    StmtReturn,
     ControlFlowContinue,
     ControlFlowBreak,
     Program,

@@ -2,4 +2,5 @@ int main() {
     int y = 20 + 10 * 5 + 2;
     bool x = true;
     bool z = !x;
+    return y;
 }

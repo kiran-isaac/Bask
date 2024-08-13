@@ -11,6 +11,7 @@ int main(int argc, const char **argv) {
   
   auto ast = parser.parse();
   ast->fold_expressions();
+  ast->check_semantics();
 
   KLCodeGenVisitor visitor("Main");
   ast->accept(&visitor);

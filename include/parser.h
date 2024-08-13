@@ -34,6 +34,7 @@ class Parser {
   unique_ptr<ASTStmtExpr> parse_expression_statement();
   unique_ptr<ASTStmtAssignment> parse_assignment();
   unique_ptr<ASTStmtDecl> parse_declaration();
+  unique_ptr<ASTStmtReturn> parse_return();
 
   // expressions
   unique_ptr<ASTExpr> parse_expression();

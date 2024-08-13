@@ -160,6 +160,8 @@ public:
 
   KLCodeGenVisitor(const char *module_name) : Builder(TheContext) {
     TheModule = new llvm::Module(module_name, TheContext);
+
+    TheModule->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
   }
 
   // Declared in AST.h
@@ -182,6 +184,10 @@ public:
 
   // Declared in AST_ControlFlow.h
   KLCodeGenResult *visit(ASTControLFlowIf *node);
+
+  llvm::Module *getModule() { return TheModule; }
+
+  void printModule() { TheModule->print(llvm::errs(), nullptr); }
 };
 
 #endif // KL_CODEGEN_H

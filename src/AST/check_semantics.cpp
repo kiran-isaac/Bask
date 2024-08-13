@@ -50,10 +50,10 @@ void ASTStmtAssignment::check_semantics() {
 }
 
 void ASTStmtDecl::check_semantics() {
-  auto exists = SYMTAB.get_name_type(name);
+  auto exists = SYMTAB.get_name_type(identifier->name);
   if (exists) {
     ASTNode::ValueError(this->line, this->col,
-                        "Variable " + name + " already exists");
+                        "Variable " + identifier->name + " already exists");
   }
   KL_Type lhstype = KL_Type(type->type);
   KL_Type rhstype = value->get_expr_type();
@@ -97,7 +97,7 @@ void ASTStmtDecl::check_semantics() {
       ASTNode::TypeError(this->line, this->col, "Type mismatch in declaration");
   }
 
-  SYMTAB.add_name(name, lhstype);
+  SYMTAB.add_name(identifier->name, lhstype);
 }
 
 void ASTExprBinary::check_semantics() {

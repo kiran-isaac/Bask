@@ -16,7 +16,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   // Create the function prototype
-  vector<Type *> argTypes(node->argTypes.size());
+  vector<Type *> argTypes;
 
   KLCodeGenResult *llvmTypeResult;
   for (auto &argType : node->argTypes) {
@@ -42,13 +42,22 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   FunctionType *FT =
       FunctionType::get(return_type->getLLVMType(), argTypes, false);
 
+  cout << "Creating function " << node->name << endl;
+  // cout << "Function type is " << FT->dump() << endl;
+  FT->dump();
+
   Function *F =
       Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);
 
-  // Set names for all arguments
+  // Set names for all arguments.
   unsigned idx = 0;
-  for (auto &arg : F->args()) {
-    arg.setName(node->argNames[idx++]);
+  unsigned argc = node->argNames.size();
+  if (argc != argTypes.size()) {
+    return KLCodeGenResult::Error("Function " + node->name +
+                                  " has mismatched argument names and types");
+  }
+  for (auto &Arg : F->args()) {
+    Arg.setName(node->argNames[idx++]);
   }
 
   // Create a new basic block to start insertion into.

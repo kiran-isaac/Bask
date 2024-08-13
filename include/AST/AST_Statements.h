@@ -6,6 +6,9 @@
 #define KL_AST_STATEMENTS_H
 
 #include "AST/AST_Expressions.h"
+#include "codegen.h"
+#include "types.h"
+#include <memory>
 
 class ASTStmt : public ASTNode {
  public:
@@ -83,18 +86,27 @@ class ASTStmtDecl : public ASTStmt {
  public:
   ASTProgram *program;
   unique_ptr<ASTType> type;
-  string name;
+  unique_ptr<ASTExprIdentifier> identifier;
   unique_ptr<ASTExpr> value;
   unsigned int line;
   unsigned int col;
 
   ASTStmtDecl(unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value,
               unsigned int line, unsigned int col)
-      : type(std::move(type)),
-        name(std::move(name)),
-        value(std::move(value)),
-        line(line),
-        col(col) {}
+      : type(std::move(type)), identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
+
+  ASTStmtDecl(KL_Type type, string name, unique_ptr<ASTExpr> value,
+              unsigned int line, unsigned int col)
+      : type(std::make_unique<ASTType>(type, line, col)),
+        identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
+
+  ASTStmtDecl(KL_Type type, string name,
+              unsigned int line, unsigned int col)
+      : type(std::make_unique<ASTType>(type, line, col)),
+        identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(nullptr), line(line), col(col) {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtDecl; }
 
@@ -106,7 +118,7 @@ class ASTStmtDecl : public ASTStmt {
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Declaration: " << name << std::endl;
+    out << "Declaration: " << identifier->name << std::endl;
     type->print(indent + 1, out);
     if (value) {
       value->print(indent + 1, out);

@@ -24,11 +24,10 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprConstantValue *node) {
 
   switch (type.primitive) {
   case KL_INT_PRIMITIVE:
-    constant = ConstantInt::get(TheContext, APInt(32, string, 10));
+    constant = ConstantInt::get(TheContext, APInt(64, string, 10));
     break;
   case KL_FLOAT_PRIMITIVE:
-    constant =
-        ConstantFP::get(TheContext, APFloat(APFloat::IEEEsingle(), string));
+    constant = ConstantFP::get(llvm::Type::getDoubleTy(TheContext), string);
     break;
   case KL_BOOL_PRIMITIVE:
     constant = ConstantInt::get(TheContext, APInt(1, string == "true" ? "1" : "0", 2));
@@ -55,8 +54,10 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprIdentifier *node) {
     return KLCodeGenResult::Error("Unknown variable name");
   }
 
+  auto type = found->getType();
+
   Value *loadedValue = Builder.CreateLoad(
-      found->getType()->getPointerElementType(), found, node->name);
+      found->getType(), found, node->name);
 
   return KLCodeGenResult::Value(loadedValue);
 }

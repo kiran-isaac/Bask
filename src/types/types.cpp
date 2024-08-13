@@ -64,9 +64,9 @@ llvm::Type *KL_Type::get_llvm_type(llvm::LLVMContext &TheContext) const {
   if (kind == KL_PRIMITIVE_TYPEKIND) {
       switch (primitive) {
         case KL_INT_PRIMITIVE:
-          return llvm::Type::getInt32Ty(TheContext);
+          return llvm::Type::getInt64Ty(TheContext);
         case KL_FLOAT_PRIMITIVE:
-          return llvm::Type::getFloatTy(TheContext);
+          return llvm::Type::getDoubleTy(TheContext);
         case KL_BOOL_PRIMITIVE:
           return llvm::Type::getInt1Ty(TheContext);
         case KL_CHAR_PRIMITIVE:

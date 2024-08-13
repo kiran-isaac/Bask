@@ -6,6 +6,8 @@
 #include "AST/AST.h"
 #include "codegen.h"
 #include "types.h"
+#include "../utils/utils.h"
+#include "parser.h"
 
 TEST(CodeGen, VisitConstantInt) {
   KLCodeGenVisitor visitor("CodeGen.VistConstantInt");
@@ -90,4 +92,18 @@ TEST(CodeGen, VisitConstantString) {
   ASSERT_EQ(result->getTypeOfResult(), CodeGenResultType_Value);
   ASSERT_TRUE(llvm::isa<llvm::ConstantDataArray>(result->getValue()));
   ASSERT_EQ(llvm::cast<llvm::ConstantDataArray>(result->getValue())->getAsCString(), "Hello, World!");
+}
+
+TEST(Const, Float) {
+  string source = R"(
+int main() {  
+      float x = 0.; 
+    }
+  )";
+  string IR = compile("Declarations.SimpleDeclaration", source);
+
+
+  auto main_func = get_IR_func_block(IR, "main").value();
+
+  cout << main_func << endl;
 }

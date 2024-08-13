@@ -84,3 +84,20 @@ optional<string> get_IR_func_block(string &output, string func_name) {
 
   return output.substr(start, end - start);
 }
+
+string compile(string module_name, string program) {
+  KLCodeGenVisitor visitor(module_name.c_str());
+
+  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+
+  CommandLineArguments options(2, argv);
+  Lexer lexer(options);
+  Parser parser(lexer);
+
+  auto ast = parser.parse();
+  ast->fold_expressions();
+
+  ast->accept(&visitor);
+
+  return visitor.getModuleAsString();
+}

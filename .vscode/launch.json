@@ -28,7 +28,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/KLTest",
-      "args": [""],
+      "args": ["--gtest_filter=\"Const.Float\""],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],

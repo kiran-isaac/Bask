@@ -32,12 +32,16 @@ void Lexer::advance() {
 }
 
 Lexer::Lexer(const CommandLineArguments& options) {
-  file = fopen(options.file.c_str(), "r");
-  if (file == nullptr) {
-    lexerError = "Error: could not open file " + options.file;
-    return;
+  if (options.isStdin) {
+    file = stdin;
+  } else {
+    file = fopen(options.file.c_str(), "r");
+    if (file == nullptr) {
+      lexerError = "Error: could not open file " + options.file;
+      return;
+    }
   }
-  
+
   refresh_buffer_1();
   
   c = buf1;

@@ -15,6 +15,8 @@ public:
   string cwd;
   string file;
   string out;
+  bool isStdin;
+  enum Mode { COMPILE, RUN, IR, AST, HELP } mode;
   
   CommandLineArguments(int argc, const char **argv);
 };

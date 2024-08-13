@@ -6,6 +6,7 @@
 #define KL_UTILS_H
 
 #include <regex>
+#include <string>
 
 #include "parser.h"
 
@@ -16,5 +17,7 @@ string reformat(const string &str);
 optional<string> get_IR_func_block(string &output, string func_name);
 
 unique_ptr<ASTProgram> parseTestProgram(const string &program);
+
+string compile(string module_name, string program);
 
 #endif //KL_UTILS_H

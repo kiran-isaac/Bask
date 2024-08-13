@@ -24,6 +24,7 @@ public:
 	optional<KL_Token> next();
 private:
   FILE *file{};
+  bool isStdIn;
   
   char buf1[4096]{};
   char buf2[4096]{};

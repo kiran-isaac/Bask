@@ -8,7 +8,19 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtExpr *node) {
   return node->expr->accept(this);
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtAssignment *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtAssignment *node) {
+  auto var = NamedValues.findValue(node->identifier->name);
+  if (!var)
+    return KLCodeGenResult::Error("Unknown variable name " + node->identifier->name);
+
+  auto expr_result = node->value->accept(this);
+  auto expr = expr_result->getValue();
+  if (!expr)
+    return KLCodeGenResult::Error("Failed to get value of expression");
+
+  Builder.CreateStore(expr, var);
+  return KLCodeGenResult::None();
+}
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
   auto type_result = node->type->accept(this);

@@ -7,6 +7,7 @@ void ASTExprIdentifier::check_semantics() {
 }
 
 void ASTStmtAssignment::check_semantics() {
+  auto name = identifier->name;
   // check exists
   auto exists = SYMTAB.get_name_type(name);
   if (exists == nullopt) {

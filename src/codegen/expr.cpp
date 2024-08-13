@@ -1,5 +1,6 @@
 #include "AST/AST.h"
 #include "codegen.h"
+#include "tokens.h"
 #include "types.h"
 #include <llvm/ADT/StringRef.h>
 #include <llvm/IR/Constants.h>
@@ -10,6 +11,7 @@
 
 using namespace llvm;
 
+// Get the value of a constant, create a constant value and return it
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprConstantValue *node) {
   auto type = node->type;
 
@@ -44,12 +46,19 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprConstantValue *node) {
   return KLCodeGenResult::Value(constant);
 }
 
+// Get the value of an identifier, create a load instruction and return the
+// value
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprIdentifier *node) {
   auto found = NamedValues.findValue(node->name);
 
   if (found == nullptr) {
     return KLCodeGenResult::Error("Unknown variable name");
   }
+
+  Value *loadedValue = Builder.CreateLoad(
+      found->getType()->getPointerElementType(), found, node->name);
+
+  return KLCodeGenResult::Value(loadedValue);
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprFuncCall *node) {}
@@ -64,4 +73,22 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
   }
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprUnary *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprUnary *node) {
+  auto operand = node->expr->accept(this);
+
+  if (operand->getTypeOfResult() != CodeGenResultType_Value) {
+    return KLCodeGenResult::Error("Unary operation requires a value");
+  }
+
+  auto value = operand->getValue();
+
+  switch (node->op) {
+  case KL_TT_Operator_Sub:
+    return KLCodeGenResult::Value(Builder.CreateNeg(value, "negtmp"));
+  case KL_TT_Operator_LogicalNot:
+  case KL_TT_Operator_BitwiseNot:
+    return KLCodeGenResult::Value(Builder.CreateNot(value, "nottmp"));
+  default:
+    return KLCodeGenResult::Error("Unknown unary operator");
+  }
+}

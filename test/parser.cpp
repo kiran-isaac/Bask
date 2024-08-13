@@ -46,7 +46,7 @@ TEST(Parser, Assignment) {
   
   ASSERT_NE(value, nullptr);
   
-  ASSERT_EQ(assignment->name, "a");
+  ASSERT_EQ(assignment->identifier->name, "a");
   ASSERT_EQ(value->value, "50");
 }
 

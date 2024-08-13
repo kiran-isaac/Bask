@@ -56,14 +56,15 @@ class ASTStmtAssignment : public ASTStmt {
  public:
   ASTProgram *program;
 
-  string name;
+  unique_ptr<ASTExprIdentifier> identifier;
   unique_ptr<ASTExpr> value;
   unsigned int line;
   unsigned int col;
 
   ASTStmtAssignment(string name, unique_ptr<ASTExpr> value, unsigned int line,
                     unsigned int col)
-      : name(std::move(name)), value(std::move(value)), line(line), col(col) {}
+      : identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
 
   void fold_expressions() override { value = ASTExpr::fold(value.get()); }
 
@@ -77,7 +78,7 @@ class ASTStmtAssignment : public ASTStmt {
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Assignment: " << name << std::endl;
+    out << "Assignment: " << identifier->name << std::endl;
     value->print(indent + 1, out);
   }
 };

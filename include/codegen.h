@@ -5,8 +5,10 @@
 #ifndef KL_CODEGEN_H
 #define KL_CODEGEN_H
 
+#include <iostream>
 #include <map>
 #include <optional>
+#include <ostream>
 #include <string>
 
 #include <llvm/ADT/StringRef.h>
@@ -17,6 +19,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
+#include <llvm/Support/raw_ostream.h>
 
 class ASTType;
 class ASTFuncDecl;
@@ -76,7 +79,7 @@ private:
 
   KLCodeGenResult(CodeGenResultType type, std::optional<llvm::Value *> value,
                   std::optional<std::string> error,
-                  std::optional <llvm::Type *> llvm_type)
+                  std::optional<llvm::Type *> llvm_type)
       : type(type) {
     switch (type) {
     case CodeGenResultType_Value:
@@ -187,7 +190,16 @@ public:
 
   llvm::Module *getModule() { return TheModule; }
 
-  void printModule() { TheModule->print(llvm::errs(), nullptr); }
+  void printModule(llvm::raw_ostream &stream = llvm::outs()) {
+    TheModule->print(stream, nullptr);
+  }
+
+  std::string getModuleAsString() {
+    std::string output;
+    llvm::raw_string_ostream llvm_output(output);
+    printModule(llvm_output);
+    return output;
+  }
 };
 
 #endif // KL_CODEGEN_H

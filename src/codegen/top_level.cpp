@@ -42,9 +42,6 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   FunctionType *FT =
       FunctionType::get(return_type->getLLVMType(), argTypes, false);
 
-  cout << "Creating function " << node->name << endl;
-  // cout << "Function type is " << FT->dump() << endl;
-  FT->dump();
 
   Function *F =
       Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);

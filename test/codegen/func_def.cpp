@@ -47,5 +47,21 @@ TEST(FuncDef, MainWithArgs) {
 
   ast->accept(&visitor);
 
-  visitor.printModule();
+  // create llvm output stream
+  std::string output;
+
+  llvm::raw_string_ostream llvm_output(output);
+
+  visitor.printModule(llvm_output);
+
+  std::string expected_output =
+  R"(; ModuleID = 'Declarations.Main'
+    source_filename = "Declarations.Main"
+    target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+
+    define i32 @main(i32 %a, i32 %b) {
+    entry:
+  })";
+
+  EXPECT_EQ(reformat(output), reformat(expected_output));
 }

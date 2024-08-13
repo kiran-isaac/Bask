@@ -5,6 +5,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "lldb",
+      "request": "launch",
+      "name": "CodeLLDB GTest",
+      "program": "${workspaceFolder}/build/KLTest",
+      "args": [],
+      "preLaunchTask": "build with make",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb-dap",
+      "request": "launch",
+      "name": "LLDB GTest",
+      "program": "${workspaceFolder}/build/KLTest",
+      "args": [],
+      "preLaunchTask": "build with make",
+      "cwd": "${workspaceFolder}"
+    },
+
+    {
       "name": "build and debug gtests",
       "type": "cppdbg",
       "request": "launch",

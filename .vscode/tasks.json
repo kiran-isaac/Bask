@@ -4,7 +4,7 @@
     {
       "label": "build with make",
       "type": "shell",
-      "command": "make",
+      "command": "make -j12",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -17,7 +17,7 @@
     {
       "label": "build with ninja",
       "type": "shell",
-      "command": "ninja",
+      "command": "ninja -j12",
       "group": {
         "kind": "build",
         "isDefault": true

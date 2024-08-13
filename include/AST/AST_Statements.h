@@ -5,13 +5,14 @@
 #ifndef KL_AST_STATEMENTS_H
 #define KL_AST_STATEMENTS_H
 
-#include "AST.h"
-#include "AST_Expressions.h"
+#include "AST/AST_Expressions.h"
+#include "AST/AST_Preamble.h"
+#include "codegen.h"
+#include "types.h"
+#include <memory>
 
 class ASTStmt : public ASTNode {
- public:
-  ASTProgram *program;
-
+public:
   virtual void fold_expressions() {}
 
   virtual void check_semantics() {}
@@ -19,6 +20,8 @@ class ASTStmt : public ASTNode {
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
 
   virtual void print(int indent, ostream &out) const = 0;
+
+  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v) = 0;
 };
 
 class ASTStmtExpr : public ASTStmt {
@@ -29,8 +32,7 @@ class ASTStmtExpr : public ASTStmt {
   unsigned int line;
   unsigned int col;
 
-  explicit ASTStmtExpr(unique_ptr<ASTExpr> expr, unsigned int line,
-                       unsigned int col)
+  ASTStmtExpr(unique_ptr<ASTExpr> expr, unsigned int line, unsigned int col)
       : expr(std::move(expr)), line(line), col(col) {}
 
   void fold_expressions() override { expr = ASTExpr::fold(expr.get()); }
@@ -38,6 +40,8 @@ class ASTStmtExpr : public ASTStmt {
   void check_semantics() override { expr->check_semantics(); }
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtExpr; }
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -50,14 +54,15 @@ class ASTStmtAssignment : public ASTStmt {
  public:
   ASTProgram *program;
 
-  string name;
+  unique_ptr<ASTExprIdentifier> identifier;
   unique_ptr<ASTExpr> value;
   unsigned int line;
   unsigned int col;
 
   ASTStmtAssignment(string name, unique_ptr<ASTExpr> value, unsigned int line,
                     unsigned int col)
-      : name(std::move(name)), value(std::move(value)), line(line), col(col) {}
+      : identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
 
   void fold_expressions() override { value = ASTExpr::fold(value.get()); }
 
@@ -67,9 +72,11 @@ class ASTStmtAssignment : public ASTStmt {
     return StmtAssignment;
   }
 
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Assignment: " << name << std::endl;
+    out << "Assignment: " << identifier->name << std::endl;
     value->print(indent + 1, out);
   }
 };
@@ -78,18 +85,27 @@ class ASTStmtDecl : public ASTStmt {
  public:
   ASTProgram *program;
   unique_ptr<ASTType> type;
-  string name;
+  unique_ptr<ASTExprIdentifier> identifier;
   unique_ptr<ASTExpr> value;
   unsigned int line;
   unsigned int col;
 
   ASTStmtDecl(unique_ptr<ASTType> type, string name, unique_ptr<ASTExpr> value,
               unsigned int line, unsigned int col)
-      : type(std::move(type)),
-        name(std::move(name)),
-        value(std::move(value)),
-        line(line),
-        col(col) {}
+      : type(std::move(type)), identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
+
+  ASTStmtDecl(KL_Type type, string name, unique_ptr<ASTExpr> value,
+              unsigned int line, unsigned int col)
+      : type(std::make_unique<ASTType>(type, line, col)),
+        identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(std::move(value)), line(line), col(col) {}
+
+  ASTStmtDecl(KL_Type type, string name,
+              unsigned int line, unsigned int col)
+      : type(std::make_unique<ASTType>(type, line, col)),
+        identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
+        value(nullptr), line(line), col(col) {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtDecl; }
 
@@ -97,13 +113,41 @@ class ASTStmtDecl : public ASTStmt {
 
   void check_semantics() override;
 
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
-    out << "Declaration: " << name << std::endl;
+    out << "Declaration: " << identifier->name << std::endl;
     type->print(indent + 1, out);
     if (value) {
       value->print(indent + 1, out);
     }
+  }
+};
+
+class ASTStmtReturn : public ASTStmt {
+public:
+  ASTProgram *program;
+
+  unique_ptr<ASTExpr> return_expr;
+  unsigned int line;
+  unsigned int col;
+
+  ASTStmtReturn(unique_ptr<ASTExpr> return_expr, unsigned line, unsigned col)
+      : return_expr(std::move(return_expr)), line(line), col(col) {}
+
+  [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtReturn; }
+
+  void fold_expressions() override { return_expr = ASTExpr::fold(return_expr.get()); }
+
+  void check_semantics() override { return_expr->check_semantics(); }
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
+  void print(int indent, ostream &out) const override {
+    printIndent(indent, out);
+    out << "Return Statement:" << std::endl;
+    return_expr->print(indent + 1, out);
   }
 };
 
@@ -130,11 +174,13 @@ class ASTBlock : public ASTNode {
 
   int size() { return body.size(); }
 
-  void check_semantics() {
+  void check_semantics() override {
     for (auto &stmt : body) {
       stmt->check_semantics();
     }
   }
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

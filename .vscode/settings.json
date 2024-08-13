@@ -123,5 +123,17 @@
   },
   "gtest-adapter.debugConfig": "Debug",
   "gtest-adapter.mainConfig": "Debug",
-  "gtest-adapter.supportLocation": true
+  "gtest-adapter.supportLocation": true,
+
+  "testMate.cpp.test.advancedExecutables": [
+    {
+      "pattern": "{build,Build,BUILD,out,Out,OUT}/**/*{test,Test,TEST}*",
+      "cwd": "${absDirpath}",
+      "runTask": { "before": ["build with make"] },
+      "env": {
+        "ExampleENV1": "You can use variables here too, like ${relPath}",
+        "PATH": "${os_env:PATH}${osPathEnvSep}/adding/new/item/to/PATH/env"
+      }
+    }
+  ]
 }

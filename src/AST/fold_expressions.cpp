@@ -16,7 +16,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
   }
   
   auto value = dynamic_cast<ASTExprConstantValue *>(unary->expr.get());
-  if (value->type.primitive == KL_INT) {
+  if (value->type.primitive == KL_INT_PRIMITIVE) {
     int val = stoi(value->value);
     switch (unary->op) {
       case KL_TT_Operator_Sub:
@@ -26,7 +26,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       default:
         ASTNode::SyntaxError(unary->line, unary->col, "Invalid unary operator for int value");
     }
-  } else if (value->type.primitive == KL_FLOAT) {
+  } else if (value->type.primitive == KL_FLOAT_PRIMITIVE) {
     float val = stof(value->value);
     switch (unary->op) {
       case KL_TT_Operator_Sub:
@@ -34,7 +34,7 @@ unique_ptr<ASTExpr> ASTExpr::fold_unary(ASTExpr* expr) {
       default:
         ASTNode::SyntaxError(unary->line, unary->col, "Invalid unary operator for float value");
     }
-  } else if (value->type.primitive == KL_BOOL) {
+  } else if (value->type.primitive == KL_BOOL_PRIMITIVE) {
     bool val = value->value == "true";
     switch (unary->op) {
       case KL_TT_Operator_LogicalNot:

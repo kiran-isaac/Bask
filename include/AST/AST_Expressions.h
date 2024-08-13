@@ -5,8 +5,10 @@
 #ifndef KL_AST_EXPRESSIONS_H
 #define KL_AST_EXPRESSIONS_H
 
-#include "AST.h"
+#include "AST/AST_Preamble.h"
+#include "codegen.h"
 #include "symtab.h"
+#include <llvm/IR/Value.h>
 
 class ASTExpr : public ASTNode {
  private:
@@ -24,9 +26,9 @@ class ASTExpr : public ASTNode {
 
   virtual KL_Type get_expr_type() { return KL_Type(); };
 
-  virtual void print(int indent, ostream &out) const {};
+  virtual void print(int indent, ostream &out) const override {};
 
-  virtual void check_semantics() {}
+  virtual void check_semantics() override {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Expr; }
 };
@@ -53,6 +55,8 @@ class ASTExprConstantValue : public ASTExpr {
 
   KL_Type get_expr_type() override { return KL_Type(type); };
 
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Value: " << value << std::endl;
@@ -74,9 +78,11 @@ class ASTExprIdentifier : public ASTExpr {
     return ExprIdentifier;
   }
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
 
   void check_semantics() override;
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -108,7 +114,7 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
-  KL_Type get_expr_type() {
+  KL_Type get_expr_type() override {
     auto type = SYMTAB.get_name_type(name);
     if (!type) {
       throw std::runtime_error("Function " + name + " not found");
@@ -121,6 +127,8 @@ class ASTExprFuncCall : public ASTExpr {
       arg->check_semantics();
     }
   }
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -160,9 +168,11 @@ class ASTExprBinary : public ASTExpr {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return ExprBinary; }
 
-  void check_semantics();
+  void check_semantics() override;
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -191,22 +201,17 @@ class ASTExprUnary : public ASTExpr {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return ExprUnary; }
 
-  void check_semantics();
+  void check_semantics() override;
 
-  KL_Type get_expr_type();
+  KL_Type get_expr_type() override;
+
+  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Unary Expression: " << token_type_to_string(op) << std::endl;
     expr->print(indent + 1, out);
   }
-};
-
-class ASTExpressionCast : public ASTExpr {
- public:
-  ASTProgram *program;
-  unique_ptr<ASTExpr> expr;
-  unique_ptr<ASTType> type;
 };
 
 #endif  // KL_AST_EXPRESSIONS_H

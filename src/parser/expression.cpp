@@ -39,23 +39,23 @@ unique_ptr<ASTExpr> Parser::parse_primary() {
   unique_ptr<ASTExpr> return_primary;
   switch (tk.type) {
     case KL_TT_Literal_Int:
-      return_primary = make_unique<ASTExprConstantValue>(INT_CONST, tk.value, tk.line, tk.col);
+      return_primary = make_unique<ASTExprConstantValue>(KL_INT_CONST, tk.value, tk.line, tk.col);
       nextToken();
       return return_primary;
     case KL_TT_Literal_Float:
-      return_primary = make_unique<ASTExprConstantValue>(FLOAT_CONST, tk.value, tk.line, tk.col);
+      return_primary = make_unique<ASTExprConstantValue>(KL_FLOAT_CONST, tk.value, tk.line, tk.col);
       nextToken();
       return return_primary;
     case KL_TT_Literal_Bool:
-      return_primary = make_unique<ASTExprConstantValue>(BOOL_CONST, tk.value, tk.line, tk.col);
+      return_primary = make_unique<ASTExprConstantValue>(KL_BOOL_CONST, tk.value, tk.line, tk.col);
       nextToken();
       return return_primary;
     case KL_TT_Literal_Char:
-      return_primary = make_unique<ASTExprConstantValue>(CHAR_CONST, tk.value, tk.line, tk.col);
+      return_primary = make_unique<ASTExprConstantValue>(KL_CHAR_CONST, tk.value, tk.line, tk.col);
       nextToken();
       return return_primary;
     case KL_TT_Literal_String:
-      return_primary = make_unique<ASTExprConstantValue>(STRING_CONST, tk.value, tk.line, tk.col);
+      return_primary = make_unique<ASTExprConstantValue>(KL_STRING_CONST, tk.value, tk.line, tk.col);
       nextToken();
       return return_primary;
       

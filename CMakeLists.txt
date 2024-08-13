@@ -7,7 +7,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(KL)
 
 include(FetchContent)
-find_package(LLVM REQUIRED CONFIG)
+find_package(LLVM 14 REQUIRED CONFIG EXACT)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
@@ -17,7 +20,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "-g")
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wno-trigraphs")
+set(CMAKE_CXX_FLAGS "-Wno-trigraphs -Wno-delete-abstract-non-virtual-dtor -Wno-return-type")
 
 include_directories(include)
 include_directories(${LLVM_INCLUDE_DIRS})
@@ -30,6 +33,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 # Add the executable
 add_executable(KL src/main.cpp ${SOURCES} ${INCLUDES})
+target_link_libraries(KL LLVMSupport)
 
 # Link against LLVM libraries
 target_link_libraries(KL LLVM)
@@ -40,8 +44,8 @@ list(FILTER TEST_SOURCES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
 include(FetchContent)
 FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    googletest
+    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -57,3 +61,4 @@ target_link_libraries(KLTest GTest::gtest_main)
 target_link_libraries(KLTest LLVM)
 
 target_compile_definitions(KLTest PRIVATE KL_DEBUG)
+target_link_libraries(KLTest LLVMSupport)

@@ -1,3 +1,4 @@
+#include "codegen.h"
 #include <iostream>
 #include <options.h>
 #include <parser.h>
@@ -10,7 +11,10 @@ int main(int argc, const char **argv) {
   
   auto ast = parser.parse();
   ast->fold_expressions();
-  ast->print(0, cout);
-  
-  return 0;
+  ast->check_semantics();
+
+  KLCodeGenVisitor visitor("Main");
+  ast->accept(&visitor);
+
+  visitor.printModule();
 }

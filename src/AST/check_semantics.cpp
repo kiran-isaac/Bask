@@ -7,6 +7,7 @@ void ASTExprIdentifier::check_semantics() {
 }
 
 void ASTStmtAssignment::check_semantics() {
+  auto name = identifier->name;
   // check exists
   auto exists = SYMTAB.get_name_type(name);
   if (exists == nullopt) {
@@ -25,13 +26,13 @@ void ASTStmtAssignment::check_semantics() {
   }
 
   switch (lhstype.kind) {
-    case KL_PRIMITIVE:
+    case KL_PRIMITIVE_TYPEKIND:
       if (lhstype.primitive != rhstype.primitive) {
         ASTNode::TypeError(this->line, this->col,
                            "Type mismatch in declaration");
       }
       break;
-    case KL_ARRAY:
+    case KL_ARRAY_TYPEKIND:
       if (lhstype.array_sizes != rhstype.array_sizes) {
         ASTNode::TypeError(this->line, this->col,
                            "Incompatible array sizes in declaration");
@@ -41,7 +42,7 @@ void ASTStmtAssignment::check_semantics() {
                            "Incompatible array type in declaration");
       }
       break;
-    case KL_FUNCTION:
+    case KL_FUNCTION_TYPEKIND:
       throw std::runtime_error(
           "UNREACHABLE: Function type in declaration not supported");
     default:
@@ -50,10 +51,10 @@ void ASTStmtAssignment::check_semantics() {
 }
 
 void ASTStmtDecl::check_semantics() {
-  auto exists = SYMTAB.get_name_type(name);
+  auto exists = SYMTAB.get_name_type(identifier->name);
   if (exists) {
     ASTNode::ValueError(this->line, this->col,
-                        "Variable " + name + " already exists");
+                        "Variable " + identifier->name + " already exists");
   }
   KL_Type lhstype = KL_Type(type->type);
   KL_Type rhstype = value->get_expr_type();
@@ -67,7 +68,7 @@ void ASTStmtDecl::check_semantics() {
   }
 
   switch (lhstype.kind) {
-    case KL_PRIMITIVE:
+    case KL_PRIMITIVE_TYPEKIND:
       if (lhstype.primitive != rhstype.primitive) {
         ASTNode::TypeError(this->line, this->col,
                            "Type mismatch in declaration. Expected '" +
@@ -75,7 +76,7 @@ void ASTStmtDecl::check_semantics() {
                                rhstype.to_string() + "'");
       }
       break;
-    case KL_ARRAY:
+    case KL_ARRAY_TYPEKIND:
       if (lhstype.array_sizes != rhstype.array_sizes) {
         ASTNode::TypeError(this->line, this->col,
                            "Incompatible array sizes in declaration. Expected '" +
@@ -90,14 +91,14 @@ void ASTStmtDecl::check_semantics() {
       }
       
       break;
-    case KL_FUNCTION:
+    case KL_FUNCTION_TYPEKIND:
       throw std::runtime_error(
           "UNREACHABLE: Function type in declaration not supported");
     default:
       ASTNode::TypeError(this->line, this->col, "Type mismatch in declaration");
   }
 
-  SYMTAB.add_name(name, lhstype);
+  SYMTAB.add_name(identifier->name, lhstype);
 }
 
 void ASTExprBinary::check_semantics() {
@@ -108,7 +109,7 @@ void ASTExprBinary::check_semantics() {
   KL_Type lhs_type = lhs->get_expr_type();
   KL_Type rhs_type = rhs->get_expr_type();
 
-  if (lhs_type.kind != KL_PRIMITIVE || rhs_type.kind != KL_PRIMITIVE) {
+  if (lhs_type.kind != KL_PRIMITIVE_TYPEKIND || rhs_type.kind != KL_PRIMITIVE_TYPEKIND) {
     ASTNode::SyntaxError(
         this->line, this->col,
         "Binary operation can only be applied to primitive types");
@@ -116,11 +117,11 @@ void ASTExprBinary::check_semantics() {
 
   bool is_const = lhs_type.is_const && rhs_type.is_const;
 
-  if (lhs_type.primitive == KL_STRING || rhs_type.primitive == KL_STRING) {
-    auto t1 = lhs_type.primitive == KL_STRING ? lhs_type : rhs_type;
-    auto t2 = lhs_type.primitive == KL_STRING ? rhs_type : lhs_type;
+  if (lhs_type.primitive == KL_STRING_PRIMITIVE || rhs_type.primitive == KL_STRING_PRIMITIVE) {
+    auto t1 = lhs_type.primitive == KL_STRING_PRIMITIVE ? lhs_type : rhs_type;
+    auto t2 = lhs_type.primitive == KL_STRING_PRIMITIVE ? rhs_type : lhs_type;
 
-    if (t2.primitive != KL_STRING) {
+    if (t2.primitive != KL_STRING_PRIMITIVE) {
       ASTNode::TypeError(this->line, this->col,
                          "Invalid type in string expression");
     }
@@ -129,13 +130,13 @@ void ASTExprBinary::check_semantics() {
     switch (op) {
       // Valid operations for t2 being a string or char
       case KL_TT_Operator_Add:
-        type = KL_Type(is_const, KL_STRING);
+        type = KL_Type(is_const, KL_STRING_PRIMITIVE);
         break;
 
       // Valid operations for t2 being a string
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
-        type = KL_Type(is_const, KL_BOOL);
+        type = KL_Type(is_const, KL_BOOL_PRIMITIVE);
         break;
 
       default:
@@ -143,11 +144,11 @@ void ASTExprBinary::check_semantics() {
                              "Invalid operator in " + t1.to_string() + " and " +
                                  t2.to_string() + " binary expression");
     }
-  } else if (lhs_type.primitive == KL_FLOAT || rhs_type.primitive == KL_FLOAT) {
-    auto t1 = lhs_type.primitive == KL_FLOAT ? lhs_type : rhs_type;
-    auto t2 = lhs_type.primitive == KL_FLOAT ? rhs_type : lhs_type;
+  } else if (lhs_type.primitive == KL_FLOAT_PRIMITIVE || rhs_type.primitive == KL_FLOAT_PRIMITIVE) {
+    auto t1 = lhs_type.primitive == KL_FLOAT_PRIMITIVE ? lhs_type : rhs_type;
+    auto t2 = lhs_type.primitive == KL_FLOAT_PRIMITIVE ? rhs_type : lhs_type;
 
-    if (t2.primitive != KL_FLOAT && t2.primitive != KL_INT) {
+    if (t2.primitive != KL_FLOAT_PRIMITIVE && t2.primitive != KL_INT_PRIMITIVE) {
       ASTNode::TypeError(this->line, this->col,
                          "Invalid type in float expression");
     }
@@ -161,7 +162,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_Mul:
       case KL_TT_Operator_Div:
       case KL_TT_Operator_Mod:
-        type = KL_Type(is_const, KL_FLOAT);
+        type = KL_Type(is_const, KL_FLOAT_PRIMITIVE);
         break;
 
       // Valid operations for t2 being a float
@@ -171,7 +172,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_LessEqual:
       case KL_TT_Operator_Greater:
       case KL_TT_Operator_GreaterEqual:
-        type = KL_Type(is_const, KL_BOOL);
+        type = KL_Type(is_const, KL_BOOL_PRIMITIVE);
         break;
 
       default:
@@ -179,11 +180,11 @@ void ASTExprBinary::check_semantics() {
                              "Invalid operator in " + t1.to_string() + " and " +
                                  t2.to_string() + " binary expression");
     }
-  } else if (lhs_type.primitive == KL_INT || rhs_type.primitive == KL_INT) {
-    auto t1 = lhs_type.primitive == KL_INT ? lhs_type : rhs_type;
-    auto t2 = lhs_type.primitive == KL_INT ? rhs_type : lhs_type;
+  } else if (lhs_type.primitive == KL_INT_PRIMITIVE || rhs_type.primitive == KL_INT_PRIMITIVE) {
+    auto t1 = lhs_type.primitive == KL_INT_PRIMITIVE ? lhs_type : rhs_type;
+    auto t2 = lhs_type.primitive == KL_INT_PRIMITIVE ? rhs_type : lhs_type;
 
-    if (t2.primitive != KL_INT) {
+    if (t2.primitive != KL_INT_PRIMITIVE) {
       ASTNode::TypeError(this->line, this->col,
                          "Invalid type in int expression");
     }
@@ -200,7 +201,7 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_Mod:
       case KL_TT_Operator_Shl:
       case KL_TT_Operator_Shr:
-        type = KL_Type(is_const, KL_INT);
+        type = KL_Type(is_const, KL_INT_PRIMITIVE);
         break;
       // Comparisons
       case KL_TT_Operator_Less:
@@ -209,15 +210,15 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_GreaterEqual:
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
-        type = KL_Type(is_const, KL_BOOL);
+        type = KL_Type(is_const, KL_BOOL_PRIMITIVE);
         break;
 
       // Valid operations for t2 being an int
       case KL_TT_Operator_BitwiseAnd:
       case KL_TT_Operator_BitwiseOr:
       case KL_TT_Operator_BitwiseXor:
-        if (t2.primitive == KL_INT) {
-          type = KL_Type(is_const, KL_INT);
+        if (t2.primitive == KL_INT_PRIMITIVE) {
+          type = KL_Type(is_const, KL_INT_PRIMITIVE);
           break;
         }
 
@@ -226,7 +227,7 @@ void ASTExprBinary::check_semantics() {
                              "Invalid operator in " + t1.to_string() + " and " +
                                  t2.to_string() + " binary expression");
     }
-  } else if (lhs_type.primitive == KL_BOOL && rhs_type.primitive == KL_BOOL) {
+  } else if (lhs_type.primitive == KL_BOOL_PRIMITIVE && rhs_type.primitive == KL_BOOL_PRIMITIVE) {
     // t1 and t2 are definitely bool
     switch (op) {
       // Valid operations for bool
@@ -234,20 +235,20 @@ void ASTExprBinary::check_semantics() {
       case KL_TT_Operator_NotEqual:
       case KL_TT_Operator_LogicalAnd:
       case KL_TT_Operator_LogicalOr:
-        type = KL_Type(is_const, KL_BOOL);
+        type = KL_Type(is_const, KL_BOOL_PRIMITIVE);
         break;
 
       default:
         ASTNode::SyntaxError(this->line, this->col,
                              "Invalid operator in bool expression");
     }
-  } else if (lhs_type.primitive == KL_CHAR && rhs_type.primitive == KL_CHAR) {
+  } else if (lhs_type.primitive == KL_CHAR_PRIMITIVE && rhs_type.primitive == KL_CHAR_PRIMITIVE) {
     // t1 and t2 are definitely char
     switch (op) {
       // Valid operations for char
       case KL_TT_Operator_Equal:
       case KL_TT_Operator_NotEqual:
-        type = KL_Type(is_const, KL_BOOL);
+        type = KL_Type(is_const, KL_BOOL_PRIMITIVE);
         break;
       default:
         ASTNode::SyntaxError(this->line, this->col,
@@ -265,26 +266,26 @@ void ASTExprUnary::check_semantics() {
   // TODO type check operation
   expr->check_semantics();
   KL_Type expr_type = expr->get_expr_type();
-  if (expr_type.kind != KL_PRIMITIVE) {
+  if (expr_type.kind != KL_PRIMITIVE_TYPEKIND) {
     ASTNode::SyntaxError(
         this->line, this->col,
         "Unary operation can only be applied to primitive types");
   }
   switch (op) {
     case KL_TT_Operator_Sub:
-      if (expr_type.primitive != KL_INT && expr_type.primitive != KL_FLOAT) {
+      if (expr_type.primitive != KL_INT_PRIMITIVE && expr_type.primitive != KL_FLOAT_PRIMITIVE) {
         throw std::runtime_error(
             "Unary minus can only be applied to int or float");
       }
       break;
     case KL_TT_Operator_LogicalNot:
-      if (expr_type.primitive != KL_BOOL) {
+      if (expr_type.primitive != KL_BOOL_PRIMITIVE) {
         throw std::runtime_error(
             "Unary logical not can only be applied to bool");
       }
       break;
     case KL_TT_Operator_BitwiseNot:
-      if (expr_type.primitive != KL_INT) {
+      if (expr_type.primitive != KL_INT_PRIMITIVE) {
         throw std::runtime_error("Unary binary can only be applied to int");
       }
     default:

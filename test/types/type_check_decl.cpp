@@ -20,39 +20,39 @@ TEST(DeclTypeCheck, Test1) {
   ASSERT_EQ(type->to_string(), "int");
 }
 
-void testBadDecl(const std::string &program) {
+void wipeSymtabAndExpectFaliure(const std::string &program) {
   SYMTAB.wipe();
   EXPECT_THROW(parseTestProgram(program)->check_semantics(),
                std::runtime_error);
 }
 
 TEST(DeclTypeCheck, BadAssignment) {
-  testBadDecl(R"(
+  wipeSymtabAndExpectFaliure(R"(
   int main() {
     bool a = 0;
   })");
 
-  testBadDecl(R"(
+  wipeSymtabAndExpectFaliure(R"(
   int main() {
     int a = 0; 
     bool b = a;
   })");
 
-  testBadDecl(R"(
+  wipeSymtabAndExpectFaliure(R"(
   int main() {
     int a = 0; 
     int b = 1; 
     bool c = a + b;
   })");
 
-  testBadDecl(R"(
+  wipeSymtabAndExpectFaliure(R"(
   int main() {
     int a = 0; 
     const int b = 1; 
     b = a;
   })");
 
-  testBadDecl(R"(
+  wipeSymtabAndExpectFaliure(R"(
   int main() {
     int a = 0; 
     string b = "hello world"; 

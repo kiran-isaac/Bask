@@ -18,3 +18,14 @@ unique_ptr<ASTControLFlowIf> Parser::parse_if() {
   
   return make_unique<ASTControLFlowIf>(std::move(condition), std::move(then_block), std::move(else_block), line, col);
 }
+
+unique_ptr<ASTControlFlowWhile> Parser::parse_while() {
+  unsigned int line = tk.line;
+  unsigned int col = tk.col;
+  
+  nextToken();
+  auto condition = parse_expression();
+  auto body = parse_block();
+  
+  return make_unique<ASTControlFlowWhile>(std::move(condition), std::move(body), line, col);
+}

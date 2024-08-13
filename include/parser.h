@@ -47,7 +47,8 @@ class Parser {
   unique_ptr<ASTExprFuncCall> parse_function_call();
 
   unique_ptr<ASTControLFlowIf> parse_if();
- public:
+  unique_ptr<ASTControlFlowWhile> parse_while();
+public:
   explicit Parser(Lexer &lexer) : lexer(lexer) { nextToken(); }
 
   unique_ptr<ASTProgram> parse();

@@ -69,6 +69,9 @@ unique_ptr<ASTStmt> Parser::parse_statement() {
   case KL_TT_KW_If:
     return parse_if();
 
+  case KL_TT_KW_While:
+    return parse_while();
+
   case KL_TT_KW_Const:
   case KL_TT_KW_Int:
   case KL_TT_KW_Float:

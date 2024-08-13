@@ -58,7 +58,7 @@ public:
   }
 };
 
-class ASTControlFlowWhile : ASTStmt {
+class ASTControlFlowWhile : public ASTStmt {
 public:
   unique_ptr<ASTExpr> condition;
   unique_ptr<ASTBlock> block;

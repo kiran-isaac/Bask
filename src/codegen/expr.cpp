@@ -71,6 +71,53 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
       rhs->getTypeOfResult() != CodeGenResultType_Value) {
     return KLCodeGenResult::Error("Binary operation requires two values");
   }
+
+  auto left = lhs->getValue();
+  auto right = rhs->getValue();
+
+  switch (node->op) {
+  case KL_TT_Operator_Add:
+    return KLCodeGenResult::Value(Builder.CreateAdd(left, right, "addtmp"));
+  case KL_TT_Operator_Sub:
+    return KLCodeGenResult::Value(Builder.CreateSub(left, right, "subtmp"));
+  case KL_TT_Operator_Mul:
+    return KLCodeGenResult::Value(Builder.CreateMul(left, right, "multmp"));
+  case KL_TT_Operator_Div:
+    return KLCodeGenResult::Value(Builder.CreateSDiv(left, right, "divtmp"));
+  case KL_TT_Operator_Mod:
+    return KLCodeGenResult::Value(Builder.CreateSRem(left, right, "modtmp"));
+  case KL_TT_Operator_LogicalAnd:
+    return KLCodeGenResult::Value(Builder.CreateAnd(left, right, "andtmp"));
+  case KL_TT_Operator_LogicalOr:
+    return KLCodeGenResult::Value(Builder.CreateOr(left, right, "ortmp"));
+  case KL_TT_Operator_BitwiseAnd:
+    return KLCodeGenResult::Value(Builder.CreateAnd(left, right, "andtmp"));
+  case KL_TT_Operator_BitwiseOr:
+    return KLCodeGenResult::Value(Builder.CreateOr(left, right, "ortmp"));
+  case KL_TT_Operator_BitwiseXor:
+    return KLCodeGenResult::Value(Builder.CreateXor(left, right, "xortmp"));
+  case KL_TT_Operator_Equal:
+    return KLCodeGenResult::Value(Builder.CreateICmpEQ(left, right, "eqtmp"));
+  case KL_TT_Operator_NotEqual:
+    return KLCodeGenResult::Value(Builder.CreateICmpNE(left, right, "netmp"));
+  case KL_TT_Operator_Less:
+    return KLCodeGenResult::Value(Builder.CreateICmpSLT(left, right, "lttmp"));
+  case KL_TT_Operator_LessEqual:
+    return KLCodeGenResult::Value(
+        Builder.CreateICmpSLE(left, right, "letmp"));
+  case KL_TT_Operator_Greater:
+    return KLCodeGenResult::Value(
+        Builder.CreateICmpSGT(left, right, "gttmp"));
+  case KL_TT_Operator_GreaterEqual:
+    return KLCodeGenResult::Value(
+        Builder.CreateICmpSGE(left, right, "getmp"));
+  case KL_TT_Operator_Shl:
+    return KLCodeGenResult::Value(Builder.CreateShl(left, right, "shltmp"));
+  case KL_TT_Operator_Shr:
+    return KLCodeGenResult::Value(Builder.CreateAShr(left, right, "shrtmp"));
+  default:
+    return KLCodeGenResult::Error("Unknown binary operator");
+  }
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprUnary *node) {

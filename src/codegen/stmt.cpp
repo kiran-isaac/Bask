@@ -48,9 +48,27 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTBlock *node) {
+  bool halt_next = false;
   for (auto &stmt : node->body) {
-    stmt->accept(this);
+    if (halt_next) {
+      return KLCodeGenResult::Error("Unreachable code " + stmt->positionString());
+    }
+    auto result = stmt->accept(this);
+
+    switch (result->getTypeOfResult()) {
+      case CodeGenResultType_Error:
+        return KLCodeGenResult::Error(result->getError());
+      case CodeGenResultType_Halt:
+        // if this isnt the last statement in the block, return an error
+        if (&stmt == &node->body.back())
+          return KLCodeGenResult::None();
+        // Fail on the next stmt (so we can get correct line number)
+        halt_next = true;
+      default:
+        break;
+    }
   }
+
   return KLCodeGenResult::None();
 }
 
@@ -61,5 +79,5 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtReturn *node) {
     return KLCodeGenResult::Error("Failed to get value of return expression");
 
   Builder.CreateRet(expr);
-  return KLCodeGenResult::None();
+  return KLCodeGenResult::Halt();
 }

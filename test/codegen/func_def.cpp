@@ -19,7 +19,7 @@ TEST(FuncDef, Main) {
   KLCodeGenVisitor visitor("Declarations.Main");
 
   const char *argv[] = {"KL",
-                        insertIntoTempFile("int main() {}")};
+                        insertIntoTempFile("int main() {return 0;}")};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -36,7 +36,7 @@ TEST(FuncDef, Main) {
 TEST(FuncDef, MainWithArgs) {
   KLCodeGenVisitor visitor("Declarations.Main");
 
-  const char *argv[] = {"KL", insertIntoTempFile("int main(int a, int b) {}")};
+  const char *argv[] = {"KL", insertIntoTempFile("int main(int a, int b) {return 0;}")};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -55,13 +55,15 @@ TEST(FuncDef, MainWithArgs) {
   visitor.printModule(llvm_output);
 
   std::string expected_output =
-  R"(; ModuleID = 'Declarations.Main'
+      R"(; ModuleID = 'Declarations.Main'
     source_filename = "Declarations.Main"
     target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 
-    define i32 @main(i32 %a, i32 %b) {
+    define i64 @main(i64 %a, i64 %b) {
     entry:
-  })";
+      ret i64 0
+    }
+  )";
 
   EXPECT_EQ(reformat(output), reformat(expected_output));
 }

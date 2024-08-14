@@ -63,6 +63,10 @@ class ASTFuncDecl : public ASTNode {
     out << returnType->type.to_string() << " function: " << name << std::endl;
     body->print(indent + 1, out);
   }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTProgram : public ASTNode {
@@ -112,6 +116,10 @@ class ASTProgram : public ASTNode {
       }
     }
     throw runtime_error("Function not found");
+  }
+
+  std::string positionString() override {
+    return "[MODULE]";
   }
 };
 

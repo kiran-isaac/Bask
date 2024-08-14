@@ -16,27 +16,14 @@
 #include "types.h"
 
 TEST(While, While1) {
-  KLCodeGenVisitor visitor("Declarations.SimpleDeclaration");
-
-  const char *argv[] = {"KL", insertIntoTempFile(R"(
+  compile_and_unpack("While.While1", R"(
       int main() { 
         int x = 0;
         while (x < 10) {
           x = x + 1;
         }
         return x;
-      })")};
+      })");
 
-  CommandLineArguments options(2, argv);
-  Lexer lexer(options);
-  Parser parser(lexer);
-
-  auto ast = parser.parse();
-  ast->fold_expressions();
-
-  ast->accept(&visitor);
-
-  string output = visitor.getModuleAsString();
-
-  cout << output << endl;
+  cout << IR << endl;
 }

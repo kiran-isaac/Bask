@@ -9,8 +9,10 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <gtest/gtest.h>
 
 #include "AST/AST.h"
+#include "AST/AST_Preamble.h"
 #include "parser.h"
 #include "utils.h"
 
@@ -85,8 +87,10 @@ optional<string> get_IR_func_block(string &output, string func_name) {
   return output.substr(start, end - start);
 }
 
-string compile(string module_name, string program) {
+pair<bool, string> compile(string module_name, string program) {
   KLCodeGenVisitor visitor(module_name.c_str());
+
+  SYMTAB.wipe();
 
   const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
 
@@ -96,8 +100,14 @@ string compile(string module_name, string program) {
 
   auto ast = parser.parse();
   ast->fold_expressions();
+  ast->check_semantics();
 
-  ast->accept(&visitor);
+  auto codeGenResult = ast->accept(&visitor);
 
-  return visitor.getModuleAsString();
+  if (codeGenResult->getTypeOfResult() == CodeGenResultType_Error) {
+    cout << "FALIURE: IR:\n" << visitor.getModuleAsString() << endl;
+    return std::pair(false, codeGenResult->getError());
+  }
+
+  return std::pair(true, visitor.getModuleAsString());
 }

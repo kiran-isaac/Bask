@@ -12,11 +12,20 @@ using namespace llvm;
 using namespace std;
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {
+  auto result = KLCodeGenResult::None();
   for (auto &func : node->funcs) {
-    func->accept(this);
+    auto func_result = func->accept(this);
+    if (func_result->getTypeOfResult() != CodeGenResultType_Error)
+      continue;
+    
+    if (result->getTypeOfResult() == CodeGenResultType_Error) {
+      result->prepend_error(func_result->getError());
+    } else {
+      result = KLCodeGenResult::Error(func_result->getError());
+    }
   }
 
-  return KLCodeGenResult::None();
+  return result;
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
@@ -79,18 +88,29 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   // Pop the function arguments from the NamedValues map.
   NamedValues.exitScope();
 
+  auto func_result = KLCodeGenResult::None();
+
   if (body_result->getTypeOfResult() == CodeGenResultType_Error) {
-    body_result->prepend_error("Error in function " + node->name +
-                               node->positionString() + ":\n");
+    func_result = KLCodeGenResult::Error("Function " + node->name +
+                                         node->positionString() +
+                                         " has bad body: \n  " + body_result->getError() + "\n");
   }
 
-  if (verifyFunction(*F)) {
-    return KLCodeGenResult::Error("Error in function " + node->name +
-                                  node->positionString() + ":\n");
+  // create llvm os stream
+  std::string error_msg;
+  raw_string_ostream error_stream(error_msg);
+
+  if (verifyFunction(*F, &error_stream)) {
+    if (func_result->getTypeOfResult() == CodeGenResultType_None) {
+      func_result = KLCodeGenResult::Error("");
+    }
+
+    func_result->prepend_error("Function " + node->name +
+                                         node->positionString() +
+                                         " failed llvm verification: \n  " + error_stream.str() + "\n");
   }
 
-
-  return body_result;
+  return func_result;
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTType *node) {

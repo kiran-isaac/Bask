@@ -53,9 +53,6 @@ public:
 
   [[nodiscard]] virtual ASTNodeType get_AST_type() const = 0;
 
-  unsigned int line;
-  unsigned int col;
-
   virtual void fold_expressions() {}
 
   virtual void print(int indent, ostream &out) const = 0;
@@ -87,9 +84,7 @@ public:
     throw std::runtime_error(msg);
   }
 
-  std::string positionString() {
-    return "[" + to_string(line) + ", " + to_string(col) + "]";
-  }
+  virtual std::string positionString() = 0;
 
   // TODO add warning functions
 };
@@ -110,6 +105,10 @@ public:
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << type.to_string() << std::endl;
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 

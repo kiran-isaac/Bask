@@ -18,6 +18,13 @@ optional<string> get_IR_func_block(string &output, string func_name);
 
 unique_ptr<ASTProgram> parseTestProgram(const string &program);
 
-string compile(string module_name, string program);
+pair<bool, string> compile(string module_name, string program);
+
+#define compile_and_unpack(module_name, program) \
+  auto result = compile(module_name, program); \
+  if (!result.first) { \
+    FAIL() << result.second; \
+  } \
+  auto IR = result.second;
 
 #endif //KL_UTILS_H

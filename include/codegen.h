@@ -34,7 +34,7 @@ class ASTStmtAssignment;
 class ASTStmtDecl;
 class ASTStmtReturn;
 class ASTBlock;
-class ASTControLFlowIf;
+class ASTControlFlowIf;
 class ASTControlFlowWhile;
 
 class NamedValuesClass {
@@ -67,17 +67,18 @@ enum CodeGenResultType {
   CodeGenResultType_Value,
   CodeGenResultType_Error,
   CodeGenResultType_None,
+  CodeGenResultType_Halt,
   CodeGenResultType_Type
 };
 
 class KLCodeGenResult {
 private:
   CodeGenResultType type;
-  union {
-    llvm::Value *value;
-    llvm::Type *llvm_type;
-    std::string error;
-  };
+
+  llvm::Value *value;
+  llvm::Type *llvm_type;
+  std::string error;
+  
 
   KLCodeGenResult(CodeGenResultType type, std::optional<llvm::Value *> value,
                   std::optional<std::string> error,
@@ -85,14 +86,24 @@ private:
       : type(type) {
     switch (type) {
     case CodeGenResultType_Value:
+      if (!value.has_value()) {
+        throw std::runtime_error("Value must be provided");
+      }
       this->value = value.value();
       break;
     case CodeGenResultType_Error:
+      if (!error.has_value()) {
+        throw std::runtime_error("Error must be provided");
+      }
       this->error = error.value();
       break;
     case CodeGenResultType_Type:
+      if (!llvm_type.has_value()) {
+        throw std::runtime_error("Type must be provided");
+      }
       this->llvm_type = llvm_type.value();
       break;
+    case CodeGenResultType_Halt:
     case CodeGenResultType_None:
       break;
     }
@@ -136,9 +147,8 @@ public:
     this->error += error;
   }
 
-  static KLCodeGenResult *Error(const std::string error) {
-    std::cout << "Error: " << error << std::endl;
-    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, std::string(error),
+  static KLCodeGenResult *Error(std::string error) {
+    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, std::make_optional(error),
                                std::nullopt);
   }
 
@@ -148,6 +158,10 @@ public:
 
   static KLCodeGenResult *Type(llvm::Type *llvm_type) {
     return new KLCodeGenResult(CodeGenResultType_Type, nullptr, "", llvm_type);
+  }
+
+  static KLCodeGenResult *Halt() {
+    return new KLCodeGenResult(CodeGenResultType_Halt, nullptr, "", nullptr);
   }
 
   static KLCodeGenResult *None() {
@@ -170,6 +184,9 @@ public:
     TheModule->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
   }
 
+  llvm::Value *i64_to_double(llvm::Value *value);
+  llvm::Value *double_to_i64(llvm::Value *value);
+
   // Declared in AST.h
   KLCodeGenResult *visit(ASTType *node);
   KLCodeGenResult *visit(ASTFuncDecl *node);
@@ -189,7 +206,7 @@ public:
   KLCodeGenResult *visit(ASTBlock *node);
 
   // Declared in AST_ControlFlow.h
-  KLCodeGenResult *visit(ASTControLFlowIf *node);
+  KLCodeGenResult *visit(ASTControlFlowIf *node);
   KLCodeGenResult *visit(ASTControlFlowWhile *node);
   KLCodeGenResult *visit(ASTStmtReturn *node);
 

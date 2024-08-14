@@ -126,6 +126,35 @@ enum KL_TokenType {
   case KL_TT_Literal_Char: \
   case KL_TT_Literal_Bool
 
+#define ARITHMETIC_BINARY_CASES \
+  KL_TT_Operator_Add: \
+  case KL_TT_Operator_Sub: \
+  case KL_TT_Operator_Mul: \
+  case KL_TT_Operator_Div: \
+  case KL_TT_Operator_Mod
+
+#define COMPARISON_BINARY_CASES \
+  KL_TT_Operator_Equal: \
+  case KL_TT_Operator_NotEqual: \
+  case KL_TT_Operator_Less: \
+  case KL_TT_Operator_LessEqual: \
+  case KL_TT_Operator_Greater: \
+  case KL_TT_Operator_GreaterEqual 
+
+#define LOGICAL_BINARY_CASES \
+  KL_TT_Operator_LogicalAnd: \
+  case KL_TT_Operator_LogicalOr \
+
+
+#define BITWISE_BINARY_CASES \
+  KL_TT_Operator_BitwiseAnd: \
+  case KL_TT_Operator_BitwiseOr: \
+  case KL_TT_Operator_BitwiseXor: \
+
+#define SHIFT_BINARY_CASES \
+  KL_TT_Operator_Shl: \
+  case KL_TT_Operator_Shr
+
 struct KL_Token {
   KL_TokenType type;
   string value;

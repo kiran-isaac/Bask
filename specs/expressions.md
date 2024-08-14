@@ -1,7 +1,7 @@
 ## Binary expressions
 These are in order of matching precedence.
 
-### Arithmetic: +, -, *, /, %, **
+### Arithmetic: +, -, *, /, %
 FLOAT + FLOAT = FLOAT
 FLOAT + INT = FLOAT
 INT + FLOAT = FLOAT

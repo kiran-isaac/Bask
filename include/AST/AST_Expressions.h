@@ -61,6 +61,10 @@ class ASTExprConstantValue : public ASTExpr {
     printIndent(indent, out);
     out << "Value: " << value << std::endl;
   }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTExprIdentifier : public ASTExpr {
@@ -87,6 +91,10 @@ class ASTExprIdentifier : public ASTExpr {
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << "Identifier: " << name << std::endl;
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 
@@ -138,6 +146,10 @@ class ASTExprFuncCall : public ASTExpr {
       arg->print(indent + 1, out);
     }
   }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTExprBinary : public ASTExpr {
@@ -184,6 +196,10 @@ class ASTExprBinary : public ASTExpr {
     out << "RHS:" << std::endl;
     rhs->print(indent + 1, out);
   }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTExprUnary : public ASTExpr {
@@ -211,6 +227,10 @@ class ASTExprUnary : public ASTExpr {
     printIndent(indent, out);
     out << "Unary Expression: " << token_type_to_string(op) << std::endl;
     expr->print(indent + 1, out);
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 

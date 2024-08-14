@@ -96,12 +96,13 @@ TEST(CodeGen, VisitConstantString) {
 
 TEST(CodeGen, FloatConst) {
   string source = R"(
+    
     int main() {  
       float x = 0.; 
     }
   )";
-  string IR = compile("Declarations.SimpleDeclaration", source);
 
+  compile_and_unpack("Declarations.SimpleDeclaration", source);
 
   auto main_func = get_IR_func_block(IR, "main").value();
 

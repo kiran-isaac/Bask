@@ -3,8 +3,11 @@
 
 using namespace llvm;
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTControLFlowIf *node) {
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
   auto condition_result = node->condition->accept(this);
+  if (condition_result->getTypeOfResult() == CodeGenResultType_Error) {
+    return KLCodeGenResult::Error(condition_result->getError());
+  }
   auto condition = condition_result->getValue();
   if (!condition)
     return KLCodeGenResult::Error("Failed to get value of condition");
@@ -19,7 +22,11 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControLFlowIf *node) {
 
   Builder.SetInsertPoint(then_block);
   node->then_block->accept(this);
-  Builder.CreateBr(merge_block);
+
+  // check if the block is terminated
+  if (!then_block->getTerminator()) 
+    Builder.CreateBr(merge_block);
+
   then_block = Builder.GetInsertBlock();
 
   function->getBasicBlockList().push_back(else_block);
@@ -27,12 +34,19 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControLFlowIf *node) {
 
   if (node->else_block) {
     node->else_block->accept(this);
-  }
+  } 
 
-  Builder.CreateBr(merge_block);
+  if (!else_block->getTerminator())
+    Builder.CreateBr(merge_block);
+  
   else_block = Builder.GetInsertBlock();
 
+  // if both blocks are terminated, we don't need to create a merge block 
+  if (then_block->getTerminator() && else_block->getTerminator())
+    return KLCodeGenResult::Halt();
+
   function->getBasicBlockList().push_back(merge_block);
+
   Builder.SetInsertPoint(merge_block);
 
   return KLCodeGenResult::None();

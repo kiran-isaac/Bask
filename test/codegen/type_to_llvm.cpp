@@ -19,7 +19,7 @@ TEST(TypeToLLVMType, PrimitiveTypes) {
   ASTType type(KL_Type(), 0, 0);
 
   llvm::SmallVector<llvm::Type::TypeID, 6> expected_results = {
-      llvm::Type::TypeID::IntegerTyID, llvm::Type::TypeID::FloatTyID,
+      llvm::Type::TypeID::IntegerTyID, llvm::Type::TypeID::DoubleTyID,
       llvm::Type::TypeID::IntegerTyID, llvm::Type::TypeID::IntegerTyID,
       llvm::Type::TypeID::PointerTyID, llvm::Type::TypeID::VoidTyID};
 
@@ -102,6 +102,6 @@ TEST(TypeToLLVMType, FunctionType) {
 
   assert(function_type->getReturnType()->getTypeID() == llvm::Type::TypeID::IntegerTyID);
   assert(function_type->getNumParams() == 2);
-  assert(function_type->getParamType(0)->getTypeID() == llvm::Type::TypeID::FloatTyID);
+  assert(function_type->getParamType(0)->getTypeID() == llvm::Type::TypeID::DoubleTyID);
   assert(function_type->getParamType(1)->getTypeID() == llvm::Type::TypeID::IntegerTyID);
 }

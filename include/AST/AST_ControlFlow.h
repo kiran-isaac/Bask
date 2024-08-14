@@ -7,7 +7,7 @@
 
 #include "AST_Statements.h"
 
-class ASTControLFlowIf : public ASTStmt {
+class ASTControlFlowIf : public ASTStmt {
 public:
   unique_ptr<ASTExpr> condition;
   unique_ptr<ASTBlock> then_block;
@@ -19,7 +19,7 @@ public:
     return ControlFlowIf;
   }
 
-  ASTControLFlowIf(unique_ptr<ASTExpr> condition,
+  ASTControlFlowIf(unique_ptr<ASTExpr> condition,
                    unique_ptr<ASTBlock> then_block,
                    unique_ptr<ASTBlock> else_block, unsigned line, unsigned col)
       : condition(std::move(condition)), then_block(std::move(then_block)),
@@ -55,6 +55,10 @@ public:
     if (else_block) {
       else_block->fold_expressions();
     }
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 
@@ -93,6 +97,10 @@ public:
   void fold_expressions() override {
     condition = ASTExpr::fold(condition.get());
     block->fold_expressions();
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 

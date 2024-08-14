@@ -34,10 +34,10 @@ TEST(Declarations, SimpleDeclaration) {
 
   string expected_main =
       R"(
-    define i32 @main() {
+    define i64 @main() {
     entry:
-      %a = alloca i32, align 4
-      store i32 50, i32* %a, align 4
+      %a = alloca i64, align 8
+      store i64 50, i64* %a, align 8
     }
     )";
 
@@ -65,11 +65,11 @@ TEST(Declarations, SimpleDeclarationWithAssignment) {
 
   string expected_main =
       R"(
-    define i32 @main() {
+    define i64 @main() {
     entry:
-      %a = alloca i32, align 4
-      store i32 50, i32* %a, align 4
-      store i32 10, i32* %a, align 4
+      %a = alloca i64, align 8
+      store i64 50, i64* %a, align 8
+      store i64 10, i64* %a, align 8
     }
     )";
 

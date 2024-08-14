@@ -48,6 +48,10 @@ class ASTStmtExpr : public ASTStmt {
     out << "Expression Statement:" << std::endl;
     expr->print(indent + 1, out);
   };
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTStmtAssignment : public ASTStmt {
@@ -78,6 +82,10 @@ class ASTStmtAssignment : public ASTStmt {
     printIndent(indent, out);
     out << "Assignment: " << identifier->name << std::endl;
     value->print(indent + 1, out);
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 
@@ -123,6 +131,10 @@ class ASTStmtDecl : public ASTStmt {
       value->print(indent + 1, out);
     }
   }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
+  }
 };
 
 class ASTStmtReturn : public ASTStmt {
@@ -148,6 +160,10 @@ public:
     printIndent(indent, out);
     out << "Return Statement:" << std::endl;
     return_expr->print(indent + 1, out);
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 
@@ -188,6 +204,10 @@ class ASTBlock : public ASTNode {
     for (const auto &stmt : body) {
       stmt->print(indent + 1, out);
     }
+  }
+
+  std::string positionString() override {
+    return "[" + to_string(line) + ", " + to_string(col) + "]";
   }
 };
 

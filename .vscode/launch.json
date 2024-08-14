@@ -28,7 +28,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/KLTest",
-      "args": ["--gtest_filter=\"CodeGen.FloatConst\""],
+      "args": ["--gtest_filter=\"Expressions.Expr3\""],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],

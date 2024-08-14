@@ -9,13 +9,56 @@
 #include "parser.h"
 #include "types.h"
 
-TEST(Expression, Expr1) {
+TEST(Expressions, Expr1) {
   string source = R"(
     int main() {  
       float x = 0.; 
+      return 0;
     }
   )";
-  string IR = compile("Declarations.SimpleDeclaration", source);
+  
+  compile_and_unpack("Main", source);
+
+  auto main_func = get_IR_func_block(IR, "main").value();
+
+  cout << main_func << endl;
+}
+
+TEST(Expressions, Expr2) {
+  string source = R"(
+    int main() {  
+      float a = 0.; 
+      float b = 1.0;
+      float c = a + b;
+
+      return 0;
+    }
+  )";
+
+  compile_and_unpack("Main", source);
+
+  auto main_func = get_IR_func_block(IR, "main").value();
+
+  cout << main_func << endl;
+}
+
+TEST(Expressions, Expr3) {
+  string source = R"(
+    int main() {  
+      float a = 0.; 
+      float b = 1.0;
+      float c = a + b;
+
+      if (c >= 0) {
+          return 1;
+      } else {
+          return 0;
+      }
+      return 0;
+    }
+  )";
+
+  compile_and_unpack("Main", source);
 
   auto main_func = get_IR_func_block(IR, "main").value();
 

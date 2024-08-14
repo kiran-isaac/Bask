@@ -24,7 +24,6 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
     Builder.CreateCondBr(condition, then_block, merge_block);
   }
 
-
   Builder.SetInsertPoint(then_block);
   node->then_block->accept(this);
 

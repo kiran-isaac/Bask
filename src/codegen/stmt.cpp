@@ -31,7 +31,6 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
   auto type = type_result->getLLVMType();
 
   auto var = Builder.CreateAlloca(type, nullptr, node->identifier->name);
-  NamedValues.addValue(node->identifier->name, var);
 
   if (node->value) {
     auto expr_result = node->value->accept(this);
@@ -39,6 +38,8 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
     auto expr = expr_result->getValue();
     if (!expr)
       return KLCodeGenResult::Error("Failed to get value of expression");
+
+    NamedValues.addValue(node->identifier->name, expr);
 
     // create store using the type  
     Builder.CreateStore(expr, var);

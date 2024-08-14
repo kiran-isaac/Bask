@@ -12,11 +12,12 @@
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "symtab.h"
 #include "tokens.h"
 #include "types.h"
 #include "codegen.h"
+
+#include "AST_Preamble.h"
 
 // --------------------------- Expressions ---------------------------
 #include "AST_Expressions.h"
@@ -54,7 +55,13 @@ class ASTFuncDecl : public ASTNode {
 
   void fold_expressions() override { body->fold_expressions(); }
 
-  void check_semantics() override { body->check_semantics(); }
+  void check_semantics() override { 
+    SYMTAB.enter_block();
+    for (size_t i = 0; i < argTypes.size(); i++) {
+      SYMTAB.add_name(argNames[i], argTypes[i]->type);
+    }
+    body->check_semantics(); 
+  }
 
   KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
 

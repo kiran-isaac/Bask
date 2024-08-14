@@ -58,11 +58,9 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprIdentifier *node) {
   }
 
   // get type that the value is pointing to
-  auto type = found->getType()->getPointerElementType();
+  auto type = found->getType();
 
-  Value *loadedValue = Builder.CreateLoad(type, found, node->name);
-
-  return KLCodeGenResult::Value(loadedValue);
+  return KLCodeGenResult::Value(found);
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprFuncCall *node) {}

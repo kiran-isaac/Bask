@@ -1,0 +1,11 @@
+int main() {  
+  float a = 0.; 
+  float b = 1.0;
+  float c = a + b;
+
+  if (c >= 0) {
+      return 0;
+  } else {
+      return 1;
+  }
+}

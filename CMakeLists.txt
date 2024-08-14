@@ -62,3 +62,18 @@ target_link_libraries(KLTest LLVM)
 
 target_compile_definitions(KLTest PRIVATE KL_DEBUG)
 target_link_libraries(KLTest LLVMSupport)
+
+# Add the test script to the build dir
+file(COPY test/codegen/float_expr.kl DESTINATION ${CMAKE_BINARY_DIR}/test/codegen)
+
+FILE(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/TEST
+     CONTENT 
+"#!/usr/bin/env bash
+echo 'Running unit tests'
+./KLTest
+
+echo 'Running test scripts'
+../test/all.sh
+
+"
+     FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)

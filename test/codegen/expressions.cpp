@@ -54,7 +54,6 @@ TEST(Expressions, Expr3) {
       } else {
           return 0;
       }
-      return 0;
     }
   )";
 

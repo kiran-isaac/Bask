@@ -88,8 +88,6 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   // Pop the function arguments from the NamedValues map.
   NamedValues.exitScope();
 
-  auto func_result = KLCodeGenResult::None();
-
   if (body_result->getTypeOfResult() == CodeGenResultType_Error) {
     return KLCodeGenResult::Error("Function " + node->name +
                                          node->positionString() +
@@ -106,22 +104,17 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
     }
   }
 
-  // // create llvm os stream
-  // std::string error_msg;
-  // raw_string_ostream error_stream(error_msg);
+  // create llvm os stream
+  std::string error_msg;
+  raw_string_ostream error_stream(error_msg);
 
-  // if (verifyFunction(*F, &error_stream)) {
-  //   if (func_result->getTypeOfResult() == CodeGenResultType_None) {
-  //     func_result = KLCodeGenResult::Error("");
-  //   }
+  if (verifyFunction(*F, &error_stream)) {
+    return KLCodeGenResult::Error("Function " + node->name +
+                                         node->positionString() +
+                                         " failed llvm verification: \n  " + error_stream.str() + "\n");
+  }
 
-  //   func_result->prepend_error("Function " + node->name +
-  //                                        node->positionString() +
-  //                                        " failed llvm verification: \n  " + error_stream.str() + "\n"
-  //                                        + "IR: \n" + value_to_string(F) + "\n");
-  // }
-
-  return func_result;
+  return KLCodeGenResult::None();
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTType *node) {

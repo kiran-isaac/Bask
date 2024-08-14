@@ -52,7 +52,7 @@
       "request": "launch",
       "name": "CodeLLDB int_expr.kl",
       "program": "${workspaceFolder}/build/KL",
-      "args": ["${workspaceFolder}/test/codegen/int_expr.kl"],
+      "args": ["${workspaceFolder}/test/codegen/bool_expr.kl"],
       "preLaunchTask": "build with make",
       "cwd": "${workspaceFolder}"
     },

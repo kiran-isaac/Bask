@@ -13,7 +13,7 @@ int main(int argc, const char **argv) {
   Parser parser(lexer);
   
   auto ast = parser.parse();
-  ast->fold_expressions();
+  // ast->fold_expressions();
   ast->check_semantics();
 
   ostream &out = options.out.empty() ? std::cout : *(new ofstream(options.out));

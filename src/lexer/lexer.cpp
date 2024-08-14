@@ -189,6 +189,30 @@ optional<KL_Token> Lexer::next() {
         return KL_Token{KL_TokenType::KL_TT_Operator_Mul, "*", tokenStartLine, tokenStartCol};
       case '/':
         advance();
+
+        // Check for comments
+        if (*c == '/') {
+          while (*c != '\n') {
+            advance();
+          }
+          continue;
+        }
+        if (*c == '*') {
+          advance();
+          while (true) {
+            if (*c == '*') {
+              advance();
+              if (*c == '/') {
+                advance();
+                break;
+              }
+            } else {
+              advance();
+            }
+          }
+          continue;
+        }
+        
         return KL_Token{KL_TokenType::KL_TT_Operator_Div, "/", tokenStartLine, tokenStartCol};
       case '%':
         advance();

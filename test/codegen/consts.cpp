@@ -94,9 +94,9 @@ TEST(CodeGen, VisitConstantString) {
   ASSERT_EQ(llvm::cast<llvm::ConstantDataArray>(result->getValue())->getAsCString(), "Hello, World!");
 }
 
-TEST(Const, Float) {
+TEST(CodeGen, FloatConst) {
   string source = R"(
-int main() {  
+    int main() {  
       float x = 0.; 
     }
   )";

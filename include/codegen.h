@@ -136,8 +136,9 @@ public:
     this->error += error;
   }
 
-  static KLCodeGenResult *Error(const std::string &error) {
-    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, error,
+  static KLCodeGenResult *Error(const std::string error) {
+    std::cout << "Error: " << error << std::endl;
+    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, std::string(error),
                                std::nullopt);
   }
 

@@ -1,7 +1,11 @@
 #include "AST/AST.h"
 #include "codegen.h"
+#include <llvm-14/llvm/Support/raw_os_ostream.h>
+#include <llvm-14/llvm/Support/raw_ostream.h>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/Verifier.h>
+#include <sstream>
 #include <string>
 
 using namespace llvm;
@@ -11,6 +15,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {
   for (auto &func : node->funcs) {
     func->accept(this);
   }
+
   return KLCodeGenResult::None();
 }
 
@@ -78,6 +83,12 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
     body_result->prepend_error("Error in function " + node->name +
                                node->positionString() + ":\n");
   }
+
+  if (verifyFunction(*F)) {
+    return KLCodeGenResult::Error("Error in function " + node->name +
+                                  node->positionString() + ":\n");
+  }
+
 
   return body_result;
 }

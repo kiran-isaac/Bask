@@ -1,13 +1,16 @@
 int main() {
-  bool x = true;
-  bool y = true;
-  bool z = true && (x || !y);
+  bool a = true;
+  bool b = true;
+  bool c = true && (a || !b);
 
-  if (!z) {
+  if (!c) {
     return 1;
   }
 
-  if (!(true && (true || false)))
+  bool d = true;
+  if (!(true && (a || false))) {
+    return 1;
+  }
 
   return 0;
 }

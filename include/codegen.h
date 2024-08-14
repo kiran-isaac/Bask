@@ -193,6 +193,7 @@ public:
 
   llvm::Value *i64_to_double(llvm::Value *value);
   llvm::Value *double_to_i64(llvm::Value *value);
+  llvm::Value *to_bool(llvm::Value *value);
 
   // Declared in AST.h
   KLCodeGenResult *visit(ASTType *node);

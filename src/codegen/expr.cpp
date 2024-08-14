@@ -77,6 +77,22 @@ llvm::Value *KLCodeGenVisitor::double_to_i64(llvm::Value *value) {
                               "inttmp");
 }
 
+llvm::Value *KLCodeGenVisitor::to_bool(llvm::Value *value) {
+  if (value->getType() == llvm::Type::getInt1Ty(TheContext)) {
+    return value;
+  }
+  if (value->getType() == llvm::Type::getInt64Ty(TheContext)) {
+    return Builder.CreateICmpNE(value, ConstantInt::get(TheContext, APInt(64, 0)),
+                                "booltmp");
+  }
+  if (value->getType() == llvm::Type::getInt8Ty(TheContext)) {
+    return Builder.CreateICmpNE(value, ConstantInt::get(TheContext, APInt(8, 0)),
+                                "booltmp");
+  } else {
+    throw std::runtime_error("UNREACHABLE: cannot convert to bool");
+  }
+}
+
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
   auto lhs = node->lhs->accept(this);
   auto rhs = node->rhs->accept(this);
@@ -88,6 +104,9 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
 
   auto left = lhs->getValue();
   auto right = rhs->getValue();
+
+  auto left_llvm_type = left->getType();
+  auto right_llvm_type = right->getType();
 
   auto type = node->get_expr_type();
 
@@ -150,7 +169,26 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
     default:
       return KLCodeGenResult::Error("UNREACHABLE: BINARY CODEGEN");
     }
+  case LOGICAL_BINARY_CASES:
+    if (lhs_primitive != KL_BOOL_PRIMITIVE && lhs_primitive != KL_INT_PRIMITIVE &&
+        lhs_primitive != KL_CHAR_PRIMITIVE && rhs_primitive != KL_BOOL_PRIMITIVE &&
+        rhs_primitive != KL_INT_PRIMITIVE && rhs_primitive != KL_CHAR_PRIMITIVE) {
+      return KLCodeGenResult::Error("UNREACHABLE: Invalid type for logical binary operator");
+    }
 
+    left = to_bool(left);
+    right = to_bool(right);
+
+    switch (node->op) {
+    case KL_TT_Operator_LogicalAnd:
+      return KLCodeGenResult::Value(
+          Builder.CreateAnd(left, right, "andtmp"));
+    case KL_TT_Operator_LogicalOr:
+      return KLCodeGenResult::Value(
+          Builder.CreateOr(left, right, "ortmp"));
+    default:
+      return KLCodeGenResult::Error("UNREACHABLE: BINARY CODEGEN");
+    }
   // Comparison operators: ==, !=, <, <=, >, >=
   case COMPARISON_BINARY_CASES:
     // If one of the operands is an integer and the other is a float, convert
@@ -214,6 +252,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
         }
       // Compare as bools
       case KL_BOOL_PRIMITIVE:
+
         switch (node->op) {
         case KL_TT_Operator_Equal:
           return KLCodeGenResult::Value(

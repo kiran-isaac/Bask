@@ -69,8 +69,9 @@ file(COPY test/codegen/float_expr.kl DESTINATION ${CMAKE_BINARY_DIR}/test/codege
 FILE(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/TEST
      CONTENT 
 "#!/usr/bin/env bash
+# pass all arguments to the test script
 echo 'Running unit tests'
-./KLTest
+./KLTest $@
 
 echo 'Running test scripts'
 ../test/all.sh

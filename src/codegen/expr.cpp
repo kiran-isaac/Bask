@@ -256,7 +256,8 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprBinary *node) {
         return KLCodeGenResult::Error("UNREACHABLE: BINARY CODEGEN (VOID?????)");
     }
   default:
-    return KLCodeGenResult::Error("Unknown binary operator");
+    return KLCodeGenResult::Error("Unknown binary operator: " +
+                                  std::to_string(node->op));
   }
 }
 

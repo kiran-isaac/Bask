@@ -59,11 +59,16 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTBlock *node) {
       case CodeGenResultType_Error:
         return KLCodeGenResult::Error(result->getError());
       case CodeGenResultType_Halt:
-        // if this isnt the last statement in the block, return an error
+        // if this is the last statement in the block, return
         if (&stmt == &node->body.back())
           return KLCodeGenResult::None();
         // Fail on the next stmt (so we can get correct line number)
         halt_next = true;
+      case CodeGenResultType_NoHalt:
+        // if this is the last statement in the block, return
+        if (&stmt == &node->body.back())
+          return KLCodeGenResult::Error("Expected more statements after " + stmt->positionString() + " but found none. Possible missing return statement?");
+        break;
       default:
         break;
     }

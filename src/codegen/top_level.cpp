@@ -91,24 +91,35 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   auto func_result = KLCodeGenResult::None();
 
   if (body_result->getTypeOfResult() == CodeGenResultType_Error) {
-    func_result = KLCodeGenResult::Error("Function " + node->name +
+    return KLCodeGenResult::Error("Function " + node->name +
                                          node->positionString() +
                                          " has bad body: \n  " + body_result->getError() + "\n");
   }
 
-  // create llvm os stream
-  std::string error_msg;
-  raw_string_ostream error_stream(error_msg);
-
-  if (verifyFunction(*F, &error_stream)) {
-    if (func_result->getTypeOfResult() == CodeGenResultType_None) {
-      func_result = KLCodeGenResult::Error("");
+  if (!BB->getTerminator()) {
+    if (return_type->getLLVMType()->isVoidTy()) {
+      Builder.CreateRetVoid();
+    } else {
+      return KLCodeGenResult::Error("Function " + node->name +
+                                           node->positionString() +
+                                           " does not return a value");
     }
-
-    func_result->prepend_error("Function " + node->name +
-                                         node->positionString() +
-                                         " failed llvm verification: \n  " + error_stream.str() + "\n");
   }
+
+  // // create llvm os stream
+  // std::string error_msg;
+  // raw_string_ostream error_stream(error_msg);
+
+  // if (verifyFunction(*F, &error_stream)) {
+  //   if (func_result->getTypeOfResult() == CodeGenResultType_None) {
+  //     func_result = KLCodeGenResult::Error("");
+  //   }
+
+  //   func_result->prepend_error("Function " + node->name +
+  //                                        node->positionString() +
+  //                                        " failed llvm verification: \n  " + error_stream.str() + "\n"
+  //                                        + "IR: \n" + value_to_string(F) + "\n");
+  // }
 
   return func_result;
 }

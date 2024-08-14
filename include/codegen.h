@@ -67,8 +67,10 @@ enum CodeGenResultType {
   CodeGenResultType_Value,
   CodeGenResultType_Error,
   CodeGenResultType_None,
-  CodeGenResultType_Halt,
-  CodeGenResultType_Type
+  CodeGenResultType_Halt,   // make sure this is the last statement in the block
+  CodeGenResultType_NoHalt, // make sure this is not the last statement in the block
+  CodeGenResultType_Type,
+
 };
 
 class KLCodeGenResult {
@@ -104,6 +106,7 @@ private:
       this->llvm_type = llvm_type.value();
       break;
     case CodeGenResultType_Halt:
+    case CodeGenResultType_NoHalt:
     case CodeGenResultType_None:
       break;
     }
@@ -158,6 +161,10 @@ public:
 
   static KLCodeGenResult *Type(llvm::Type *llvm_type) {
     return new KLCodeGenResult(CodeGenResultType_Type, nullptr, "", llvm_type);
+  }
+
+  static KLCodeGenResult *NoHalt() {
+    return new KLCodeGenResult(CodeGenResultType_NoHalt, nullptr, "", nullptr);
   }
 
   static KLCodeGenResult *Halt() {

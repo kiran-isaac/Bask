@@ -24,7 +24,12 @@ int main(int argc, const char **argv) {
   }
 
   KLCodeGenVisitor visitor("Main");
-  ast->accept(&visitor);
+  auto result = ast->accept(&visitor);
+
+  if (result->getTypeOfResult() == CodeGenResultType_Error) {
+    cerr << "Error: " << result->getError() << endl;
+    return 1;
+  }
 
   if (options.mode == CommandLineArguments::Mode::IR) {
     if (options.out.empty()) {

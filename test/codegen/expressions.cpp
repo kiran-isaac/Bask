@@ -49,6 +49,10 @@ TEST(Expressions, Expr3) {
       float b = 1.0;
       float c = a + b;
 
+      if (false) {
+        return 1;
+      }
+
       if (c >= 0) {
           return 1;
       } else {

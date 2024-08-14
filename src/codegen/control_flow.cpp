@@ -18,7 +18,12 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
   auto else_block = BasicBlock::Create(TheContext, "else");
   auto merge_block = BasicBlock::Create(TheContext, "ifcont");
 
-  Builder.CreateCondBr(condition, then_block, else_block);
+  if (node->else_block) {
+    Builder.CreateCondBr(condition, then_block, else_block);
+  } else {
+    Builder.CreateCondBr(condition, then_block, merge_block);
+  }
+
 
   Builder.SetInsertPoint(then_block);
   node->then_block->accept(this);
@@ -29,27 +34,27 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
 
   then_block = Builder.GetInsertBlock();
 
-  function->getBasicBlockList().push_back(else_block);
-  Builder.SetInsertPoint(else_block);
-
   if (node->else_block) {
+    function->getBasicBlockList().push_back(else_block);
+    Builder.SetInsertPoint(else_block);
+
     node->else_block->accept(this);
+
+    if (!else_block->getTerminator())
+      Builder.CreateBr(merge_block);
+
+    else_block = Builder.GetInsertBlock();
+
+    // if both blocks are terminated, we don't need to create a merge block
+    if (then_block->getTerminator() && else_block->getTerminator())
+      return KLCodeGenResult::Halt();
   } 
-
-  if (!else_block->getTerminator())
-    Builder.CreateBr(merge_block);
-  
-  else_block = Builder.GetInsertBlock();
-
-  // if both blocks are terminated, we don't need to create a merge block 
-  if (then_block->getTerminator() && else_block->getTerminator())
-    return KLCodeGenResult::Halt();
 
   function->getBasicBlockList().push_back(merge_block);
 
   Builder.SetInsertPoint(merge_block);
 
-  return KLCodeGenResult::None();
+  return KLCodeGenResult::NoHalt();
 }
 
 KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowWhile *node) {

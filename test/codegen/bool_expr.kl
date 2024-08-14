@@ -1,0 +1,13 @@
+int main() {
+  bool x = true;
+  bool y = true;
+  bool z = true && (x || !y);
+
+  if (!z) {
+    return 1;
+  }
+
+  if (!(true && (true || false)))
+
+  return 0;
+}

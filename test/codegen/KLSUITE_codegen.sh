@@ -31,7 +31,7 @@ do
 
     if [ $? -ne 0 ]; then
         clean_line
-        red_echo "Failed to compile$t"
+        red_echo "Failed to compile $t"
         cat KL_output.log
         FAILED_TESTS="$FAILED_TESTS $t"
         rm -f *.log *.ll

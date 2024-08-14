@@ -41,7 +41,7 @@ KL_Token Parser::peek(int n) {
 #pragma clang diagnostic pop
 
 void Parser::parserError(const string &msg) const {
-  printf("Parser error at line %d, col %d: %s\n", tk.line, tk.col, msg.c_str());
+  cerr << "Parser error at line " << tk.line << ", col " << tk.col << ": " << msg << endl;
   exit(1);
 }
 

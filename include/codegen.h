@@ -58,7 +58,7 @@ public:
     return nullptr; // or throw an error
   }
 
-  void addValue(const std::string &name, llvm::Value *value) {
+  void addValue(const std::string name, llvm::Value *value) {
     NamedValuesStack.back()[name] = value;
   }
 };

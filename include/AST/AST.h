@@ -55,7 +55,21 @@ class ASTFuncDecl : public ASTNode {
 
   void fold_expressions() override { body->fold_expressions(); }
 
-  void check_semantics() override { 
+  vector<KL_Type> get_signature() const {
+    vector<KL_Type> signature;
+    for (auto &argType : argTypes) {
+      signature.push_back(argType->type);
+    }
+    signature.push_back(returnType->type);
+    return signature;
+  }
+
+  KL_Type get_type() const {
+    return KL_Type(returnType->type.is_const, get_signature());
+  }
+
+  void check_semantics() override {
+    SYMTAB.add_name(name, get_type());
     SYMTAB.enter_block();
     for (size_t i = 0; i < argTypes.size(); i++) {
       SYMTAB.add_name(argNames[i], argTypes[i]->type);

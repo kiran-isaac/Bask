@@ -27,9 +27,6 @@ unique_ptr<ASTExprFuncCall> Parser::parse_function_call() {
   while (tk.type != KL_TT_Punctuation_RParen) {
     nextToken();
     args->push_back(parse_expression());
-    if (tk.type == KL_TT_Punctuation_Comma) {
-      nextToken();
-    }
   }
   nextToken();
   return make_unique<ASTExprFuncCall>(name, std::move(args), line, col);

@@ -1,7 +1,10 @@
-bool foo(bool a, bool b) {
-  return (!a || !b);
+int factorial(int n) {
+  if (n == 0) {
+    return 1;
+  }
+  return n * factorial(n - 1);
 }
 
 int main() {
-  return 0;
+  return factorial(6);
 }

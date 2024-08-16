@@ -3,6 +3,7 @@
 //
 
 #include "symtab.h"
+#include "types.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ optional<KL_Type> SymTab::get_name_type(std::string name) {
 }
 
 void SymTab::add_name(std::string name, KL_Type type) {
-  scope_stack.back()[name] = type;
+  scope_stack.back().insert({name, type});
 }
 
 void SymTab::enter_block() {

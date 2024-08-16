@@ -63,7 +63,49 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprIdentifier *node) {
   return KLCodeGenResult::Value(found);
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprFuncCall *node) {}
+KLCodeGenResult *KLCodeGenVisitor::visit(ASTExprFuncCall *node) {
+  auto func = TheModule->getFunction(node->name);
+
+  if (!func) {
+    return KLCodeGenResult::Error("Unknown function referenced");
+  }
+
+  if (func->arg_size() != node->args->size()) {
+    return KLCodeGenResult::Error("Incorrect number of arguments passed");
+  }
+
+  auto function_args = func->args().begin();
+  auto call_args = node->args->begin();
+
+  for (; function_args != func->args().end(); ++function_args, ++call_args) {
+    auto *arg = call_args->get();
+    auto arg_type = (*function_args).getType();
+    auto arg_result = arg->accept(this);
+
+    if (arg_result->getTypeOfResult() != CodeGenResultType_Value) {
+      return KLCodeGenResult::Error("Function call requires values");
+    }
+
+    auto arg_value = arg_result->getValue();
+    auto arg_value_type = arg_value->getType();
+
+    if (arg_value_type != arg_type) {
+      return KLCodeGenResult::Error("Argument type mismatch");
+    }
+  }
+
+  std::vector<Value *> args;
+  for (auto &arg : *node->args) {
+    auto arg_result = arg->accept(this);
+    if (arg_result->getTypeOfResult() != CodeGenResultType_Value) {
+      return KLCodeGenResult::Error("Function call requires values");
+    }
+
+    args.push_back(arg_result->getValue());
+  }
+
+  return KLCodeGenResult::Value(Builder.CreateCall(func, args, "calltmp"));
+}
 
 llvm::Value *KLCodeGenVisitor::i64_to_double(llvm::Value *value) {
   return Builder.CreateSIToFP(value, llvm::Type::getDoubleTy(TheContext),

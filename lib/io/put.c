@@ -1,5 +1,5 @@
 #include <stdio.h>
 
-void putint(long x) {
+void put_int(long x) {
   printf("%ld\n", x);
 }

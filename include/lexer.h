@@ -18,10 +18,14 @@ using namespace std;
 class Lexer {
 public:
   explicit Lexer(const CommandLineArguments& options);
+
+  explicit Lexer(string filename, const CommandLineArguments& options);
   
   string lexerError;
   
 	optional<KL_Token> next();
+
+  CommandLineArguments options;
 private:
   FILE *file{};
   bool isStdIn;

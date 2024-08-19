@@ -1,3 +1,7 @@
+use "io.kl";
+
+int no_body();
+
 int factorial(int n) {
   if (n == 0) {
     return 1;
@@ -6,5 +10,6 @@ int factorial(int n) {
 }
 
 int main() {
-  return factorial(6);
+  put_int(factorial(5));
+  return 0;
 }

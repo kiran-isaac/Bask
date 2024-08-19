@@ -3,6 +3,7 @@
 //
 
 #include "lexer.h"
+#include "options.h"
 
 #define UNKNOWN_TOKEN_ERROR_LOCATION_SIZE 10
 
@@ -31,7 +32,7 @@ void Lexer::advance() {
   col++;
 }
 
-Lexer::Lexer(const CommandLineArguments& options) {
+Lexer::Lexer(const CommandLineArguments& options) : options(options) {
   if (options.isStdin) {
     file = stdin;
   } else {
@@ -48,9 +49,25 @@ Lexer::Lexer(const CommandLineArguments& options) {
   line = 1;
   col = 1;
   isBuffer1 = true;
-  
-  preprocessor_condition_depth = 0;
-  pathway_found = false;
+}
+
+Lexer::Lexer(string filename, const CommandLineArguments &options) : options(options) { 
+  if (options.isStdin) {
+    file = stdin;
+  } else {
+    file = fopen(filename.c_str(), "r");
+    if (file == nullptr) {
+      lexerError = "Error: could not open file " + filename;
+      return;
+    }
+  }
+
+  refresh_buffer_1();
+
+  c = buf1;
+  line = 1;
+  col = 1;
+  isBuffer1 = true;
 }
 
 optional<KL_Token> Lexer::lex_word() {
@@ -70,19 +87,19 @@ optional<KL_Token> Lexer::lex_word() {
       } else if (word == "bool") {
         return KL_Token{KL_TokenType::KL_TT_KW_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'c':
       if (word == "char") {
         return KL_Token{KL_TokenType::KL_TT_KW_Char, word, tokenStartLine, tokenStartCol};
       } else if (word == "const") {
         return KL_Token{KL_TokenType::KL_TT_KW_Const, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'e':
       if (word == "else") {
         return KL_Token{KL_TokenType::KL_TT_KW_Else, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'f':
       if (word == "for") {
         return KL_Token{KL_TokenType::KL_TT_KW_For, word, tokenStartLine, tokenStartCol};
@@ -91,44 +108,50 @@ optional<KL_Token> Lexer::lex_word() {
       } else if (word == "false") {
         return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'i':
       if (word == "if") {
         return KL_Token{KL_TokenType::KL_TT_KW_If, word, tokenStartLine, tokenStartCol};
       } else if (word == "int") {
         return KL_Token{KL_TokenType::KL_TT_KW_Int, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'r':
       if (word == "return") {
         return KL_Token{KL_TokenType::KL_TT_KW_Return, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 's':
       if (word == "string") {
         return KL_Token{KL_TokenType::KL_TT_KW_String, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 't':
       if (word == "true") {
         return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
+    case 'u':
+      if (word == "use") {
+        return KL_Token{KL_TokenType::KL_TT_KW_Use, word, tokenStartLine, tokenStartCol};
+      }
+      break;
     case 'v':
       if (word == "void") {
         return KL_Token{KL_TokenType::KL_TT_KW_Void, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     case 'w':
       if (word == "while") {
         return KL_Token{KL_TokenType::KL_TT_KW_While, word, tokenStartLine, tokenStartCol};
       }
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
     default:
-      return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine, tokenStartCol};
+      break;
   }
-  
-  return nullopt;
+
+  return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine,
+                  tokenStartCol};
 }
 
 optional<KL_Token> Lexer::next() {

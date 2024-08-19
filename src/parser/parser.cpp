@@ -2,6 +2,7 @@
 // Created by kiran on 5/20/24.
 //
 
+#include "tokens.h"
 #include <parser.h>
 #include <iostream>
 
@@ -144,16 +145,47 @@ unique_ptr<ASTFuncDecl> Parser::parse_function() {
   }
   
   nextToken();
-  
-  return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(arg_types), std::move(arg_names), std::move(parse_block()), line, col);
+
+  if (tk.type == KL_TT_Punctuation_LBrace) {
+    return std::make_unique<ASTFuncDecl>(
+        name, std::move(return_type), std::move(arg_types),
+        std::move(arg_names), std::move(parse_block()), line, col);
+  } else if (tk.type == KL_TT_Punctuation_Semicolon) {
+    nextToken();
+    return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(arg_types), std::move(arg_names), nullptr, line, col);
+  } else {
+    parserError("Unexpected token after function declaration: Expected '{' or ';'");
+  }
 }
 
 unique_ptr<ASTProgram> Parser::parse() {
-  vector<unique_ptr<ASTFuncDecl>> functions;
-  
+  auto program = make_unique<ASTProgram>();
+
   while (tk.type != KL_TT_EndOfFile) {
-    functions.push_back(parse_function());
+    if (tk.type == KL_TT_KW_Use) {
+      nextToken();
+      if (tk.type != KL_TT_Literal_String) {
+        parserError("Expected string after 'use'");
+      }
+      string module = lexer.options.find_module(tk.value);
+      nextToken();
+      if (module.empty()) {
+        parserError("Module not found: " + tk.value);
+      }
+      Lexer moduleLexer(module, lexer.options);
+      Parser moduleParser(moduleLexer);
+      auto moduleAST = moduleParser.parse();
+      program->prepend(moduleAST.get());
+      expect(KL_TT_Punctuation_Semicolon);
+      nextToken();
+    } else {
+      auto func = parse_function();
+      auto name = string(func->name);
+      if (!program->add_function(std::move(func))) {
+        parserError("Function redefined: " + name);
+      }
+    }
   }
-  
-  return make_unique<ASTProgram>(std::move(functions));
+
+  return program;
 }

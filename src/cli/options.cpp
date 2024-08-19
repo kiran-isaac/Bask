@@ -9,6 +9,36 @@
 
 using namespace std;
 
+string CommandLineArguments::find_module(string module_name) {
+  // get cwd 
+  string cwd = getcwd(nullptr, 0);
+
+  // check if module_name is an absolute path
+  if (module_name[0] == '/') {
+    if (access(module_name.c_str(), F_OK) == -1) {
+      cerr << "Error: file " << module_name << " does not exist" << endl;
+      cerr << "  Current working directory: " << cwd << endl;
+      exit(1);
+    }
+
+    return module_name;
+  }
+
+  // check if module_name is a relative path
+  if (access((cwd + "/" + module_name).c_str(), F_OK) != -1) {
+    return cwd + "/" + module_name;
+  }
+
+  // check if module_name is in lib_path
+  if (!lib_path.empty()) {
+    if (access((lib_path + "/" + module_name).c_str(), F_OK) != -1) {
+      return lib_path + "/" + module_name;
+    }
+  }
+
+  return "";
+}
+
 CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
   cwd = getcwd(nullptr, 0);
 
@@ -18,41 +48,6 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
 
   argv++;
   argc--;
-
-  // while (argc > 0) {
-  //   if (argv[0][0] == '-') {
-  //     if (strcmp(argv[0], "-o") == 0) {
-  //       if (!out.empty()) {
-  //         cerr << "Error: -o specified multiple times" << endl;
-  //         exit(1);
-  //       }
-
-  //       if (argc < 2) {
-  //         cerr << "Error: -o requires an argument" << endl;
-  //         exit(1);
-  //       }
-
-  //       out = argv[1];
-
-  //       argv++;
-  //       argc--;
-  //     } else {
-  //       cerr << "Error: unknown option " << argv[0] << endl;
-  //       exit(1);
-  //     }
-  //   } else {
-  //     file = argv[0];
-
-  //     // check if file exists
-  //     if (access(file.c_str(), F_OK) == -1) {
-  //       cerr << "Error: file " << file << " does not exist" << endl;
-  //       cerr << "  Current working directory: " << cwd << endl;
-  //       exit(1);
-  //     }
-  //   }
-  //   argv++;
-  //   argc--;
-  // }
 
   unsigned i = 0;
   while (i < argc) {
@@ -79,6 +74,25 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
 
         i += 2;
         break;
+      case 'l':
+        if (!lib_path.empty()) {
+          cerr << "Error: -l specified multiple times" << endl;
+          exit(1);
+        }
+
+        if (argv[i][2] != '\0') {
+          lib_path = string(argv[i] + 2);
+          i++;
+          continue;
+        } else {
+          if (i + 1 >= argc) {
+            cerr << "Error: -l requires an argument" << endl;
+            exit(1);
+          }
+
+          lib_path = argv[i + 1];
+          i += 2;
+        }
       case 'c':
         mode = COMPILE;
         i++;

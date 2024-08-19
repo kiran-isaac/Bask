@@ -1,0 +1,1 @@
+int put_int(int i);

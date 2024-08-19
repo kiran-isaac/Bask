@@ -53,7 +53,7 @@ class ASTFuncDecl : public ASTNode {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return FuncDecl; }
 
-  void fold_expressions() override { body->fold_expressions(); }
+  void fold_expressions() override { if (body) body->fold_expressions(); }
 
   vector<KL_Type> get_signature() const {
     vector<KL_Type> signature;
@@ -69,6 +69,9 @@ class ASTFuncDecl : public ASTNode {
   }
 
   void check_semantics() override {
+    if (!body)
+      return;
+
     SYMTAB.add_name(name, get_type());
     SYMTAB.enter_block();
     for (size_t i = 0; i < argTypes.size(); i++) {
@@ -97,8 +100,7 @@ class ASTProgram : public ASTNode {
  public:
   vector<unique_ptr<ASTFuncDecl>> funcs;
 
-  explicit ASTProgram(vector<unique_ptr<ASTFuncDecl>> funcs)
-      : funcs(std::move(funcs)) {}
+  explicit ASTProgram() {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Program; }
 
@@ -106,6 +108,23 @@ class ASTProgram : public ASTNode {
     for (auto &func : funcs) {
       func->fold_expressions();
     }
+  }
+
+  bool add_function(unique_ptr<ASTFuncDecl> func) {
+    // Check if function already exists
+    for (const auto &f : funcs) {
+      if (f->name == func->name) {
+        return false;
+      }
+    }
+
+    funcs.push_back(std::move(func));
+    return true;
+  }
+
+  void prepend(ASTProgram *other) {
+    funcs.insert(funcs.begin(), std::make_move_iterator(other->funcs.begin()),
+                 std::make_move_iterator(other->funcs.end()));
   }
 
   void print(int indent, ostream &out) const override {

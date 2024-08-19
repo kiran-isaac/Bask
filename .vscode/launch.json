@@ -10,12 +10,13 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/KL",
       "args": [
-        "${workspaceFolder}/test/codegen/functions.kl"
+        "${workspaceFolder}/test/codegen/functions.kl", "-llib/build"
       ],
       "stopAtEntry": false,
-      "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
+      "preLaunchTask": "build with make",
       "MIMode": "gdb",
       "setupCommands": [
           {

@@ -60,6 +60,9 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   Function *F =
       Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);
 
+  if (!node->body)
+    return KLCodeGenResult::Value(F);
+
   // Set names for all arguments.
   unsigned idx = 0;
   unsigned argc = node->argNames.size();

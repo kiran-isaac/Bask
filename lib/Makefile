@@ -1,23 +1,31 @@
-# get all folders exept build
-MODULES=$(filter-out build/, $(wildcard */))
 SOURCES=$(wildcard */*.c)
+BUILD_FOLDER=build
+OBJECTS=$(patsubst %.c,$(BUILD_FOLDER)/%.bc,$(SOURCES))
+LLVM_LINK=llvm-link
+# All headers are kl files not in the build folder
+HEADERS=$(filter-out $(wildcard build/*.kl),$(wildcard */*.kl))
 
-# to build a module, we need to build all the .bc files in the module
-# and then link them together
+# All folders except build and without a slash at the end
+MODULES=$(filter-out build/,$(filter-out %/,$(dir $(wildcard */))))
 
-# build all modules
-# this will build all the modules in the lib folder
-all: $(MODULES)
+$(info $(OBJECTS))
 
-# build a module. Run the Makefile in the module folder
-# this will build all the .bc files in the module
+all: $(OBJECTS) $(MODULES)
+	llvm-link -o $(BUILD_FOLDER)/lib.bc $(OBJECTS)
+	cp $(HEADERS) $(BUILD_FOLDER)
 
-# this is a pattern rule. It says that to build a module, we need to build all the .bc files in the module
-# and then link them together
-$(MODULES): 
-	$(MAKE) -C $@ all
+IOSOURCES=$(wildcard io/*.c)
+IOOBJECTS=$(patsubst %.c,$(BUILD_FOLDER)/%.bc,$(IOSOURCES))
 
-# clean all modules
-clean:
-	$(foreach module, $(MODULES), $(MAKE) -C $(module) clean;)
-	rm -rf build
+io: $(IOOBJECTS)
+	llvm-link -o $(BUILD_FOLDER)/io.bc $(IOOBJECTS)
+	cp $(wildcard io/*.kl) $(BUILD_FOLDER)
+
+$(BUILD_FOLDER)/%.bc: %.c
+	mkdir -p $(dir $@)
+	clang -c -emit-llvm -o $@ $<
+
+$(MODULES): %: $(BUILD_FOLDER)/%.bc
+	MODULESOURCE=$(wildcard $@/*.c) 
+	MODULEOBJECT=$(BUILD_FOLDER)/$@.bc
+	clang -c -emit-llvm -o $(MODULEOBJECT) $(MODULESOURCE)

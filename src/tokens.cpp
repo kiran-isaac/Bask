@@ -4,46 +4,46 @@
 
 #include <tokens.h>
 
-int get_operator_precedence(KL_TokenType type) {
+int get_operator_precedence(BASK_TokenType type) {
   switch (type) {
-    case KL_TT_Operator_Assign:
+    case BASK_TT_Operator_Assign:
       return 1;
-    case KL_TT_Operator_LogicalOr:
+    case BASK_TT_Operator_LogicalOr:
       return 2;
-    case KL_TT_Operator_LogicalAnd:
+    case BASK_TT_Operator_LogicalAnd:
       return 3;
-    case KL_TT_Operator_BitwiseOr:
+    case BASK_TT_Operator_BitwiseOr:
       return 4;
-    case KL_TT_Operator_BitwiseXor:
+    case BASK_TT_Operator_BitwiseXor:
       return 5;
-    case KL_TT_Operator_BitwiseAnd:
+    case BASK_TT_Operator_BitwiseAnd:
       return 6;
-    case KL_TT_Operator_Equal:
-    case KL_TT_Operator_NotEqual:
+    case BASK_TT_Operator_Equal:
+    case BASK_TT_Operator_NotEqual:
       return 7;
-    case KL_TT_Operator_Less:
-    case KL_TT_Operator_LessEqual:
-    case KL_TT_Operator_Greater:
-    case KL_TT_Operator_GreaterEqual:
+    case BASK_TT_Operator_Less:
+    case BASK_TT_Operator_LessEqual:
+    case BASK_TT_Operator_Greater:
+    case BASK_TT_Operator_GreaterEqual:
       return 8;
-    case KL_TT_Operator_Shl:
-    case KL_TT_Operator_Shr:
+    case BASK_TT_Operator_Shl:
+    case BASK_TT_Operator_Shr:
       return 9;
-    case KL_TT_Operator_Add:
-    case KL_TT_Operator_Sub:
+    case BASK_TT_Operator_Add:
+    case BASK_TT_Operator_Sub:
       return 10;
-    case KL_TT_Operator_Mul:
-    case KL_TT_Operator_Div:
-    case KL_TT_Operator_Mod:
+    case BASK_TT_Operator_Mul:
+    case BASK_TT_Operator_Div:
+    case BASK_TT_Operator_Mod:
       return 11;
-    case KL_TT_Operator_BitwiseNot:
-    case KL_TT_Operator_LogicalNot:
+    case BASK_TT_Operator_BitwiseNot:
+    case BASK_TT_Operator_LogicalNot:
       return 12;
     default:
       return -1;
   }
 }
 
-bool operator_is_commutative(KL_TokenType op) {
-  return op == KL_TT_Operator_Add || op == KL_TT_Operator_Mul || op == KL_TT_Operator_Equal || op == KL_TT_Operator_NotEqual;
+bool operator_is_commutative(BASK_TokenType op) {
+  return op == BASK_TT_Operator_Add || op == BASK_TT_Operator_Mul || op == BASK_TT_Operator_Equal || op == BASK_TT_Operator_NotEqual;
 }

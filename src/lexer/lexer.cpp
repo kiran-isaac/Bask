@@ -70,7 +70,7 @@ Lexer::Lexer(string filename, const CommandLineArguments &options) : options(opt
   isBuffer1 = true;
 }
 
-optional<KL_Token> Lexer::lex_word() {
+optional<BASK_Token> Lexer::lex_word() {
   string word;
   word += *c;
   advance();
@@ -83,78 +83,78 @@ optional<KL_Token> Lexer::lex_word() {
   switch (word[0]) {
     case 'b':
       if (word == "break") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Break, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Break, word, tokenStartLine, tokenStartCol};
       } else if (word == "bool") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Bool, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Bool, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'c':
       if (word == "char") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Char, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Char, word, tokenStartLine, tokenStartCol};
       } else if (word == "const") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Const, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Const, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'e':
       if (word == "else") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Else, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Else, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'f':
       if (word == "for") {
-        return KL_Token{KL_TokenType::KL_TT_KW_For, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_For, word, tokenStartLine, tokenStartCol};
       } else if (word == "float") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Float, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Float, word, tokenStartLine, tokenStartCol};
       } else if (word == "false") {
-        return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'i':
       if (word == "if") {
-        return KL_Token{KL_TokenType::KL_TT_KW_If, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_If, word, tokenStartLine, tokenStartCol};
       } else if (word == "int") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Int, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Int, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'r':
       if (word == "return") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Return, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Return, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 's':
       if (word == "string") {
-        return KL_Token{KL_TokenType::KL_TT_KW_String, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_String, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 't':
       if (word == "true") {
-        return KL_Token{KL_TokenType::KL_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Literal_Bool, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'u':
       if (word == "use") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Use, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Use, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'v':
       if (word == "void") {
-        return KL_Token{KL_TokenType::KL_TT_KW_Void, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_Void, word, tokenStartLine, tokenStartCol};
       }
       break;
     case 'w':
       if (word == "while") {
-        return KL_Token{KL_TokenType::KL_TT_KW_While, word, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_KW_While, word, tokenStartLine, tokenStartCol};
       }
       break;
     default:
       break;
   }
 
-  return KL_Token{KL_TokenType::KL_TT_Identifier, word, tokenStartLine,
+  return BASK_Token{BASK_TokenType::BASK_TT_Identifier, word, tokenStartLine,
                   tokenStartCol};
 }
 
-optional<KL_Token> Lexer::next() {
+optional<BASK_Token> Lexer::next() {
   while (true) {
     tokenStartCol = col;
     tokenStartLine = line;
@@ -168,48 +168,48 @@ optional<KL_Token> Lexer::next() {
         continue;
         
       case EOF:
-        return KL_Token{KL_TokenType::KL_TT_EndOfFile, "", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_EndOfFile, "", tokenStartLine, tokenStartCol};
       
       case ',':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_Comma, ",", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_Comma, ",", tokenStartLine, tokenStartCol};
       case ';':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_Semicolon, ";", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_Semicolon, ";", tokenStartLine, tokenStartCol};
       case ':':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_Colon, ":", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_Colon, ":", tokenStartLine, tokenStartCol};
       case '.':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_Dot, ".", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_Dot, ".", tokenStartLine, tokenStartCol};
       case '(':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_LParen, "(", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_LParen, "(", tokenStartLine, tokenStartCol};
       case ')':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_RParen, ")", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_RParen, ")", tokenStartLine, tokenStartCol};
       case '{':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_LBrace, "{", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_LBrace, "{", tokenStartLine, tokenStartCol};
       case '}':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_RBrace, "}", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_RBrace, "}", tokenStartLine, tokenStartCol};
       case '[':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_LBracket, "[", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_LBracket, "[", tokenStartLine, tokenStartCol};
       case ']':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Punctuation_RBracket, "]", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Punctuation_RBracket, "]", tokenStartLine, tokenStartCol};
       
       case '+':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_Add, "+", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Add, "+", tokenStartLine, tokenStartCol};
       case '-':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_Sub, "-", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Sub, "-", tokenStartLine, tokenStartCol};
       case '*':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_Mul, "*", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Mul, "*", tokenStartLine, tokenStartCol};
       case '/':
         advance();
 
@@ -236,65 +236,65 @@ optional<KL_Token> Lexer::next() {
           continue;
         }
         
-        return KL_Token{KL_TokenType::KL_TT_Operator_Div, "/", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Div, "/", tokenStartLine, tokenStartCol};
       case '%':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_Mod, "%", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Mod, "%", tokenStartLine, tokenStartCol};
       case '&':
         advance();
         if (*c == '&') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_LogicalAnd, "&&", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_LogicalAnd, "&&", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseAnd, "&", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_BitwiseAnd, "&", tokenStartLine, tokenStartCol};
       case '|':
         advance();
         if (*c == '|') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_LogicalOr, "||", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_LogicalOr, "||", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseOr, "|", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_BitwiseOr, "|", tokenStartLine, tokenStartCol};
       case '^':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseXor, "^", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_BitwiseXor, "^", tokenStartLine, tokenStartCol};
       case '~':
         advance();
-        return KL_Token{KL_TokenType::KL_TT_Operator_BitwiseNot, "~", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_BitwiseNot, "~", tokenStartLine, tokenStartCol};
       case '!':
         advance();
         if (*c == '=') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_NotEqual, "!=", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_NotEqual, "!=", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_LogicalNot, "!", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_LogicalNot, "!", tokenStartLine, tokenStartCol};
       case '=':
         advance();
         if (*c == '=') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_Equal, "==", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_Equal, "==", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_Assign, "=", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Assign, "=", tokenStartLine, tokenStartCol};
       case '<':
         advance();
         if (*c == '=') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_LessEqual, "<=", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_LessEqual, "<=", tokenStartLine, tokenStartCol};
         } else if (*c == '<') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_Shl, "<<", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_Shl, "<<", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_Less, "<", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Less, "<", tokenStartLine, tokenStartCol};
         
       case '>':
         advance();
         if (*c == '=') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_GreaterEqual, ">=", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_GreaterEqual, ">=", tokenStartLine, tokenStartCol};
         } else if (*c == '>') {
           advance();
-          return KL_Token{KL_TokenType::KL_TT_Operator_Shr, ">>", tokenStartLine, tokenStartCol};
+          return BASK_Token{BASK_TokenType::BASK_TT_Operator_Shr, ">>", tokenStartLine, tokenStartCol};
         }
-        return KL_Token{KL_TokenType::KL_TT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Operator_Greater, ">", tokenStartLine, tokenStartCol};
       
       case '\'':
         return lex_char_literal();

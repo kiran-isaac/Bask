@@ -2,8 +2,8 @@ SOURCES=$(wildcard */*.c)
 BUILD_FOLDER=build
 OBJECTS=$(patsubst %.c,$(BUILD_FOLDER)/%.bc,$(SOURCES))
 LLVM_LINK=llvm-link
-# All headers are kl files not in the build folder
-HEADERS=$(filter-out $(wildcard build/*.kl),$(wildcard */*.kl))
+# All headers are bask files not in the build folder
+HEADERS=$(filter-out $(wildcard build/*.bsk),$(wildcard */*.bsk))
 
 # All folders except build and without a slash at the end
 MODULES=$(filter-out build/,$(filter-out %/,$(dir $(wildcard */))))
@@ -19,7 +19,7 @@ IOOBJECTS=$(patsubst %.c,$(BUILD_FOLDER)/%.bc,$(IOSOURCES))
 
 io: $(IOOBJECTS)
 	llvm-link -o $(BUILD_FOLDER)/io.bc $(IOOBJECTS)
-	cp $(wildcard io/*.kl) $(BUILD_FOLDER)
+	cp $(wildcard io/*.bsk) $(BUILD_FOLDER)
 
 $(BUILD_FOLDER)/%.bc: %.c
 	mkdir -p $(dir $@)

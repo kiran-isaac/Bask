@@ -16,9 +16,9 @@
 #include "types.h"
 
 TEST(FuncDef, Main) {
-  KLCodeGenVisitor visitor("Declarations.Main");
+  BASKCodeGenVisitor visitor("Declarations.Main");
 
-  const char *argv[] = {"KL",
+  const char *argv[] = {"BASK",
                         insertIntoTempFile("int main() {return 0;}")};
 
   CommandLineArguments options(2, argv);
@@ -34,9 +34,9 @@ TEST(FuncDef, Main) {
 }
 
 TEST(FuncDef, MainWithArgs) {
-  KLCodeGenVisitor visitor("Declarations.Main");
+  BASKCodeGenVisitor visitor("Declarations.Main");
 
-  const char *argv[] = {"KL", insertIntoTempFile("int main(int a, int b) {return 0;}")};
+  const char *argv[] = {"BASK", insertIntoTempFile("int main(int a, int b) {return 0;}")};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);

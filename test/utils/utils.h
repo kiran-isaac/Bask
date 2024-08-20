@@ -2,8 +2,8 @@
 // Created by kiran on 5/20/24.
 //
 
-#ifndef KL_UTILS_H
-#define KL_UTILS_H
+#ifndef BASK_UTILS_H
+#define BASK_UTILS_H
 
 #include <regex>
 #include <string>
@@ -27,4 +27,4 @@ pair<bool, string> compile(string module_name, string program);
   } \
   auto IR = result.second;
 
-#endif //KL_UTILS_H
+#endif //BASK_UTILS_H

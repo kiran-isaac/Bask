@@ -16,9 +16,9 @@
 #include "../utils/utils.h"
 
 TEST(Declarations, SimpleDeclaration) {
-  KLCodeGenVisitor visitor("Declarations.SimpleDeclaration");
+  BASKCodeGenVisitor visitor("Declarations.SimpleDeclaration");
 
-  const char *argv[] = {"KL",
+  const char *argv[] = {"BASK",
                         insertIntoTempFile("int main() { int a = 5 * 10; }")};
 
   CommandLineArguments options(2, argv);
@@ -47,9 +47,9 @@ TEST(Declarations, SimpleDeclaration) {
 }
 
 TEST(Declarations, SimpleDeclarationWithAssignment) {
-  KLCodeGenVisitor visitor("Declarations.SimpleDeclarationWithAssignment");
+  BASKCodeGenVisitor visitor("Declarations.SimpleDeclarationWithAssignment");
 
-  const char *argv[] = {"KL",
+  const char *argv[] = {"BASK",
                         insertIntoTempFile("int main() { int a = 5 * 10; a = 10; }")};
 
   CommandLineArguments options(2, argv);

@@ -1,7 +1,7 @@
 #include "AST/AST.h"
 #include "symtab.h"
 
-KL_Type ASTExprIdentifier::get_expr_type() {
+BASK_Type ASTExprIdentifier::get_expr_type() {
   auto type = SYMTAB.get_name_type(name);
   if (!type) {
     ASTNode::ValueError(this->line, this->col, "Variable " + name + " does not exist");
@@ -9,7 +9,7 @@ KL_Type ASTExprIdentifier::get_expr_type() {
   return *type;
 }
 
-KL_Type ASTExprBinary::get_expr_type() {
+BASK_Type ASTExprBinary::get_expr_type() {
   if (checked) {
     return type;
   }

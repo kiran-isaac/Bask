@@ -2,8 +2,8 @@
 // Created by kiran on 5/21/24.
 //
 
-#ifndef KL_SYMTAB_H
-#define KL_SYMTAB_H
+#ifndef BASK_SYMTAB_H
+#define BASK_SYMTAB_H
 
 #include <string>
 #include <types.h>
@@ -14,7 +14,7 @@
 
 class SymTab {
 private:
-  std::vector<std::unordered_map<std::string, KL_Type>> scope_stack;
+  std::vector<std::unordered_map<std::string, BASK_Type>> scope_stack;
 
 public:
   SymTab() {
@@ -24,8 +24,8 @@ public:
   bool name_is_in_scope(const char *name) {
     return name_is_in_scope(std::string(name));
   }
-  std::optional<KL_Type> get_name_type(std::string);
-  void add_name(std::string, KL_Type);
+  std::optional<BASK_Type> get_name_type(std::string);
+  void add_name(std::string, BASK_Type);
   void enter_block();
   void exit_block();
   void wipe() {
@@ -48,4 +48,4 @@ public:
   }
 };
 
-#endif //KL_SYMTAB_H
+#endif //BASK_SYMTAB_H

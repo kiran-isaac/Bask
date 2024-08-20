@@ -10,8 +10,8 @@
 #include "parser.h"
 
 TEST(CodeGen, VisitConstantInt) {
-  KLCodeGenVisitor visitor("CodeGen.VistConstantInt");
-  ASTExprConstantValue node(KL_INT_CONST, "Replace", 0, 0);
+  BASKCodeGenVisitor visitor("CodeGen.VistConstantInt");
+  ASTExprConstantValue node(BASK_INT_CONST, "Replace", 0, 0);
   
   // Generate a random number
   std::random_device rd;
@@ -31,8 +31,8 @@ TEST(CodeGen, VisitConstantInt) {
 }
 
 TEST(CodeGen, VisitConstantFloat) {
-  KLCodeGenVisitor visitor("CodeGen.VisitConstantFloat");
-  ASTExprConstantValue node(KL_FLOAT_CONST, "42.0", 0, 0);
+  BASKCodeGenVisitor visitor("CodeGen.VisitConstantFloat");
+  ASTExprConstantValue node(BASK_FLOAT_CONST, "42.0", 0, 0);
 
   // Generate a random number
   std::random_device rd;
@@ -52,8 +52,8 @@ TEST(CodeGen, VisitConstantFloat) {
 }
 
 TEST(CodeGen, VisitConstantBool) {
-  KLCodeGenVisitor visitor("CodeGen.VisitConstantBool");
-  ASTExprConstantValue node(KL_BOOL_CONST, "true", 0, 0);
+  BASKCodeGenVisitor visitor("CodeGen.VisitConstantBool");
+  ASTExprConstantValue node(BASK_BOOL_CONST, "true", 0, 0);
 
   auto result = visitor.visit(&node);
 
@@ -70,8 +70,8 @@ TEST(CodeGen, VisitConstantBool) {
 }
 
 TEST(CodeGen, VisitConstantChar) {
-  KLCodeGenVisitor visitor("CodeGen.VisitConstantChar");
-  ASTExprConstantValue node(KL_CHAR_CONST, "a", 0, 0);
+  BASKCodeGenVisitor visitor("CodeGen.VisitConstantChar");
+  ASTExprConstantValue node(BASK_CHAR_CONST, "a", 0, 0);
 
   for (unsigned char i = 0; i < 255; i++) {
     node.value = std::string(1, i);
@@ -84,8 +84,8 @@ TEST(CodeGen, VisitConstantChar) {
 }
 
 TEST(CodeGen, VisitConstantString) {
-  KLCodeGenVisitor visitor("CodeGen.VisitConstantString");
-  ASTExprConstantValue node(KL_STRING_CONST, "Hello, World!", 0, 0);
+  BASKCodeGenVisitor visitor("CodeGen.VisitConstantString");
+  ASTExprConstantValue node(BASK_STRING_CONST, "Hello, World!", 0, 0);
 
   auto result = visitor.visit(&node);
 

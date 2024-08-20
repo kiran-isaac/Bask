@@ -2,8 +2,8 @@
 // Created by kiran on 5/21/24.
 //
 
-#ifndef KL_AST_EXPRESSIONS_H
-#define KL_AST_EXPRESSIONS_H
+#ifndef BASK_AST_EXPRESSIONS_H
+#define BASK_AST_EXPRESSIONS_H
 
 #include "AST/AST_Preamble.h"
 #include "codegen.h"
@@ -24,7 +24,7 @@ class ASTExpr : public ASTNode {
 
   static unique_ptr<ASTExpr> fold(ASTExpr *);
 
-  virtual KL_Type get_expr_type() { return KL_Type(); };
+  virtual BASK_Type get_expr_type() { return BASK_Type(); };
 
   virtual void print(int indent, ostream &out) const override {};
 
@@ -38,12 +38,12 @@ class ASTExprConstantValue : public ASTExpr {
  public:
   ASTProgram *program;
 
-  KL_Type type;
+  BASK_Type type;
   string value;
   unsigned int line;
   unsigned int col;
 
-  explicit ASTExprConstantValue(KL_Type type, string value, unsigned int line,
+  explicit ASTExprConstantValue(BASK_Type type, string value, unsigned int line,
                                 unsigned int col)
       : type(std::move(type)), value(std::move(value)), line(line), col(col) {}
 
@@ -53,9 +53,9 @@ class ASTExprConstantValue : public ASTExpr {
 
   void check_semantics() override {}
 
-  KL_Type get_expr_type() override { return KL_Type(type); };
+  BASK_Type get_expr_type() override { return BASK_Type(type); };
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -82,11 +82,11 @@ class ASTExprIdentifier : public ASTExpr {
     return ExprIdentifier;
   }
 
-  KL_Type get_expr_type() override;
+  BASK_Type get_expr_type() override;
 
   void check_semantics() override;
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -122,7 +122,7 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
-  KL_Type get_expr_type() override {
+  BASK_Type get_expr_type() override {
     auto type = SYMTAB.get_name_type(name);
     if (!type) {
       throw std::runtime_error("Function " + name + " not found");
@@ -136,7 +136,7 @@ class ASTExprFuncCall : public ASTExpr {
     }
   }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -157,19 +157,19 @@ class ASTExprBinary : public ASTExpr {
   // This is used to check if the expression has been checked for semantics
   // so that we don't check it again to get return type
   bool checked;
-  KL_Type type;
+  BASK_Type type;
 
  public:
   ASTProgram *program;
 
   unique_ptr<ASTExpr> lhs;
   unique_ptr<ASTExpr> rhs;
-  KL_TokenType op;
+  BASK_TokenType op;
   unsigned int line;
   unsigned int col;
 
   explicit ASTExprBinary(unique_ptr<ASTExpr> lhs, unique_ptr<ASTExpr> rhs,
-                         KL_TokenType op, unsigned int line, unsigned int col)
+                         BASK_TokenType op, unsigned int line, unsigned int col)
       : lhs(std::move(lhs)),
         rhs(std::move(rhs)),
         op(op),
@@ -182,9 +182,9 @@ class ASTExprBinary : public ASTExpr {
 
   void check_semantics() override;
 
-  KL_Type get_expr_type() override;
+  BASK_Type get_expr_type() override;
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -207,11 +207,11 @@ class ASTExprUnary : public ASTExpr {
   ASTProgram *program;
 
   unique_ptr<ASTExpr> expr;
-  KL_TokenType op;
+  BASK_TokenType op;
   unsigned int line;
   unsigned int col;
 
-  explicit ASTExprUnary(KL_TokenType op, unique_ptr<ASTExpr> expr,
+  explicit ASTExprUnary(BASK_TokenType op, unique_ptr<ASTExpr> expr,
                         unsigned int line, unsigned int col)
       : expr(std::move(expr)), op(op), line(line), col(col) {}
 
@@ -219,9 +219,9 @@ class ASTExprUnary : public ASTExpr {
 
   void check_semantics() override;
 
-  KL_Type get_expr_type() override;
+  BASK_Type get_expr_type() override;
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -234,4 +234,4 @@ class ASTExprUnary : public ASTExpr {
   }
 };
 
-#endif  // KL_AST_EXPRESSIONS_H
+#endif  // BASK_AST_EXPRESSIONS_H

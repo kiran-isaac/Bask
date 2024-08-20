@@ -3,14 +3,14 @@
 
 using namespace llvm;
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTControlFlowIf *node) {
   auto condition_result = node->condition->accept(this);
   if (condition_result->getTypeOfResult() == CodeGenResultType_Error) {
-    return KLCodeGenResult::Error(condition_result->getError());
+    return BASKCodeGenResult::Error(condition_result->getError());
   }
   auto condition = condition_result->getValue();
   if (!condition)
-    return KLCodeGenResult::Error("Failed to get value of condition");
+    return BASKCodeGenResult::Error("Failed to get value of condition");
 
   auto function = Builder.GetInsertBlock()->getParent();
 
@@ -46,17 +46,17 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowIf *node) {
 
     // if both blocks are terminated, we don't need to create a merge block
     if (then_block->getTerminator() && else_block->getTerminator())
-      return KLCodeGenResult::Halt();
+      return BASKCodeGenResult::Halt();
   } 
 
   function->getBasicBlockList().push_back(merge_block);
 
   Builder.SetInsertPoint(merge_block);
 
-  return KLCodeGenResult::NoHalt();
+  return BASKCodeGenResult::NoHalt();
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowWhile *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTControlFlowWhile *node) {
   auto function = Builder.GetInsertBlock()->getParent();
 
   auto loop_block = BasicBlock::Create(TheContext, "loop", function);
@@ -68,12 +68,12 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTControlFlowWhile *node) {
   auto condition_result = node->condition->accept(this);
   auto condition = condition_result->getValue();
   if (!condition)
-    return KLCodeGenResult::Error("Failed to get value of condition");
+    return BASKCodeGenResult::Error("Failed to get value of condition");
 
   Builder.CreateCondBr(condition, loop_block, after_block);
 
   function->getBasicBlockList().push_back(after_block);
   Builder.SetInsertPoint(after_block);
 
-  return KLCodeGenResult::None();
+  return BASKCodeGenResult::None();
 }

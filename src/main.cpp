@@ -23,7 +23,7 @@ int main(int argc, const char **argv) {
     return 0;
   }
 
-  KLCodeGenVisitor visitor("Main");
+  BASKCodeGenVisitor visitor("Main");
   auto result = ast->accept(&visitor);
 
   if (result->getTypeOfResult() == CodeGenResultType_Error) {

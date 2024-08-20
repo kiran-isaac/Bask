@@ -2,8 +2,8 @@
 // Created by kiran on 5/20/24.
 //
 
-#ifndef KL_LEXER_H
-#define KL_LEXER_H
+#ifndef BASK_LEXER_H
+#define BASK_LEXER_H
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ public:
   
   string lexerError;
   
-	optional<KL_Token> next();
+	optional<BASK_Token> next();
 
   CommandLineArguments options;
 private:
@@ -50,11 +50,11 @@ private:
   
   void advance();
   
-  optional<KL_Token> lex_word();
-  optional<KL_Token> lex_number();
-  optional<KL_Token> lex_string_literal();
-  optional<KL_Token> lex_char_literal();
+  optional<BASK_Token> lex_word();
+  optional<BASK_Token> lex_number();
+  optional<BASK_Token> lex_string_literal();
+  optional<BASK_Token> lex_char_literal();
   optional<char> let_escape_char();
 };
 
-#endif //KL_LEXER_H
+#endif //BASK_LEXER_H

@@ -2,8 +2,8 @@
 // Created by kiran on 5/21/24.
 //
 
-#ifndef KL_AST_CONTROLFLOW_H
-#define KL_AST_CONTROLFLOW_H
+#ifndef BASK_AST_CONTROLFLOW_H
+#define BASK_AST_CONTROLFLOW_H
 
 #include "AST_Statements.h"
 
@@ -25,7 +25,7 @@ public:
       : condition(std::move(condition)), then_block(std::move(then_block)),
         else_block(std::move(else_block)), line(line), col(col) {}
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override {
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override {
     return v->visit(this);
   }
 
@@ -78,7 +78,7 @@ public:
       : condition(std::move(condition)), block(std::move(block)), line(line),
         col(col) {}
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override {
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override {
     return v->visit(this);
   }
 
@@ -104,4 +104,4 @@ public:
   }
 };
 
-#endif //KL_AST_CONTROLFLOW_H
+#endif //BASK_AST_CONTROLFLOW_H

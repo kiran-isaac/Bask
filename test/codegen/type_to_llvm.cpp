@@ -14,9 +14,9 @@
 #include "types.h"
 
 TEST(TypeToLLVMType, PrimitiveTypes) {
-  KLCodeGenVisitor visitor("TypeToLLVMType.PrimitiveTypes");
+  BASKCodeGenVisitor visitor("TypeToLLVMType.PrimitiveTypes");
 
-  ASTType type(KL_Type(), 0, 0);
+  ASTType type(BASK_Type(), 0, 0);
 
   llvm::SmallVector<llvm::Type::TypeID, 6> expected_results = {
       llvm::Type::TypeID::IntegerTyID, llvm::Type::TypeID::DoubleTyID,
@@ -24,12 +24,12 @@ TEST(TypeToLLVMType, PrimitiveTypes) {
       llvm::Type::TypeID::PointerTyID, llvm::Type::TypeID::VoidTyID};
 
   auto expected_results_it = expected_results.begin();
-  for (auto type : {KL_INT_PRIMITIVE, KL_FLOAT_PRIMITIVE, KL_BOOL_PRIMITIVE, KL_CHAR_PRIMITIVE, KL_STRING_PRIMITIVE, KL_VOID_PRIMITIVE}) {
-    KL_Type kl_type;
-    kl_type.kind = KL_PRIMITIVE_TYPEKIND;
-    kl_type.primitive = type;
+  for (auto type : {BASK_INT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, BASK_BOOL_PRIMITIVE, BASK_CHAR_PRIMITIVE, BASK_STRING_PRIMITIVE, BASK_VOID_PRIMITIVE}) {
+    BASK_Type bask_type;
+    bask_type.kind = BASK_PRIMITIVE_TYPEKIND;
+    bask_type.primitive = type;
 
-    ASTType type_node(kl_type, 0, 0);
+    ASTType type_node(bask_type, 0, 0);
 
     auto llvm_type_result = type_node.accept(&visitor);
 
@@ -45,7 +45,7 @@ TEST(TypeToLLVMType, PrimitiveTypes) {
 }
 
 TEST(TypeToLLVMType, ArrayTypes) {
-  KLCodeGenVisitor visitor("TypeToLLVMType.ArrayTypes");
+  BASKCodeGenVisitor visitor("TypeToLLVMType.ArrayTypes");
 
   // Generate a random number
   std::random_device rd;
@@ -59,9 +59,9 @@ TEST(TypeToLLVMType, ArrayTypes) {
       array_sizes.push_back(dis(gen));
     }
 
-    ASTType type_node(KL_Type(false, KL_INT_PRIMITIVE, array_sizes), 0, 0);
+    ASTType type_node(BASK_Type(false, BASK_INT_PRIMITIVE, array_sizes), 0, 0);
 
-    KLCodeGenResult *llvm_type_result = type_node.accept(&visitor);
+    BASKCodeGenResult *llvm_type_result = type_node.accept(&visitor);
     assert(llvm_type_result->getTypeOfResult() == CodeGenResultType_Type);
 
     llvm::Type *llvm_type = llvm_type_result->getLLVMType();
@@ -80,18 +80,18 @@ TEST(TypeToLLVMType, ArrayTypes) {
 }
 
 TEST(TypeToLLVMType, FunctionType) {
-  KLCodeGenVisitor visitor("TypeToLLVMType.FunctionType");
+  BASKCodeGenVisitor visitor("TypeToLLVMType.FunctionType");
 
-  auto *signature = new std::vector<KL_Type>();
-  signature->push_back(KL_Type(false, KL_FLOAT_PRIMITIVE));
-  signature->push_back(KL_Type(false, KL_INT_PRIMITIVE));
-  signature->push_back(KL_Type(false, KL_INT_PRIMITIVE));
+  auto *signature = new std::vector<BASK_Type>();
+  signature->push_back(BASK_Type(false, BASK_FLOAT_PRIMITIVE));
+  signature->push_back(BASK_Type(false, BASK_INT_PRIMITIVE));
+  signature->push_back(BASK_Type(false, BASK_INT_PRIMITIVE));
 
-  KL_Type kl_type(true, signature);
+  BASK_Type bask_type(true, signature);
 
-  ASTType type_node(kl_type, 0, 0);
+  ASTType type_node(bask_type, 0, 0);
 
-  KLCodeGenResult *llvm_type_result = type_node.accept(&visitor);
+  BASKCodeGenResult *llvm_type_result = type_node.accept(&visitor);
   assert(llvm_type_result->getTypeOfResult() == CodeGenResultType_Type);
 
   llvm::Type *llvm_type = llvm_type_result->getLLVMType();

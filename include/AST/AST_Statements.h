@@ -2,8 +2,8 @@
 // Created by kiran on 5/21/24.
 //
 
-#ifndef KL_AST_STATEMENTS_H
-#define KL_AST_STATEMENTS_H
+#ifndef BASK_AST_STATEMENTS_H
+#define BASK_AST_STATEMENTS_H
 
 #include "AST/AST_Expressions.h"
 #include "AST/AST_Preamble.h"
@@ -21,7 +21,7 @@ public:
 
   virtual void print(int indent, ostream &out) const = 0;
 
-  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v) = 0;
+  virtual BASKCodeGenResult *accept(BASKCodeGenVisitor *v) = 0;
 };
 
 class ASTStmtExpr : public ASTStmt {
@@ -41,7 +41,7 @@ class ASTStmtExpr : public ASTStmt {
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return StmtExpr; }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -76,7 +76,7 @@ class ASTStmtAssignment : public ASTStmt {
     return StmtAssignment;
   }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -103,13 +103,13 @@ class ASTStmtDecl : public ASTStmt {
       : type(std::move(type)), identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
         value(std::move(value)), line(line), col(col) {}
 
-  ASTStmtDecl(KL_Type type, string name, unique_ptr<ASTExpr> value,
+  ASTStmtDecl(BASK_Type type, string name, unique_ptr<ASTExpr> value,
               unsigned int line, unsigned int col)
       : type(std::make_unique<ASTType>(type, line, col)),
         identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
         value(std::move(value)), line(line), col(col) {}
 
-  ASTStmtDecl(KL_Type type, string name,
+  ASTStmtDecl(BASK_Type type, string name,
               unsigned int line, unsigned int col)
       : type(std::make_unique<ASTType>(type, line, col)),
         identifier(std::make_unique<ASTExprIdentifier>(name, line, col)),
@@ -121,7 +121,7 @@ class ASTStmtDecl : public ASTStmt {
 
   void check_semantics() override;
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -154,7 +154,7 @@ public:
 
   void check_semantics() override { return_expr->check_semantics(); }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -196,7 +196,7 @@ class ASTBlock : public ASTNode {
     }
   }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -211,4 +211,4 @@ class ASTBlock : public ASTNode {
   }
 };
 
-#endif  // KL_AST_STATEMENTS_H
+#endif  // BASK_AST_STATEMENTS_H

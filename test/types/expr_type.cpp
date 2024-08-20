@@ -8,7 +8,7 @@
 
 TEST(GetExprType, Unary) {
   auto file = insertIntoTempFile("int main() { -5; }");
-  const char* argv[] = {"KL", file};
+  const char* argv[] = {"BASK", file};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -18,8 +18,8 @@ TEST(GetExprType, Unary) {
   auto expr_stmt = program->get_function("main")->body->get_statement(0);
   auto expr = dynamic_cast<ASTStmtExpr*>(expr_stmt)->expr.get();
 
-  ASSERT_EQ(expr->get_expr_type().primitive, KL_INT_PRIMITIVE);
-  ASSERT_EQ(expr->get_expr_type().kind, KL_PRIMITIVE_TYPEKIND);
+  ASSERT_EQ(expr->get_expr_type().primitive, BASK_INT_PRIMITIVE);
+  ASSERT_EQ(expr->get_expr_type().kind, BASK_PRIMITIVE_TYPEKIND);
   ASSERT_EQ(expr->get_expr_type().is_const, true);
 }
 
@@ -62,107 +62,107 @@ TEST(GetExprType, Binary) {
   INT >> INT = INT 
   */
   struct ExpressionType {
-    KL_PrimitiveType lhs;
-    KL_PrimitiveType rhs;
+    BASK_PrimitiveType lhs;
+    BASK_PrimitiveType rhs;
     bool valid;
-    KL_PrimitiveType result;
+    BASK_PrimitiveType result;
   };
   
   // Put all the valid types in a map. Dont need to worry about the order of the types
   // because the test will check for both orders
-  map<KL_TokenType, vector<ExpressionType>> valid_ops = {
-    {KL_TT_Operator_Add, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE},
-      {KL_STRING_PRIMITIVE, KL_STRING_PRIMITIVE, true, KL_STRING_PRIMITIVE}
+  map<BASK_TokenType, vector<ExpressionType>> valid_ops = {
+    {BASK_TT_Operator_Add, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE},
+      {BASK_STRING_PRIMITIVE, BASK_STRING_PRIMITIVE, true, BASK_STRING_PRIMITIVE}
     }},
-    {KL_TT_Operator_Sub, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_Sub, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Mul, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_Mul, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Div, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_Div, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Mod, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_FLOAT_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_Mod, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_FLOAT_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Equal, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_STRING_PRIMITIVE, KL_STRING_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_CHAR_PRIMITIVE, KL_CHAR_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_BOOL_PRIMITIVE, KL_BOOL_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
-    }},
-
-    {KL_TT_Operator_NotEqual, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_STRING_PRIMITIVE, KL_STRING_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_CHAR_PRIMITIVE, KL_CHAR_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_BOOL_PRIMITIVE, KL_BOOL_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
-    }},
-    {KL_TT_Operator_Less, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
-    }},
-    {KL_TT_Operator_LessEqual, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
-    }},
-    {KL_TT_Operator_Greater, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
-    }},
-    {KL_TT_Operator_GreaterEqual, {
-      {KL_FLOAT_PRIMITIVE, KL_FLOAT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_FLOAT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE},
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
+    {BASK_TT_Operator_Equal, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_STRING_PRIMITIVE, BASK_STRING_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_CHAR_PRIMITIVE, BASK_CHAR_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_BOOL_PRIMITIVE, BASK_BOOL_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
     }},
 
-    {KL_TT_Operator_LogicalAnd, {
-      {KL_BOOL_PRIMITIVE, KL_BOOL_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
+    {BASK_TT_Operator_NotEqual, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_STRING_PRIMITIVE, BASK_STRING_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_CHAR_PRIMITIVE, BASK_CHAR_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_BOOL_PRIMITIVE, BASK_BOOL_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
     }},
-    {KL_TT_Operator_LogicalOr, {
-      {KL_BOOL_PRIMITIVE, KL_BOOL_PRIMITIVE, true, KL_BOOL_PRIMITIVE}
+    {BASK_TT_Operator_Less, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
+    }},
+    {BASK_TT_Operator_LessEqual, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
+    }},
+    {BASK_TT_Operator_Greater, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
+    }},
+    {BASK_TT_Operator_GreaterEqual, {
+      {BASK_FLOAT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_FLOAT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE},
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
     }},
 
-    {KL_TT_Operator_BitwiseAnd, {
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_LogicalAnd, {
+      {BASK_BOOL_PRIMITIVE, BASK_BOOL_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
     }},
-    {KL_TT_Operator_BitwiseOr, {
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_LogicalOr, {
+      {BASK_BOOL_PRIMITIVE, BASK_BOOL_PRIMITIVE, true, BASK_BOOL_PRIMITIVE}
     }},
-    {KL_TT_Operator_BitwiseXor, {
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+
+    {BASK_TT_Operator_BitwiseAnd, {
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Shl, {
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_BitwiseOr, {
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }},
-    {KL_TT_Operator_Shr, {
-      {KL_INT_PRIMITIVE, KL_INT_PRIMITIVE, true, KL_INT_PRIMITIVE}
+    {BASK_TT_Operator_BitwiseXor, {
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
+    }},
+    {BASK_TT_Operator_Shl, {
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
+    }},
+    {BASK_TT_Operator_Shr, {
+      {BASK_INT_PRIMITIVE, BASK_INT_PRIMITIVE, true, BASK_INT_PRIMITIVE}
     }}
   };
 
-  map<KL_TokenType, vector<ExpressionType>> all_ops = {};
+  map<BASK_TokenType, vector<ExpressionType>> all_ops = {};
 
-      vector<KL_PrimitiveType> primitives = {
-          KL_INT_PRIMITIVE, KL_FLOAT_PRIMITIVE, KL_BOOL_PRIMITIVE, KL_CHAR_PRIMITIVE, KL_STRING_PRIMITIVE,
+      vector<BASK_PrimitiveType> primitives = {
+          BASK_INT_PRIMITIVE, BASK_FLOAT_PRIMITIVE, BASK_BOOL_PRIMITIVE, BASK_CHAR_PRIMITIVE, BASK_STRING_PRIMITIVE,
       };
 
 
@@ -171,7 +171,7 @@ TEST(GetExprType, Binary) {
     for (auto& p1 : primitives) {
       for (auto& p2 : primitives) {
         bool contained = false;
-        KL_PrimitiveType result = KL_VOID_PRIMITIVE;
+        BASK_PrimitiveType result = BASK_VOID_PRIMITIVE;
         for (auto& type : types) {
           if ((type.lhs == p1 && type.rhs == p2) || (type.rhs == p1 && type.lhs == p2)) {
             contained = true;
@@ -190,15 +190,15 @@ TEST(GetExprType, Binary) {
     ASSERT_EQ(types.size(), primitives.size() * primitives.size());
     for (auto& type : types) {
       unique_ptr<ASTExprBinary> expr = make_unique<ASTExprBinary>(
-          make_unique<ASTExprConstantValue>(KL_Type(true, type.lhs), "", 0, 0),
-          make_unique<ASTExprConstantValue>(KL_Type(true, type.rhs), "", 0, 0), op,
+          make_unique<ASTExprConstantValue>(BASK_Type(true, type.lhs), "", 0, 0),
+          make_unique<ASTExprConstantValue>(BASK_Type(true, type.rhs), "", 0, 0), op,
           0, 0);
 
       if (type.valid) {
         try{
           auto expr_type = expr->get_expr_type();
           ASSERT_EQ(expr_type.primitive, type.result);
-          ASSERT_EQ(expr_type.kind, KL_PRIMITIVE_TYPEKIND);
+          ASSERT_EQ(expr_type.kind, BASK_PRIMITIVE_TYPEKIND);
           ASSERT_EQ(expr_type.is_const, true);
         } catch (std::runtime_error e) {
           FAIL() << "Expected no runtime_error";

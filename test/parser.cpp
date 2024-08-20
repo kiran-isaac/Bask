@@ -11,7 +11,7 @@
 using namespace std;
 
 TEST(Parser, ParseFunction) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() {  }")};
+  const char* argv[] = {"BASK", insertIntoTempFile("int main() {  }")};
   
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -21,7 +21,7 @@ TEST(Parser, ParseFunction) {
 }
 
 TEST(Parser, Declaration) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { int a = 5 * 10; }")};
+  const char* argv[] = {"BASK", insertIntoTempFile("int main() { int a = 5 * 10; }")};
   
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -31,7 +31,7 @@ TEST(Parser, Declaration) {
 }
 
 TEST(Parser, Assignment) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { a = 5 * 10; }")};
+  const char* argv[] = {"BASK", insertIntoTempFile("int main() { a = 5 * 10; }")};
   
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -52,7 +52,7 @@ TEST(Parser, Assignment) {
 }
 
 TEST(Parser, FunctionCall) {
-  const char* argv[] = {"KL", insertIntoTempFile("int main() { print(\"Hello, World!\"); }")};
+  const char* argv[] = {"BASK", insertIntoTempFile("int main() { print(\"Hello, World!\"); }")};
   
   CommandLineArguments options(2, argv);
   Lexer lexer(options);
@@ -73,7 +73,7 @@ TEST(Parser, FunctionCall) {
 }
 
 TEST(Parser, Return) {
-  const char *argv[] = {"KL", insertIntoTempFile("int main() { return 5; }")};
+  const char *argv[] = {"BASK", insertIntoTempFile("int main() { return 5; }")};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);

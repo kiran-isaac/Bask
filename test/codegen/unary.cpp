@@ -16,9 +16,9 @@
 #include "types.h"
 
 TEST(Unary, UnaryNegDeclaration) { 
-  KLCodeGenVisitor visitor("Declarations.SimpleDeclaration");
+  BASKCodeGenVisitor visitor("Declarations.SimpleDeclaration");
 
-  const char *argv[] = {"KL",
+  const char *argv[] = {"BASK",
                         insertIntoTempFile("int main() { int a = -5; int b = -a; }")};
 
   CommandLineArguments options(2, argv);

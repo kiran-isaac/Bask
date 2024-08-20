@@ -2,8 +2,8 @@
 // Created by kiran on 5/21/24.
 //
 
-#ifndef KL_CODEGEN_H
-#define KL_CODEGEN_H
+#ifndef BASK_CODEGEN_H
+#define BASK_CODEGEN_H
 
 #include <iostream>
 #include <map>
@@ -73,7 +73,7 @@ enum CodeGenResultType {
 
 };
 
-class KLCodeGenResult {
+class BASKCodeGenResult {
 private:
   CodeGenResultType type;
 
@@ -82,7 +82,7 @@ private:
   std::string error;
   
 
-  KLCodeGenResult(CodeGenResultType type, std::optional<llvm::Value *> value,
+  BASKCodeGenResult(CodeGenResultType type, std::optional<llvm::Value *> value,
                   std::optional<std::string> error,
                   std::optional<llvm::Type *> llvm_type)
       : type(type) {
@@ -150,33 +150,33 @@ public:
     this->error += error;
   }
 
-  static KLCodeGenResult *Error(std::string error) {
-    return new KLCodeGenResult(CodeGenResultType_Error, std::nullopt, std::make_optional(error),
+  static BASKCodeGenResult *Error(std::string error) {
+    return new BASKCodeGenResult(CodeGenResultType_Error, std::nullopt, std::make_optional(error),
                                std::nullopt);
   }
 
-  static KLCodeGenResult *Value(llvm::Value *value) {
-    return new KLCodeGenResult(CodeGenResultType_Value, value, "", nullptr);
+  static BASKCodeGenResult *Value(llvm::Value *value) {
+    return new BASKCodeGenResult(CodeGenResultType_Value, value, "", nullptr);
   }
 
-  static KLCodeGenResult *Type(llvm::Type *llvm_type) {
-    return new KLCodeGenResult(CodeGenResultType_Type, nullptr, "", llvm_type);
+  static BASKCodeGenResult *Type(llvm::Type *llvm_type) {
+    return new BASKCodeGenResult(CodeGenResultType_Type, nullptr, "", llvm_type);
   }
 
-  static KLCodeGenResult *NoHalt() {
-    return new KLCodeGenResult(CodeGenResultType_NoHalt, nullptr, "", nullptr);
+  static BASKCodeGenResult *NoHalt() {
+    return new BASKCodeGenResult(CodeGenResultType_NoHalt, nullptr, "", nullptr);
   }
 
-  static KLCodeGenResult *Halt() {
-    return new KLCodeGenResult(CodeGenResultType_Halt, nullptr, "", nullptr);
+  static BASKCodeGenResult *Halt() {
+    return new BASKCodeGenResult(CodeGenResultType_Halt, nullptr, "", nullptr);
   }
 
-  static KLCodeGenResult *None() {
-    return new KLCodeGenResult(CodeGenResultType_None, nullptr, "", nullptr);
+  static BASKCodeGenResult *None() {
+    return new BASKCodeGenResult(CodeGenResultType_None, nullptr, "", nullptr);
   }
 };
 
-class KLCodeGenVisitor {
+class BASKCodeGenVisitor {
 private:
   llvm::LLVMContext TheContext;
   llvm::IRBuilder<> Builder;
@@ -185,7 +185,7 @@ private:
 public:
   NamedValuesClass NamedValues;
 
-  KLCodeGenVisitor(const char *module_name) : Builder(TheContext) {
+  BASKCodeGenVisitor(const char *module_name) : Builder(TheContext) {
     TheModule = new llvm::Module(module_name, TheContext);
 
     TheModule->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
@@ -196,27 +196,27 @@ public:
   llvm::Value *to_bool(llvm::Value *value);
 
   // Declared in AST.h
-  KLCodeGenResult *visit(ASTType *node);
-  KLCodeGenResult *visit(ASTFuncDecl *node);
-  KLCodeGenResult *visit(ASTProgram *node);
+  BASKCodeGenResult *visit(ASTType *node);
+  BASKCodeGenResult *visit(ASTFuncDecl *node);
+  BASKCodeGenResult *visit(ASTProgram *node);
 
   // Declared in AST_Expressions.h
-  KLCodeGenResult *visit(ASTExprConstantValue *node);
-  KLCodeGenResult *visit(ASTExprIdentifier *node);
-  KLCodeGenResult *visit(ASTExprFuncCall *node);
-  KLCodeGenResult *visit(ASTExprBinary *node);
-  KLCodeGenResult *visit(ASTExprUnary *node);
+  BASKCodeGenResult *visit(ASTExprConstantValue *node);
+  BASKCodeGenResult *visit(ASTExprIdentifier *node);
+  BASKCodeGenResult *visit(ASTExprFuncCall *node);
+  BASKCodeGenResult *visit(ASTExprBinary *node);
+  BASKCodeGenResult *visit(ASTExprUnary *node);
 
   // Declared in AST_Statements.h
-  KLCodeGenResult *visit(ASTStmtExpr *node);
-  KLCodeGenResult *visit(ASTStmtAssignment *node);
-  KLCodeGenResult *visit(ASTStmtDecl *node);
-  KLCodeGenResult *visit(ASTBlock *node);
+  BASKCodeGenResult *visit(ASTStmtExpr *node);
+  BASKCodeGenResult *visit(ASTStmtAssignment *node);
+  BASKCodeGenResult *visit(ASTStmtDecl *node);
+  BASKCodeGenResult *visit(ASTBlock *node);
 
   // Declared in AST_ControlFlow.h
-  KLCodeGenResult *visit(ASTControlFlowIf *node);
-  KLCodeGenResult *visit(ASTControlFlowWhile *node);
-  KLCodeGenResult *visit(ASTStmtReturn *node);
+  BASKCodeGenResult *visit(ASTControlFlowIf *node);
+  BASKCodeGenResult *visit(ASTControlFlowWhile *node);
+  BASKCodeGenResult *visit(ASTStmtReturn *node);
 
   llvm::Module *getModule() { return TheModule; }
 
@@ -232,4 +232,4 @@ public:
   }
 };
 
-#endif // KL_CODEGEN_H
+#endif // BASK_CODEGEN_H

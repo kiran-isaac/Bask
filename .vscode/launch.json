@@ -5,12 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) FUNCTIONS.KL",
+      "name": "(gdb) FUNCTIONS.BSK",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/KL",
+      "program": "${workspaceFolder}/build/BASK",
       "args": [
-        "${workspaceFolder}/test/codegen/functions.kl", "-llib/build"
+        "${workspaceFolder}/test/codegen/functions.bsk", "-llib/build"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -35,7 +35,7 @@
       "type": "lldb",
       "request": "launch",
       "name": "CodeLLDB GTest",
-      "program": "${workspaceFolder}/build/KLTest",
+      "program": "${workspaceFolder}/build/BASKTest",
       "args": [],
       "preLaunchTask": "build with make",
       "cwd": "${workspaceFolder}"
@@ -44,7 +44,7 @@
       "type": "lldb-dap",
       "request": "launch",
       "name": "LLDB GTest",
-      "program": "${workspaceFolder}/build/KLTest",
+      "program": "${workspaceFolder}/build/BASKTest",
       "args": [],
       "preLaunchTask": "build with make",
       "cwd": "${workspaceFolder}"
@@ -53,7 +53,7 @@
       "name": "build and debug gtests",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/KLTest",
+      "program": "${workspaceFolder}/build/BASKTest",
       "args": ["--gtest_filter=\"Expressions.Expr3\""],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
@@ -77,9 +77,9 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "CodeLLDB int_expr.kl",
-      "program": "${workspaceFolder}/build/KL",
-      "args": ["${workspaceFolder}/test/codegen/functions.kl"],
+      "name": "CodeLLDB int_expr.bsk",
+      "program": "${workspaceFolder}/build/BASK",
+      "args": ["${workspaceFolder}/test/codegen/functions.bsk"],
       "preLaunchTask": "build with make",
       "cwd": "${workspaceFolder}"
     },

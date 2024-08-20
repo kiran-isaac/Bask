@@ -11,8 +11,8 @@
 using namespace llvm;
 using namespace std;
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {
-  auto result = KLCodeGenResult::None();
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTProgram *node) {
+  auto result = BASKCodeGenResult::None();
   for (auto &func : node->funcs) {
     auto func_result = func->accept(this);
     if (func_result->getTypeOfResult() != CodeGenResultType_Error)
@@ -21,18 +21,18 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTProgram *node) {
     if (result->getTypeOfResult() == CodeGenResultType_Error) {
       result->prepend_error(func_result->getError());
     } else {
-      result = KLCodeGenResult::Error(func_result->getError());
+      result = BASKCodeGenResult::Error(func_result->getError());
     }
   }
 
   return result;
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTFuncDecl *node) {
   // Create the function prototype
   vector<Type *> argTypes;
 
-  KLCodeGenResult *llvmTypeResult;
+  BASKCodeGenResult *llvmTypeResult;
   for (auto &argType : node->argTypes) {
     llvmTypeResult = argType->accept(this);
     if (llvmTypeResult->getTypeOfResult() != CodeGenResultType_Type) {
@@ -61,13 +61,13 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
       Function::Create(FT, Function::ExternalLinkage, node->name, TheModule);
 
   if (!node->body)
-    return KLCodeGenResult::Value(F);
+    return BASKCodeGenResult::Value(F);
 
   // Set names for all arguments.
   unsigned idx = 0;
   unsigned argc = node->argNames.size();
   if (argc != argTypes.size()) {
-    return KLCodeGenResult::Error("Function " + node->name +
+    return BASKCodeGenResult::Error("Function " + node->name +
                                   " has mismatched argument names and types");
   }
   for (auto &Arg : F->args()) {
@@ -92,7 +92,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   NamedValues.exitScope();
 
   if (body_result->getTypeOfResult() == CodeGenResultType_Error) {
-    return KLCodeGenResult::Error("Function " + node->name +
+    return BASKCodeGenResult::Error("Function " + node->name +
                                          node->positionString() +
                                          " has bad body: \n  " + body_result->getError() + "\n");
   }
@@ -101,7 +101,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
     if (return_type->getLLVMType()->isVoidTy()) {
       Builder.CreateRetVoid();
     } else {
-      return KLCodeGenResult::Error("Function " + node->name +
+      return BASKCodeGenResult::Error("Function " + node->name +
                                            node->positionString() +
                                            " does not return a value");
     }
@@ -112,14 +112,14 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTFuncDecl *node) {
   raw_string_ostream error_stream(error_msg);
 
   if (verifyFunction(*F, &error_stream)) {
-    return KLCodeGenResult::Error("Function " + node->name +
+    return BASKCodeGenResult::Error("Function " + node->name +
                                          node->positionString() +
                                          " failed llvm verification: \n  " + error_stream.str() + "\n");
   }
 
-  return KLCodeGenResult::None();
+  return BASKCodeGenResult::None();
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTType *node) {
-  return KLCodeGenResult::Type(node->type.get_llvm_type(TheContext));
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTType *node) {
+  return BASKCodeGenResult::Type(node->type.get_llvm_type(TheContext));
 }

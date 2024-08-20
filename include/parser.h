@@ -2,8 +2,8 @@
 // Created by kiran on 5/20/24.
 //
 
-#ifndef KL_PARSER_H
-#define KL_PARSER_H
+#ifndef BASK_PARSER_H
+#define BASK_PARSER_H
 
 #include <queue>
 
@@ -16,12 +16,12 @@ class Parser {
  private:
   Lexer &lexer;
 
-  KL_Token tk;
-  queue<KL_Token> peekQueue;
+  BASK_Token tk;
+  queue<BASK_Token> peekQueue;
 
-  KL_Token peek(int n);
+  BASK_Token peek(int n);
   void nextToken();
-  void expect(KL_TokenType type) const;
+  void expect(BASK_TokenType type) const;
 
   void parserError(const string &msg) const;
 
@@ -54,4 +54,4 @@ public:
   unique_ptr<ASTProgram> parse();
 };
 
-#endif  // KL_PARSER_H
+#endif  // BASK_PARSER_H

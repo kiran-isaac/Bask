@@ -16,9 +16,9 @@
 #include "types.h"
 
 TEST(If, If1) {
-  KLCodeGenVisitor visitor("Declarations.SimpleDeclaration");
+  BASKCodeGenVisitor visitor("Declarations.SimpleDeclaration");
 
-  const char *argv[] = {"KL", insertIntoTempFile(R"(
+  const char *argv[] = {"BASK", insertIntoTempFile(R"(
       int main() { 
         int x = 0;
         if (true) {

@@ -10,7 +10,7 @@ using namespace std;
 bool SymTab::name_is_in_scope(std::string name) {
   for (auto scope = scope_stack.rbegin(); scope != scope_stack.rend();
        scope++) {
-    std::unordered_map<std::string, KL_Type>::iterator value =
+    std::unordered_map<std::string, BASK_Type>::iterator value =
         scope->find(name);
 
     if (value != scope->end()) {
@@ -21,9 +21,9 @@ bool SymTab::name_is_in_scope(std::string name) {
   return false;
 }
 
-optional<KL_Type> SymTab::get_name_type(std::string name) {
+optional<BASK_Type> SymTab::get_name_type(std::string name) {
   for (auto scope = scope_stack.rbegin(); scope != scope_stack.rend(); scope++) {
-    std::unordered_map<std::string, KL_Type>::iterator value = scope->find(name);
+    std::unordered_map<std::string, BASK_Type>::iterator value = scope->find(name);
 
     if (value != scope->end()) {
       return value->second;
@@ -33,7 +33,7 @@ optional<KL_Type> SymTab::get_name_type(std::string name) {
   return nullopt;
 }
 
-void SymTab::add_name(std::string name, KL_Type type) {
+void SymTab::add_name(std::string name, BASK_Type type) {
   scope_stack.back().insert({name, type});
 }
 

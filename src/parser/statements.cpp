@@ -13,14 +13,14 @@ unique_ptr<ASTStmtDecl> Parser::parse_declaration() {
   unsigned int col = tk.col;
   
   auto type= parse_type_annotation();
-  expect(KL_TT_Identifier);
+  expect(BASK_TT_Identifier);
   auto name = tk.value;
   nextToken();
-  expect(KL_TT_Operator_Assign);
+  expect(BASK_TT_Operator_Assign);
   nextToken();
   auto value= parse_expression();
   
-  expect(KL_TT_Punctuation_Semicolon);
+  expect(BASK_TT_Punctuation_Semicolon);
   nextToken();
   
   return make_unique<ASTStmtDecl>(std::move(type), name, std::move(value), line, col);
@@ -32,11 +32,11 @@ unique_ptr<ASTStmtAssignment> Parser::parse_assignment() {
   
   auto name = tk.value;
   nextToken();
-  expect(KL_TT_Operator_Assign);
+  expect(BASK_TT_Operator_Assign);
   nextToken();
   auto value = parse_expression();
   
-  expect(KL_TT_Punctuation_Semicolon);
+  expect(BASK_TT_Punctuation_Semicolon);
   nextToken();
   
   return make_unique<ASTStmtAssignment>(name, std::move(value), line, col);
@@ -46,7 +46,7 @@ unique_ptr<ASTStmtExpr> Parser::parse_expression_statement() {
   unsigned int line = tk.line;
   unsigned int col = tk.col;
   auto expr = parse_expression();
-  expect(KL_TT_Punctuation_Semicolon);
+  expect(BASK_TT_Punctuation_Semicolon);
   nextToken();
   return make_unique<ASTStmtExpr>(std::move(expr), line, col);
 }
@@ -56,41 +56,41 @@ unique_ptr<ASTStmtReturn> Parser::parse_return() {
   unsigned int col = tk.col;
   nextToken();
   auto expr = parse_expression();
-  expect(KL_TT_Punctuation_Semicolon);
+  expect(BASK_TT_Punctuation_Semicolon);
   nextToken();
   return make_unique<ASTStmtReturn>(std::move(expr), line, col);
 }
 
 unique_ptr<ASTStmt> Parser::parse_statement() {
   switch (tk.type) {
-  case KL_TT_KW_Return:
+  case BASK_TT_KW_Return:
     return parse_return();
   
-  case KL_TT_KW_If:
+  case BASK_TT_KW_If:
     return parse_if();
 
-  case KL_TT_KW_While:
+  case BASK_TT_KW_While:
     return parse_while();
 
-  case KL_TT_KW_Const:
-  case KL_TT_KW_Int:
-  case KL_TT_KW_Float:
-  case KL_TT_KW_Bool:
-  case KL_TT_KW_Char:
-  case KL_TT_KW_String:
+  case BASK_TT_KW_Const:
+  case BASK_TT_KW_Int:
+  case BASK_TT_KW_Float:
+  case BASK_TT_KW_Bool:
+  case BASK_TT_KW_Char:
+  case BASK_TT_KW_String:
     return parse_declaration();
 
   // if identifier then check if it is a function call, an assignment or an
   // expression statement
-  case KL_TT_Identifier:
+  case BASK_TT_Identifier:
     switch (peek(1).type) {
     // Function call
-    case KL_TT_Punctuation_LParen:
+    case BASK_TT_Punctuation_LParen:
     // Or binary operator
     case BIN_OP_CASES:
       return parse_expression_statement();
 
-    case KL_TT_Operator_Assign:
+    case BASK_TT_Operator_Assign:
       return parse_assignment();
 
     default:

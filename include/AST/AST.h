@@ -2,8 +2,8 @@
 // Created by kiran on 5/20/24.
 //
 
-#ifndef KL_AST_H
-#define KL_AST_H
+#ifndef BASK_AST_H
+#define BASK_AST_H
 
 #include <iostream>
 #include <memory>
@@ -55,8 +55,8 @@ class ASTFuncDecl : public ASTNode {
 
   void fold_expressions() override { if (body) body->fold_expressions(); }
 
-  vector<KL_Type> get_signature() const {
-    vector<KL_Type> signature;
+  vector<BASK_Type> get_signature() const {
+    vector<BASK_Type> signature;
     for (auto &argType : argTypes) {
       signature.push_back(argType->type);
     }
@@ -64,8 +64,8 @@ class ASTFuncDecl : public ASTNode {
     return signature;
   }
 
-  KL_Type get_type() const {
-    return KL_Type(returnType->type.is_const, get_signature());
+  BASK_Type get_type() const {
+    return BASK_Type(returnType->type.is_const, get_signature());
   }
 
   void check_semantics() override {
@@ -80,7 +80,7 @@ class ASTFuncDecl : public ASTNode {
     body->check_semantics(); 
   }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
@@ -147,7 +147,7 @@ class ASTProgram : public ASTNode {
     }
   }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   [[nodiscard]] const ASTFuncDecl *get_function(const string &name) const {
     for (const auto &func : funcs) {
@@ -163,4 +163,4 @@ class ASTProgram : public ASTNode {
   }
 };
 
-#endif  // KL_AST_H
+#endif  // BASK_AST_H

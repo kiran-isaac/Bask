@@ -3,7 +3,7 @@ BASEDIR=$(dirname $0)
 cd $BASEDIR
 
 # All shell scripts in subdirs
-suites=$(find . -name "KLSUITE*.sh" | sort)
+suites=$(find . -name "TESTSUITE*.sh" | sort)
 
 echo $(pwd)
 

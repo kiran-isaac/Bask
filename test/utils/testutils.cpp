@@ -17,7 +17,7 @@
 #include "utils.h"
 
 const char *insertIntoTempFile(const char *contents) {
-  char *tempFile = strdup("/tmp/kl-XXXXXX");
+  char *tempFile = strdup("/tmp/bask-XXXXXX");
   mkstemp(tempFile);
   FILE *file = fopen(tempFile, "w");
   fprintf(file, "%s", contents);
@@ -27,7 +27,7 @@ const char *insertIntoTempFile(const char *contents) {
 
 std::unique_ptr<ASTProgram> parseTestProgram(const std::string &program) {
   {
-    const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+    const char *argv[] = {"BASK", insertIntoTempFile(program.c_str())};
 
     CommandLineArguments options(2, argv);
     Lexer lexer(options);
@@ -88,11 +88,11 @@ optional<string> get_IR_func_block(string &output, string func_name) {
 }
 
 pair<bool, string> compile(string module_name, string program) {
-  KLCodeGenVisitor visitor(module_name.c_str());
+  BASKCodeGenVisitor visitor(module_name.c_str());
 
   SYMTAB.wipe();
 
-  const char *argv[] = {"KL", insertIntoTempFile(program.c_str())};
+  const char *argv[] = {"BASK", insertIntoTempFile(program.c_str())};
 
   CommandLineArguments options(2, argv);
   Lexer lexer(options);

@@ -18,8 +18,8 @@ clean_line() {
     echo -e -n "\033[1K\r"
 }
 
-COMPILER=../../build/KL
-TESTS=$(find . -name "*.kl" | sort)
+COMPILER=../../build/BASK
+TESTS=$(find . -name "*.bsk" | sort)
 
 #list of failed tests
 FAILED_TESTS=""
@@ -27,17 +27,17 @@ FAILED_TESTS=""
 for t in $TESTS
 do
     echo -n "Testing $t" 
-    $COMPILER $t > ir.ll 2> KL_output.log
+    $COMPILER $t > ir.ll 2> BASK_output.log
 
     if [ $? -ne 0 ]; then
         clean_line
         red_echo "Failed to compile $t"
-        cat KL_output.log
+        cat BASK_output.log
         FAILED_TESTS="$FAILED_TESTS $t"
         rm -f *.log *.ll
         continue
     fi
-    rm -f KL_output.log
+    rm -f BASK_output.log
     /usr/bin/clang -Wno-override-module ir.ll -xir -o a.out -O3 > $(basename $t)-CLANG.log 2>&1;
     if [ $? -ne 0 ]; then
         clean_line

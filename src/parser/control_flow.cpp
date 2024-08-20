@@ -11,7 +11,7 @@ unique_ptr<ASTControlFlowIf> Parser::parse_if() {
   auto then_block = parse_block();
   unique_ptr<ASTBlock> else_block = nullptr;
   
-  if (tk.type == KL_TT_KW_Else) {
+  if (tk.type == BASK_TT_KW_Else) {
     nextToken();
     else_block = parse_block();
   }

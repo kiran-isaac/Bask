@@ -4,28 +4,28 @@
 
 using namespace llvm;
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtExpr *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTStmtExpr *node) {
   return node->expr->accept(this);
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtAssignment *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTStmtAssignment *node) {
   auto var = NamedValues.findValue(node->identifier->name);
   if (!var)
-    return KLCodeGenResult::Error("Unknown variable name " + node->identifier->name);
+    return BASKCodeGenResult::Error("Unknown variable name " + node->identifier->name);
 
   auto expr_result = node->value->accept(this);
   auto expr = expr_result->getValue();
   if (!expr)
-    return KLCodeGenResult::Error("Failed to get value of expression");
+    return BASKCodeGenResult::Error("Failed to get value of expression");
 
   Builder.CreateStore(expr, var);
-  return KLCodeGenResult::None();
+  return BASKCodeGenResult::None();
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTStmtDecl *node) {
   auto type_result = node->type->accept(this);
   if (type_result->getTypeOfResult() != CodeGenResultType_Type)
-    return KLCodeGenResult::Error("Failed to get type of declaration " +
+    return BASKCodeGenResult::Error("Failed to get type of declaration " +
                                   node->identifier->name);
   
   auto type = type_result->getLLVMType();
@@ -37,7 +37,7 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
 
     auto expr = expr_result->getValue();
     if (!expr)
-      return KLCodeGenResult::Error("Failed to get value of expression");
+      return BASKCodeGenResult::Error("Failed to get value of expression");
 
     NamedValues.addValue(node->identifier->name, expr);
 
@@ -45,45 +45,45 @@ KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtDecl *node) {
     Builder.CreateStore(expr, var);
   }
 
-  return KLCodeGenResult::Value(var);
+  return BASKCodeGenResult::Value(var);
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTBlock *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTBlock *node) {
   bool halt_next = false;
   for (auto &stmt : node->body) {
     if (halt_next) {
-      return KLCodeGenResult::Error("Unreachable code " + stmt->positionString());
+      return BASKCodeGenResult::Error("Unreachable code " + stmt->positionString());
     }
     auto result = stmt->accept(this);
 
     switch (result->getTypeOfResult()) {
       case CodeGenResultType_Error:
-        return KLCodeGenResult::Error(result->getError());
+        return BASKCodeGenResult::Error(result->getError());
       case CodeGenResultType_Halt:
         // if this is the last statement in the block, return
         if (&stmt == &node->body.back())
-          return KLCodeGenResult::None();
+          return BASKCodeGenResult::None();
         // Fail on the next stmt (so we can get correct line number)
         halt_next = true;
       case CodeGenResultType_NoHalt:
         // if this is the last statement in the block, return
         if (&stmt == &node->body.back())
-          return KLCodeGenResult::Error("Expected more statements after " + stmt->positionString() + " but found none. Possible missing return statement?");
+          return BASKCodeGenResult::Error("Expected more statements after " + stmt->positionString() + " but found none. Possible missing return statement?");
         break;
       default:
         break;
     }
   }
 
-  return KLCodeGenResult::None();
+  return BASKCodeGenResult::None();
 }
 
-KLCodeGenResult *KLCodeGenVisitor::visit(ASTStmtReturn *node) {
+BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTStmtReturn *node) {
   auto expr_result = node->return_expr->accept(this);
   auto expr = expr_result->getValue();
   if (!expr)
-    return KLCodeGenResult::Error("Failed to get value of return expression");
+    return BASKCodeGenResult::Error("Failed to get value of return expression");
 
   Builder.CreateRet(expr);
-  return KLCodeGenResult::Halt();
+  return BASKCodeGenResult::Halt();
 }

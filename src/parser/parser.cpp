@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void Parser::expect(KL_TokenType type) const {
+void Parser::expect(BASK_TokenType type) const {
   if (tk.type != type) {
     parserError("Expected " + string(token_type_to_string(type)) + " but got " + string(token_type_to_string(tk.type)));
   }
@@ -32,7 +32,7 @@ void Parser::nextToken() {
 // This is a false positive, as the queue is getting longer with each iteration
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
-KL_Token Parser::peek(int n) {
+BASK_Token Parser::peek(int n) {
   while (n > peekQueue.size()) {
     peekQueue.push(lexer.next().value());
   }
@@ -50,47 +50,47 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
   unsigned int line = tk.line;
   unsigned int col = tk.col;
   
-  KL_Type type;
+  BASK_Type type;
   
-  if (tk.type == KL_TT_KW_Const) {
+  if (tk.type == BASK_TT_KW_Const) {
     type.is_const = true;
     nextToken();
   }
   
-  type.kind = KL_PRIMITIVE_TYPEKIND;
+  type.kind = BASK_PRIMITIVE_TYPEKIND;
   switch (tk.type) {
-    case KL_TT_KW_Int:
-      type.primitive = KL_INT_PRIMITIVE;
+    case BASK_TT_KW_Int:
+      type.primitive = BASK_INT_PRIMITIVE;
       break;
-    case KL_TT_KW_Float:
-      type.primitive = KL_FLOAT_PRIMITIVE;
+    case BASK_TT_KW_Float:
+      type.primitive = BASK_FLOAT_PRIMITIVE;
       break;
-    case KL_TT_KW_Bool:
-      type.primitive = KL_BOOL_PRIMITIVE;
+    case BASK_TT_KW_Bool:
+      type.primitive = BASK_BOOL_PRIMITIVE;
       break;
-    case KL_TT_KW_Char:
-      type.primitive = KL_CHAR_PRIMITIVE;
+    case BASK_TT_KW_Char:
+      type.primitive = BASK_CHAR_PRIMITIVE;
       break;
-    case KL_TT_KW_String:
-      type.primitive = KL_STRING_PRIMITIVE;
+    case BASK_TT_KW_String:
+      type.primitive = BASK_STRING_PRIMITIVE;
       break;
     default:
       parserError("Expected type");
   }
   
   nextToken();
-  while (tk.type == KL_TT_Punctuation_LBracket) {
+  while (tk.type == BASK_TT_Punctuation_LBracket) {
     nextToken();
-    type.kind = KL_ARRAY_TYPEKIND;
+    type.kind = BASK_ARRAY_TYPEKIND;
     type.array_sizes = new vector<unsigned int>();
     switch (tk.type) {
-      case KL_TT_Literal_Int:
+      case BASK_TT_Literal_Int:
         type.array_sizes->push_back(stoi(tk.value));
         nextToken();
-        if (tk.type != KL_TT_Punctuation_RBracket) {
+        if (tk.type != BASK_TT_Punctuation_RBracket) {
           parserError("Expected ']' after integer in array declaration");
         }
-      case KL_TT_Punctuation_RBracket:
+      case BASK_TT_Punctuation_RBracket:
         type.array_sizes->push_back(0);
         nextToken();
         break;
@@ -103,11 +103,11 @@ unique_ptr<ASTType> Parser::parse_type_annotation() {
 }
 
 unique_ptr<ASTBlock> Parser::parse_block() {
-  expect(KL_TT_Punctuation_LBrace);
+  expect(BASK_TT_Punctuation_LBrace);
   nextToken();
   
   vector<unique_ptr<ASTStmt>> body;
-  while (tk.type != KL_TT_Punctuation_RBrace) {
+  while (tk.type != BASK_TT_Punctuation_RBrace) {
     body.push_back(parse_statement());
   }
   
@@ -121,36 +121,36 @@ unique_ptr<ASTFuncDecl> Parser::parse_function() {
   unsigned int line = tk.line;
   unsigned int col = tk.col;
   
-  if (tk.type != KL_TT_Identifier) {
+  if (tk.type != BASK_TT_Identifier) {
     parserError("Expected identifier");
   }
   
   string name = tk.value;
   nextToken();
   
-  expect(KL_TT_Punctuation_LParen);
+  expect(BASK_TT_Punctuation_LParen);
   nextToken();
   
   vector<unique_ptr<ASTType>> arg_types;
   vector<string> arg_names;
   
-  while (tk.type != KL_TT_Punctuation_RParen) {
+  while (tk.type != BASK_TT_Punctuation_RParen) {
     arg_types.push_back(parse_type_annotation());
-    expect(KL_TT_Identifier);
+    expect(BASK_TT_Identifier);
     arg_names.push_back(tk.value);
     nextToken();
-    if (tk.type == KL_TT_Punctuation_Comma) {
+    if (tk.type == BASK_TT_Punctuation_Comma) {
       nextToken();
     }
   }
   
   nextToken();
 
-  if (tk.type == KL_TT_Punctuation_LBrace) {
+  if (tk.type == BASK_TT_Punctuation_LBrace) {
     return std::make_unique<ASTFuncDecl>(
         name, std::move(return_type), std::move(arg_types),
         std::move(arg_names), std::move(parse_block()), line, col);
-  } else if (tk.type == KL_TT_Punctuation_Semicolon) {
+  } else if (tk.type == BASK_TT_Punctuation_Semicolon) {
     nextToken();
     return std::make_unique<ASTFuncDecl>(name, std::move(return_type), std::move(arg_types), std::move(arg_names), nullptr, line, col);
   } else {
@@ -161,10 +161,10 @@ unique_ptr<ASTFuncDecl> Parser::parse_function() {
 unique_ptr<ASTProgram> Parser::parse() {
   auto program = make_unique<ASTProgram>();
 
-  while (tk.type != KL_TT_EndOfFile) {
-    if (tk.type == KL_TT_KW_Use) {
+  while (tk.type != BASK_TT_EndOfFile) {
+    if (tk.type == BASK_TT_KW_Use) {
       nextToken();
-      if (tk.type != KL_TT_Literal_String) {
+      if (tk.type != BASK_TT_Literal_String) {
         parserError("Expected string after 'use'");
       }
       string module = lexer.options.find_module(tk.value);
@@ -176,7 +176,7 @@ unique_ptr<ASTProgram> Parser::parse() {
       Parser moduleParser(moduleLexer);
       auto moduleAST = moduleParser.parse();
       program->prepend(moduleAST.get());
-      expect(KL_TT_Punctuation_Semicolon);
+      expect(BASK_TT_Punctuation_Semicolon);
       nextToken();
     } else {
       auto func = parse_function();

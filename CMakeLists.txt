@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(KL)
+project(baskc)
 
 include(FetchContent)
 find_package(LLVM 14 REQUIRED CONFIG EXACT)
@@ -32,11 +32,11 @@ file(GLOB_RECURSE INCLUDES "include/*.h" "include/*.hpp")
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h" "src/*.hpp")
 
 # Add the executable
-add_executable(KL src/main.cpp ${SOURCES} ${INCLUDES})
-target_link_libraries(KL LLVMSupport)
+add_executable(baskc src/main.cpp ${SOURCES} ${INCLUDES})
+target_link_libraries(baskc LLVMSupport)
 
 # Link against LLVM libraries
-target_link_libraries(KL LLVM)
+target_link_libraries(baskc LLVM)
 
 # Add the test executable
 file(GLOB_RECURSE TEST_SOURCES "test/*.cpp" "test/*.hpp" "test/*.h" "src/*.cpp" "src/*.h" "src/*.hpp")
@@ -53,25 +53,22 @@ FetchContent_MakeAvailable(googletest)
 
 add_definitions(-DTESTING)
 
-add_executable(KLTest ${TEST_SOURCES} ${INCLUDES})
+add_executable(baskctest ${TEST_SOURCES} ${INCLUDES})
 
 # Link against gtest
-target_link_libraries(KLTest GTest::gtest_main)
+target_link_libraries(baskctest GTest::gtest_main)
 # Link against LLVM libraries
-target_link_libraries(KLTest LLVM)
+target_link_libraries(baskctest LLVM)
 
-target_compile_definitions(KLTest PRIVATE KL_DEBUG)
-target_link_libraries(KLTest LLVMSupport)
-
-# Add the test script to the build dir
-file(COPY test/codegen/float_expr.kl DESTINATION ${CMAKE_BINARY_DIR}/test/codegen)
+target_compile_definitions(baskctest PRIVATE baskc_DEBUG)
+target_link_libraries(baskctest LLVMSupport)
 
 FILE(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/TEST
      CONTENT 
 "#!/usr/bin/env bash
 # pass all arguments to the test script
 echo 'Running unit tests'
-./KLTest $@
+./baskctest $@
 
 echo 'Running test scripts'
 ../test/all.sh

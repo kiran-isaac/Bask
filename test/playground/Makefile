@@ -1,4 +1,4 @@
-KL = ../../build/KL
+BASK = ../../build/BASK
 
 .PHONY: clean
 .PRECIOUS: %.ll %.s
@@ -12,5 +12,5 @@ clean:
 %.s: %.ll 
 	llc -o $@ $<
 
-%.ll: %.kl 
-	$(KL) $< > $@
+%.ll: %.bsk 
+	$(BASK) $< > $@

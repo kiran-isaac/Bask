@@ -117,7 +117,7 @@ std::optional<char> Lexer::let_escape_char() {
   }
 }
 
-std::optional<KL_Token> Lexer::lex_string_literal() {
+std::optional<BASK_Token> Lexer::lex_string_literal() {
   advance();
   std::string str;
   while (*c != '"') {
@@ -135,10 +135,10 @@ std::optional<KL_Token> Lexer::lex_string_literal() {
     }
   }
   advance();
-  return KL_Token{KL_TokenType::KL_TT_Literal_String, str, tokenStartLine, tokenStartCol};
+  return BASK_Token{BASK_TokenType::BASK_TT_Literal_String, str, tokenStartLine, tokenStartCol};
 }
 
-std::optional<KL_Token> Lexer::lex_char_literal() {
+std::optional<BASK_Token> Lexer::lex_char_literal() {
   string charLiteralString = "";
   advance();
   if (*c == '\\') {
@@ -148,7 +148,7 @@ std::optional<KL_Token> Lexer::lex_char_literal() {
       if (*c == '\'') {
         advance();
         charLiteralString += escapeChar.value();
-        return KL_Token{KL_TokenType::KL_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
+        return BASK_Token{BASK_TokenType::BASK_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
       }
     }
   } else {
@@ -157,7 +157,7 @@ std::optional<KL_Token> Lexer::lex_char_literal() {
     if (*c == '\'') {
       advance();
       charLiteralString += escapeChar;
-      return KL_Token{KL_TokenType::KL_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
+      return BASK_Token{BASK_TokenType::BASK_TT_Literal_Char, charLiteralString, tokenStartLine, tokenStartCol};
     }
   }
   
@@ -165,7 +165,7 @@ std::optional<KL_Token> Lexer::lex_char_literal() {
   return std::nullopt;
 }
 
-std::optional<KL_Token> Lexer::lex_number() {
+std::optional<BASK_Token> Lexer::lex_number() {
   std::string num;
   while (isdigit(*c)) {
     num += *c;
@@ -179,8 +179,8 @@ std::optional<KL_Token> Lexer::lex_number() {
       num += *c;
       advance();
     }
-    return KL_Token{KL_TokenType::KL_TT_Literal_Float, num, line, col};
+    return BASK_Token{BASK_TokenType::BASK_TT_Literal_Float, num, line, col};
   }
   
-  return KL_Token{KL_TokenType::KL_TT_Literal_Int, num, line, col};
+  return BASK_Token{BASK_TokenType::BASK_TT_Literal_Int, num, line, col};
 }

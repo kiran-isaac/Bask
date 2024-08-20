@@ -59,7 +59,7 @@ public:
 
   virtual void check_semantics() {}
 
-  virtual KLCodeGenResult *accept(KLCodeGenVisitor *v) = 0;
+  virtual BASKCodeGenResult *accept(BASKCodeGenVisitor *v) = 0;
 
   static void SyntaxError(unsigned int line, unsigned int col,
                           const string &message) {
@@ -91,16 +91,16 @@ public:
 
 class ASTType : public ASTNode {
 public:
-  KL_Type type;
+  BASK_Type type;
   unsigned int line;
   unsigned int col;
 
-  explicit ASTType(KL_Type type, unsigned int line, unsigned int col)
+  explicit ASTType(BASK_Type type, unsigned int line, unsigned int col)
       : type(type), line(line), col(col) {}
 
   [[nodiscard]] ASTNodeType get_AST_type() const override { return Type; }
 
-  KLCodeGenResult *accept(KLCodeGenVisitor *v) override { return v->visit(this); }
+  BASKCodeGenResult *accept(BASKCodeGenVisitor *v) override { return v->visit(this); }
 
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);

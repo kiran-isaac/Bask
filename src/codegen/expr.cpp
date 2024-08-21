@@ -67,7 +67,7 @@ BASKCodeGenResult *BASKCodeGenVisitor::visit(ASTExprFuncCall *node) {
   auto func = TheModule->getFunction(node->name);
 
   if (!func) {
-    return BASKCodeGenResult::Error("Unknown function referenced");
+    return BASKCodeGenResult::Error("Unknown function referenced " + node->name);
   }
 
   if (func->arg_size() != node->args->size()) {

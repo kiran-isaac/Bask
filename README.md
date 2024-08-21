@@ -1,5 +1,5 @@
 # Bask
-This is a project I worked on during my Arm internship. It is a compiler for a simple language called Bask. The language is basically a subset of C. It is not particularly interesting syntactically but it was a fantastic project to learn how to write compilers, and how to use LLVM.
+This is a project I worked on during my Arm internship. It is a compiler for a simple language called Bask. The language is basically a subset of C. It is not particularly interesting syntactically but it was a fantastic project to learn how to write compilers, and how to use LLVM. The language is named after basking sharks. I don't know why, I just picked a shark at random. Naming things is hard and sharks are cool
 
 I dont have any plans to continue working on this project beyond adding a bit more to the standard library and finalizing string support and some other stuff. I am happy with what I have learned from this project and I am looking forward to my next compiler project!
 

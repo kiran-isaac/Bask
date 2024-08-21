@@ -18,7 +18,8 @@ clean_line() {
     echo -e -n "\033[1K\r"
 }
 
-COMPILER=../../build/BASK
+COMPILER=baskc
+LIB=/usr/local/lib/bask/lib.bc
 TESTS=$(find . -name "*.bsk" | sort)
 
 #list of failed tests
@@ -27,34 +28,23 @@ FAILED_TESTS=""
 for t in $TESTS
 do
     echo -n "Testing $t" 
-    $COMPILER $t > ir.ll 2> BASK_output.log
+    $COMPILER $t 2> BASK_output.log > /dev/null
 
     if [ $? -ne 0 ]; then
         clean_line
         red_echo "Failed to compile $t"
         cat BASK_output.log
         FAILED_TESTS="$FAILED_TESTS $t"
-        rm -f *.log *.ll
+        rm -f *.log *.out
         continue
     fi
     rm -f BASK_output.log
-    /usr/bin/clang -Wno-override-module ir.ll -xir -o a.out -O3 > $(basename $t)-CLANG.log 2>&1;
-    if [ $? -ne 0 ]; then
-        clean_line
-        red_echo "Failed to assemble $t"
-        cat ir.ll
-        cat $(basename $t)-CLANG.log
-        FAILED_TESTS="$FAILED_TESTS $t"
-        rm -f *.log 
-        continue
-    fi
     rm -f *.log
-    ./a.out;
+    ./a.out > /dev/null 2> /dev/null;
     exit_code=$?
     if [ $exit_code -ne 0 ]; then
         clean_line
         red_echo "Incorrect output for $t. Expected 0, got $exit_code"
-        cat ir.ll
         FAILED_TESTS="$FAILED_TESTS $t"
         rm -f *.log *.ll
     fi

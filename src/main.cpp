@@ -32,12 +32,10 @@ int main(int argc, const char **argv) {
   }
 
   if (options.mode == CommandLineArguments::Mode::IR) {
-    if (options.out.empty()) {
-      visitor.printModule();
-    } else {
-      llvm::raw_os_ostream llvm_stream(out);
+    out << visitor.getModuleAsString();
+  }
 
-      visitor.printModule(llvm_stream);
-    }
+  if (options.mode == CommandLineArguments::Mode::COMPILE) {
+    visitor.compileModule(options);
   }
 }

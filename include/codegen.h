@@ -7,9 +7,10 @@
 
 #include <iostream>
 #include <map>
-#include <optional>
 #include <ostream>
 #include <string>
+
+#include <options.h>
 
 #include <llvm/ADT/StringRef.h>
 #include <llvm/IR/DerivedTypes.h>
@@ -19,7 +20,12 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/Host.h>
+#include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
+
+#include <optional>
 
 class ASTType;
 class ASTFuncDecl;
@@ -188,7 +194,8 @@ public:
   BASKCodeGenVisitor(const char *module_name) : Builder(TheContext) {
     TheModule = new llvm::Module(module_name, TheContext);
 
-    TheModule->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
+    // Set target triple
+    TheModule->setTargetTriple(llvm::sys::getDefaultTargetTriple());
   }
 
   llvm::Value *i64_to_double(llvm::Value *value);
@@ -230,6 +237,8 @@ public:
     printModule(llvm_output);
     return output;
   }
+
+  void compileModule(CommandLineArguments &options);
 };
 
 #endif // BASK_CODEGEN_H

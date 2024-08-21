@@ -85,7 +85,8 @@ class ASTFuncDecl : public ASTNode {
   void print(int indent, ostream &out) const override {
     printIndent(indent, out);
     out << returnType->type.to_string() << " function: " << name << std::endl;
-    body->print(indent + 1, out);
+
+    if (body) body->print(indent + 1, out);
   }
 
   std::string positionString() override {

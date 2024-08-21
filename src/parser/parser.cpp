@@ -167,11 +167,12 @@ unique_ptr<ASTProgram> Parser::parse() {
       if (tk.type != BASK_TT_Literal_String) {
         parserError("Expected string after 'use'");
       }
-      string module = lexer.options.find_module(tk.value);
-      nextToken();
+      string module_name = tk.value;
+      string module = lexer.options.find_module(module_name);
       if (module.empty()) {
-        parserError("Module not found: " + tk.value);
+        parserError("Module not found: " + module_name);
       }
+      nextToken();
       Lexer moduleLexer(module, lexer.options);
       Parser moduleParser(moduleLexer);
       auto moduleAST = moduleParser.parse();

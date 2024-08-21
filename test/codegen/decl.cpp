@@ -66,10 +66,10 @@ TEST(Declarations, SimpleDeclarationWithAssignment) {
   string expected_main =
       R"(
     define i64 @main() {
-    entry:
-      %a = alloca i64, align 8
-      store i64 50, i64* %a, align 8
-      store i64 10, i64* %a, align 8
+    entry: 
+      %a = alloca i64, align 8 
+      store i64 50, i64* %a, align 8 
+      store i64 10, i64 50, align 8 
     }
     )";
 

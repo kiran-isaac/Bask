@@ -96,8 +96,9 @@ TEST(CodeGen, VisitConstantString) {
 
 TEST(CodeGen, FloatConst) {
   string source = R"(
-    void main() {  
+    int main() {  
       float x = 0.; 
+      return 0;
     }
   )";
 

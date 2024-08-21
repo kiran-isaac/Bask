@@ -2,6 +2,7 @@
 // Created by kiran on 5/20/24.
 //
 
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 #include <options.h>
@@ -12,6 +13,8 @@ using namespace std;
 string CommandLineArguments::find_module(string module_name) {
   // get cwd 
   string cwd = getcwd(nullptr, 0);
+
+  string lib_path = this->lib_path;
 
   // check if module_name is an absolute path
   if (module_name[0] == '/') {
@@ -42,7 +45,7 @@ string CommandLineArguments::find_module(string module_name) {
 CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
   cwd = getcwd(nullptr, 0);
 
-  mode = IR;
+  mode = COMPILE;
 
   isStdin = false;
 
@@ -130,6 +133,41 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
         exit(1);
       }
       i++;
+    }
+  }
+
+  // if in help mode or no args given, display help message 
+  if (mode == HELP || argc == 0) {
+    cout << "Usage: bask [options] [file]" << endl;
+    cout << "Options:" << endl;
+    cout << "  -o <file>  Output file" << endl;
+    cout << "  -l <path>  Library path" << endl;
+    cout << "  -c         Compile" << endl;
+    cout << "  -r         Run" << endl;
+    cout << "  -i         Generate IR" << endl;
+    cout << "  -a         Generate AST" << endl;
+    cout << "  -h         Display this help message" << endl;
+    exit(0);
+  }
+
+  if (lib_path.empty()) {
+    lib_path = "/usr/local/lib/bask";
+  }
+
+  if (out.empty()) {
+    switch(mode) {
+      case IR:
+        break;
+      case COMPILE:
+        out = "a.out";
+        break;
+      case RUN:
+        out = "a.out";
+        break;
+      case AST:
+        break;
+      case HELP:
+        break;
     }
   }
 }

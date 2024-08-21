@@ -9,6 +9,8 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <fstream>
+#include <unistd.h>
 
 #include <options.h>
 
@@ -236,6 +238,33 @@ public:
     llvm::raw_string_ostream llvm_output(output);
     printModule(llvm_output);
     return output;
+  }
+
+  std::string getModuleOptimizedAsString(std::string optimization_level) {
+    if (optimization_level == "0") {
+      return getModuleAsString();
+    }
+    string module = getModuleAsString();
+    system("mkdir -p /tmp/bask");
+    string filename = "/tmp/bask/unoptimised.ll";
+    ofstream out(filename);
+    out << module;
+    out.close();
+    string command = "opt -S " + filename + " -o /tmp/bask/optimised.ll 2> /tmp/bask/opt.log -O" + optimization_level;
+    if (system(command.c_str()) != 0) {
+      cerr << "Error: failed to optimize" << endl;
+      cerr << "Opt invocation: " << command << endl;
+      ifstream log("/tmp/bask/opt.log");
+      string line;
+      while (getline(log, line)) {
+        cerr << line << endl;
+      }
+      cerr << "Opt log dumped to /tmp/bask/opt.log" << endl;
+      exit(1);
+    }
+    ifstream in("/tmp/bask/optimised.ll");
+    string optimized_module((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    return optimized_module;
   }
 
   void compileModule(CommandLineArguments &options);

@@ -32,7 +32,9 @@ int main(int argc, const char **argv) {
   }
 
   if (options.mode == CommandLineArguments::Mode::IR) {
-    out << visitor.getModuleAsString();
+    string module = visitor.getModuleOptimizedAsString(options.opt_level);
+
+    out << module;
   }
 
   if (options.mode == CommandLineArguments::Mode::COMPILE) {

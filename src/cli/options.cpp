@@ -77,6 +77,21 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
 
         i += 2;
         break;
+      case 'O':
+        if (argv[i][2] != '\0') {
+          opt_level = string(argv[i] + 2);
+          i++;
+          continue;
+        }
+
+        if (i + 1 >= argc) {
+          cerr << "Error: -O requires an argument" << endl;
+          exit(1);
+        }
+
+        opt_level = argv[i + 1];
+        i += 2;
+        break;
       case 'l':
         if (!lib_path.empty()) {
           cerr << "Error: -l specified multiple times" << endl;
@@ -142,6 +157,7 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
     cout << "Options:" << endl;
     cout << "  -o <file>  Output file" << endl;
     cout << "  -l <path>  Library path" << endl;
+    cout << "  -O <level> Optimization level" << endl;
     cout << "  -c         Compile" << endl;
     cout << "  -r         Run" << endl;
     cout << "  -i         Generate IR" << endl;
@@ -152,6 +168,15 @@ CommandLineArguments::CommandLineArguments(int argc, const char **argv) {
 
   if (lib_path.empty()) {
     lib_path = "/usr/local/lib/bask";
+  }
+
+  if (opt_level.empty()) {
+    opt_level = "0";
+  }
+
+  if (opt_level != "0" && opt_level != "1" && opt_level != "2" && opt_level != "3" && opt_level != "s") {
+    cerr << "Error: invalid optimization level" << endl;
+    exit(1);
   }
 
   if (out.empty()) {

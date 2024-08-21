@@ -16,6 +16,7 @@ public:
   string file;
   string out;
   string lib_path;
+  string opt_level;
   bool isStdin;
   enum Mode { COMPILE, RUN, IR, AST, HELP } mode;
 

@@ -32,6 +32,9 @@ void BASKCodeGenVisitor::compileModule(CommandLineArguments &options) {
 
   // compile
   string cmd = "clang " + temp_file + " " + options.lib_path + "/lib.bc" + " -o " + (options.out.empty() ? "a.out" : options.out) + " 2> /tmp/bask/clang.log";
+  if (options.opt_level != "0") {
+    cmd += " -O" + options.opt_level;
+  }
 
   if (system(cmd.c_str()) != 0) {
     cerr << "Error: failed to compile" << endl;
